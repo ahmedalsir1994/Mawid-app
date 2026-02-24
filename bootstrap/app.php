@@ -11,7 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLanguage::class,
+            \App\Http\Middleware\EnsureUserIsActive::class,
+        ]);
+
+        $middleware->alias([
+            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'set.language' => \App\Http\Middleware\SetLanguage::class,
+            'check_role' => \App\Http\Middleware\CheckRole::class,
+            'check_license' => \App\Http\Middleware\CheckLicenseStatus::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'is_active',
+        'business_id',
     ];
 
     /**
@@ -43,6 +46,45 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
+
+    // Role checking methods
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isCompanyAdmin(): bool
+    {
+        return $this->role === 'company_admin';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff';
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role === 'customer';
+    }
+
+    // Relationships
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
+
+    public function staffBookings()
+    {
+        return $this->hasMany(Booking::class, 'staff_user_id');
+    }
+
+    public function license()
+    {
+        return $this->business ? $this->business->license() : null;
+    }
+
 }

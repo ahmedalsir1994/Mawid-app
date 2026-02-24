@@ -1,0 +1,225 @@
+<x-admin-layout>
+    <x-slot name="header">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.bookings') }}</h2>
+                <p class="text-gray-500 text-sm mt-1">{{ __('app.manage_track_appointments') }}</p>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                @php
+                    $bookingsIndexRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.index' : 'admin.bookings.index';
+                @endphp
+                <a href="{{ route($bookingsIndexRoute, ['filter' => 'today']) }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'today' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    {{ __('app.today') }} ({{ $today }})
+                </a>
+                <a href="{{ route($bookingsIndexRoute, ['filter' => 'upcoming']) }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'upcoming' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    {{ __('app.upcoming') }}
+                </a>
+                <a href="{{ route($bookingsIndexRoute, ['filter' => 'all']) }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    {{ __('app.all') }}
+                </a>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+
+        @if (session('success'))
+            <div class="p-4 m-6 rounded-lg bg-green-50 border border-green-200 text-green-800 flex items-center space-x-3">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if ($bookings->isEmpty())
+            <div class="p-12 text-center">
+                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">{{ __('app.no_bookings') }}</h3>
+                <p class="text-gray-600">{{ __('app.no_bookings_message') }}</p>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200 bg-gray-50">
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.date') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.time') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.service') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.customer') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.staff') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.phone') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.status') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.reminder') }}</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($bookings as $b)
+                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                                <td class="px-6 py-4 font-medium text-gray-800">{{ $b->booking_date }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ substr($b->start_time, 0, 5) }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $b->service->name }}</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                                            <span
+                                                class="text-purple-700 font-bold text-xs">{{ strtoupper(substr($b->customer_name, 0, 1)) }}</span>
+                                        </div>
+                                        <span class="font-medium text-gray-800">{{ $b->customer_name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($b->staff)
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <span
+                                                    class="text-blue-700 font-semibold text-xs">{{ strtoupper(substr($b->staff->name, 0, 1)) }}</span>
+                                            </div>
+                                            <span class="text-sm text-gray-700">{{ $b->staff->name }}</span>
+                                        </div>
+                                    @else
+                                        <span class="text-xs text-gray-400 italic">{{ __('app.not_assigned') }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-gray-600">{{ $b->customer_phone }}</td>
+
+                                <td class="px-6 py-4">
+                                    @php
+                                        $statusRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.status' : 'admin.bookings.status';
+                                    @endphp
+                                    <form method="POST" action="{{ route($statusRoute, $b) }}" class="inline">
+                                        @csrf
+                                        <select name="status"
+                                            class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            onchange="this.form.submit()">
+                                            @foreach (['pending' => __('app.pending'), 'confirmed' => __('app.confirmed'), 'cancelled' => __('app.cancelled'), 'completed' => __('app.completed')] as $st => $label)
+                                                <option value="{{ $st }}" @selected($b->status === $st)>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                </td>
+
+                                <td class="px-6 py-4" id="reminder-status-{{ $b->id }}">
+                                    @if($b->reminder_sent_at)
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ __('app.sent') }} {{ $b->reminder_sent_at->diffForHumans() }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-500 text-xs">{{ __('app.not_sent') }}</span>
+                                    @endif
+                                </td>
+
+                                <td class="px-6 py-4 text-right">
+                                    @php
+                                        // Clean and format phone number
+                                        $phone = preg_replace('/[^0-9+]/', '', $b->customer_phone);
+                                        $phone = ltrim($phone, '+');
+
+                                        // Add country code if not present
+                                        if (!preg_match('/^(968|966|971|965|973|974)/', $phone)) {
+                                            $phone = '968' . $phone;
+                                        }
+
+                                        // Format date and create message
+                                        $date = \Carbon\Carbon::parse($b->booking_date)->format('l, F j, Y');
+                                        $time = substr($b->start_time, 0, 5);
+
+                                        $message = "Hello {$b->customer_name}! 👋\n\n";
+                                        $message .= "This is a reminder from *" . auth()->user()->business->name . "*\n\n";
+                                        $message .= "📅 *Appointment Details:*\n";
+                                        $message .= "Service: {$b->service->name}\n";
+                                        $message .= "Date: {$date}\n";
+                                        $message .= "Time: {$time}\n";
+
+                                        if (auth()->user()->business->address) {
+                                            $message .= "Location: " . auth()->user()->business->address . "\n";
+                                        }
+
+                                        $message .= "\nWe look forward to seeing you! 😊\n";
+                                        $message .= "Reply here if you need to reschedule or have any questions.";
+
+                                        $whatsappUrl = 'https://api.whatsapp.com/send?phone=' . $phone . '&text=' . urlencode($message);
+                                        $reminderRoute = auth()->user()->role === 'staff' ? route('admin.staff.bookings.reminder', $b) : route('admin.bookings.reminder', $b);
+                                    @endphp
+                                    <button type="button"
+                                        onclick="sendReminder('{{ $whatsappUrl }}', '{{ $reminderRoute }}', {{ $b->id }})"
+                                        id="reminder-btn-{{ $b->id }}"
+                                        class="inline-flex px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition items-center space-x-2"
+                                        title="Send reminder via WhatsApp">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                                        </svg>
+                                        <span>{{ __('app.send_reminder') }}</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            @if($bookings->hasPages())
+                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                    {{ $bookings->links() }}
+                </div>
+            @endif
+        @endif
+
+    </div>
+
+    <script>
+        function sendReminder(whatsappUrl, reminderRoute, bookingId) {
+            // Open WhatsApp
+            window.open(whatsappUrl, '_blank');
+
+            // Mark reminder as sent
+            fetch(reminderRoute, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the reminder status display
+                        const statusCell = document.getElementById('reminder-status-' + bookingId);
+                        if (statusCell) {
+                            statusCell.innerHTML = `
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Sent ${data.sent_at}
+                            </span>
+                        `;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking reminder as sent:', error);
+                });
+        }
+    </script>
+</x-admin-layout>
