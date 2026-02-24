@@ -8,7 +8,10 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const database_1 = __importDefault(require("../db/database"));
 const router = (0, express_1.Router)();
-const JWT_SECRET = process.env.JWT_SECRET || 'mawid_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required');
+}
 router.post('/register', (req, res) => {
     const { name, email, password, role } = req.body;
     if (!name || !email || !password || !role) {
