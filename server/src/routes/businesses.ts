@@ -141,7 +141,8 @@ router.get('/:id/availability', (req: Request, res: Response): void => {
   }
 
   // Businesses are closed on Sundays (day 0); no slots available
-  const dateObj = new Date(date as string + 'T00:00:00');
+  const [year, month, day] = (date as string).split('-').map(Number);
+  const dateObj = new Date(year, month - 1, day);
   if (isNaN(dateObj.getTime()) || dateObj.getDay() === 0) {
     res.json({ slots: [] });
     return;

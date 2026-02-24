@@ -40,9 +40,9 @@ const ClientDashboard: React.FC = () => {
     }
   };
 
-  const today = new Date().toISOString().split('T')[0];
-  const upcoming = bookings.filter(b => b.appointment_date >= today && b.status !== 'cancelled');
-  const past = bookings.filter(b => b.appointment_date < today || b.status === 'cancelled');
+  const todayStr = new Date().toISOString().split('T')[0];
+  const upcoming = bookings.filter(b => b.appointment_date >= todayStr && b.status !== 'cancelled');
+  const past = bookings.filter(b => b.appointment_date < todayStr || b.status === 'cancelled');
 
   if (loading) return <div className="loading">Loading...</div>;
 

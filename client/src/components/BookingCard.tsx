@@ -10,7 +10,8 @@ interface Props {
 }
 
 const BookingCard: React.FC<Props> = ({ booking, onCancel, onConfirm, showClient }) => {
-  const isPast = new Date(booking.appointment_date) < new Date(new Date().toDateString());
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isPast = booking.appointment_date < todayStr;
 
   return (
     <div className="booking-card card">

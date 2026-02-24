@@ -14,7 +14,8 @@ import BusinessDashboard from './pages/BusinessDashboard';
 import SetupBusiness from './pages/SetupBusiness';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return null;
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
