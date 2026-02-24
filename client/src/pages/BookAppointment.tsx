@@ -49,7 +49,7 @@ const BookAppointment: React.FC = () => {
         business_id: parseInt(businessId!),
         appointment_date: date,
         appointment_time: selectedSlot,
-        notes: notes || undefined,
+        notes: notes || null,
       });
       toast.success('Booking confirmed!');
       navigate('/dashboard/client');

@@ -134,9 +134,15 @@ router.get('/:id/availability', (req: Request, res: Response): void => {
     return;
   }
 
+  // Validate date format (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date as string)) {
+    res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+    return;
+  }
+
   // Businesses are closed on Sundays (day 0); no slots available
   const dateObj = new Date(date as string + 'T00:00:00');
-  if (dateObj.getDay() === 0) {
+  if (isNaN(dateObj.getTime()) || dateObj.getDay() === 0) {
     res.json({ slots: [] });
     return;
   }
