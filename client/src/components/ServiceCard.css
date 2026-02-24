@@ -1,0 +1,31 @@
+.service-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.service-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.service-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.service-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.service-price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--primary);
+}

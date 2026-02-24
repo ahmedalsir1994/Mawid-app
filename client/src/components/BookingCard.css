@@ -1,0 +1,32 @@
+.booking-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.booking-card-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.booking-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.booking-notes {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-style: italic;
+  border-left: 3px solid var(--border);
+  padding-left: 0.75rem;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 0.5rem;
+}
