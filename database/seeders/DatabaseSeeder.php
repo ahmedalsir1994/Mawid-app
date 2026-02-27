@@ -18,14 +18,14 @@ class DatabaseSeeder extends Seeder
         // Create Super Admin User
         User::factory()->create([
             'name' => 'Super Admin',
-            'email' => 'admin@bookingapp.local',
+            'email' => 'admin@bookingap.local',
             'password' => bcrypt('password'),
             'role' => 'super_admin',
             'is_active' => true,
         ]);
 
         // Create Test User (Customer)
-        User::factory()->create([
+        User::factory()->create([p
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => bcrypt('password'),

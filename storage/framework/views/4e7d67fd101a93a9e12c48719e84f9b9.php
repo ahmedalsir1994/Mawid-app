@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(app()->getLocale()); ?>" dir="<?php echo e(app()->getLocale() === 'ar' ? 'rtl' : 'ltr'); ?>">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100'/><text x='50' y='65' font-size='70' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>M</text></svg>">
+
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+
+    <title>Admin</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|cairo:400,500,600&display=swap"
+        rel="stylesheet" />
+
+    <!-- Scripts -->
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+
+    <style>
+        .sidebar-active {
+            @apply bg-purple-100 text-purple-700 border-purple-600;
+        }
+
+        [dir="ltr"] .sidebar-active {
+            @apply border-l-4;
+        }
+
+        [dir="rtl"] .sidebar-active {
+            @apply border-r-4;
+        }
+
+        .sidebar-hover {
+            @apply hover:bg-gray-100 transition;
+        }
+
+        body.sidebar-open .sidebar-overlay {
+            @apply fixed inset-0 bg-black bg-opacity-50 z-30;
+        }
+
+        /* RTL Support */
+        [dir="rtl"] {
+            text-align: right;
+            font-family: 'Cairo', 'Figtree', sans-serif;
+        }
+
+        [dir="rtl"] .space-x-2>*+* {
+            margin-left: 0;
+            margin-right: 0.5rem;
+        }
+
+        [dir="rtl"] .space-x-3>*+* {
+            margin-left: 0;
+            margin-right: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased bg-gray-50">
+    <div class="flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:flex-col md:w-64 md:bg-white md:shadow-lg">
+            <!-- Logo Section -->
+            <div class="flex items-center justify-center h-16 px-6 border-b border-gray-200">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="w-40 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">Mawid App</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <!-- Dashboard -->
+                <a href="<?php echo e(auth()->user()->role === 'super_admin' ? route('admin.super.dashboard') : (auth()->user()->role === 'staff' ? route('admin.staff.dashboard') : route('admin.company.dashboard'))); ?>"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.dashboard', 'admin.company.dashboard', 'admin.staff.dashboard') ? 'sidebar-active' : ''); ?>">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <span class="font-medium"><?php echo e(__('app.dashboard')); ?></span>
+                </a>
+
+                <?php if(auth()->user()->role === 'super_admin'): ?>
+                    <!-- Super Admin Only: Businesses -->
+                    <a href="<?php echo e(route('admin.super.businesses.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.businesses.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.businesses')); ?></span>
+                    </a>
+
+                    <!-- Super Admin Only: Licenses -->
+                    <a href="<?php echo e(route('admin.super.licenses.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.licenses.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.licenses')); ?></span>
+                    </a>
+
+                    <!-- Super Admin Only: Users -->
+                    <a href="<?php echo e(route('admin.super.users.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.users.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM9 6a3 3 0 11-6 0 3 3 0 016 0zm12 0a3 3 0 11-6 0 3 3 0 016 0zm0 0a3 3 0 11-6 0 3 3 0 016 0zM9 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.users')); ?></span>
+                    </a>
+                <?php elseif(auth()->user()->role === 'company_admin'): ?>
+                    <!-- Company Admin Only: Business Settings -->
+                    <a href="<?php echo e(route('admin.business.edit')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.business.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.business')); ?></span>
+                    </a>
+
+                    <!-- Services -->
+                    <a href="<?php echo e(route('admin.services.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.services.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm0-6h.01M3 10h.01M3 16h.01M7 4h.01M7 10h.01M7 16h.01M11 4h.01M11 10h.01M11 16h.01M15 4h.01M15 10h.01M15 16h.01" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.services')); ?></span>
+                    </a>
+
+                    <!-- Staff -->
+                    <a href="<?php echo e(route('admin.staff.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.staff.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.staff')); ?></span>
+                    </a>
+
+                    <!-- Bookings -->
+                    <a href="<?php echo e(route('admin.bookings.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.bookings.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.bookings')); ?></span>
+                    </a>
+                <?php elseif(auth()->user()->role === 'staff'): ?>
+                    <!-- Staff Only: Bookings -->
+                    <a href="<?php echo e(route('admin.staff.bookings.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.staff.bookings.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.bookings')); ?></span>
+                    </a>
+                <?php endif; ?>
+
+                <!-- Working Hours (Company Admin Only) -->
+                <?php if(auth()->user()->role === 'company_admin' && auth()->user()->business_id): ?>
+                    <a href="<?php echo e(route('admin.working_hours.edit')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.working_hours')); ?></span>
+                    </a>
+                <?php endif; ?>
+
+                <!-- Divider -->
+                <div class="border-t border-gray-200 my-4"></div>
+
+                <!-- Settings -->
+                <a href="<?php echo e(route('profile.edit')); ?>"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('profile.*') ? 'sidebar-active' : ''); ?>">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span class="font-medium"><?php echo e(__('app.profile')); ?></span>
+                </a>
+            </nav>
+
+            <!-- User Profile Section -->
+            <div class="border-t border-gray-200 px-4 py-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center">
+                        <span
+                            class="text-purple-700 font-bold"><?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate"><?php echo e(auth()->user()->name); ?></p>
+                        <p class="text-xs text-gray-500 truncate"><?php echo e(auth()->user()->email); ?></p>
+                    </div>
+                </div>
+
+                <!-- Language Switcher -->
+                <div class="px-4 py-2 border-t border-gray-200">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-semibold text-gray-600 uppercase"><?php echo e(__('app.language')); ?></span>
+                        <div class="flex gap-1">
+                            <a href="<?php echo e(route('lang.switch', 'en')); ?>"
+                                class="px-2 py-1 text-xs font-medium rounded transition <?php echo e(app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                                EN
+                            </a>
+                            <a href="<?php echo e(route('lang.switch', 'ar')); ?>"
+                                class="px-2 py-1 text-xs font-medium rounded transition <?php echo e(app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                                AR
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" action="<?php echo e(route('logout')); ?>">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit"
+                        class="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.logout')); ?></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Navigation Bar -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+                    <!-- Mobile Menu Button -->
+                    <button onclick="document.getElementById('mobileSidebar').classList.toggle('hidden')"
+                        class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <div class="flex-1"></div>
+
+                    <!-- Right Side Navigation -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Notifications -->
+                        <div class="relative">
+                            <button onclick="document.getElementById('notificationDropdown').classList.toggle('hidden')"
+                                class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <?php if(auth()->user()->unreadNotifications->count() > 0): ?>
+                                    <span
+                                        class="absolute top-1 <?php echo e(app()->getLocale() === 'ar' ? 'left-1' : 'right-1'); ?> w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
+                                        <?php echo e(auth()->user()->unreadNotifications->count()); ?>
+
+                                    </span>
+                                <?php endif; ?>
+                            </button>
+
+                            <!-- Notification Dropdown -->
+                            <div id="notificationDropdown"
+                                class="hidden absolute <?php echo e(app()->getLocale() === 'ar' ? 'left-0' : 'right-0'); ?> mt-2 w-96 bg-white rounded-lg shadow-lg z-50 border border-gray-200 max-h-96 overflow-y-auto">
+                                <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                    <h3 class="text-sm font-bold text-gray-800"><?php echo e(__('app.notifications')); ?></h3>
+                                    <?php if(auth()->user()->unreadNotifications->count() > 0): ?>
+                                        <form method="POST" action="<?php echo e(route('admin.notifications.mark-all-read')); ?>"
+                                            class="inline">
+                                            <?php echo csrf_field(); ?>
+                                            <button type="submit"
+                                                class="text-xs text-purple-600 hover:text-purple-700 font-medium">
+                                                <?php echo e(__('app.mark_all_read')); ?>
+
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+
+                                <?php $__empty_1 = true; $__currentLoopData = auth()->user()->notifications->take(10); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <?php
+                                        $bookingRoute = auth()->user()->role === 'staff'
+                                            ? route('admin.staff.bookings.show', $notification->data['booking_id'])
+                                            : route('admin.bookings.show', $notification->data['booking_id']);
+                                    ?>
+                                    <a href="<?php echo e($bookingRoute); ?>?notification=<?php echo e($notification->id); ?>"
+                                        class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 <?php echo e($notification->read_at ? 'bg-white' : 'bg-blue-50'); ?>">
+                                        <div class="flex items-start space-x-3">
+                                            <div
+                                                class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900">
+                                                    <?php echo e($notification->data['message']); ?>
+
+                                                </p>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    <?php echo e(\Carbon\Carbon::parse($notification->data['booking_date'])->format('M d, Y')); ?>
+
+                                                    at <?php echo e(substr($notification->data['start_time'], 0, 5)); ?>
+
+                                                </p>
+                                                <p class="text-xs text-gray-400 mt-1">
+                                                    <?php echo e($notification->created_at->diffForHumans()); ?>
+
+                                                </p>
+                                            </div>
+                                            <?php if(!$notification->read_at): ?>
+                                                <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </a>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <div class="px-4 py-8 text-center text-gray-500">
+                                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                        </svg>
+                                        <p class="text-sm"><?php echo e(__('app.no_notifications')); ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- User Dropdown -->
+                        <div class="relative">
+                            <button onclick="document.getElementById('userDropdown').classList.toggle('hidden')"
+                                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+                                <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                                    <span
+                                        class="text-purple-700 font-bold text-sm"><?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?></span>
+                                </div>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="userDropdown"
+                                class="hidden absolute <?php echo e(app()->getLocale() === 'ar' ? 'left-0' : 'right-0'); ?> mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+                                <div class="px-4 py-3 border-b border-gray-200">
+                                    <p class="text-sm font-medium text-gray-800"><?php echo e(auth()->user()->name); ?></p>
+                                    <p class="text-xs text-gray-500"><?php echo e(auth()->user()->email); ?></p>
+                                </div>
+                                <a href="<?php echo e(route('profile.edit')); ?>"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><?php echo e(__('app.profile')); ?></a>
+                                <form method="POST" action="<?php echo e(route('logout')); ?>" class="block">
+                                    <?php echo csrf_field(); ?>
+                                    <button type="submit"
+                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"><?php echo e(__('app.sign_out')); ?></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-auto">
+                <div class="px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Page Header -->
+                    <?php if(isset($header)): ?>
+                        <div class="mb-8">
+                            <?php echo e($header); ?>
+
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Content -->
+                    <?php echo e($slot); ?>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobileSidebar" class="hidden fixed inset-0 z-40 md:hidden">
+        <!-- Overlay -->
+        <div onclick="document.getElementById('mobileSidebar').classList.add('hidden')"
+            class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+        <!-- Sidebar Panel -->
+        <div
+            class="absolute <?php echo e(app()->getLocale() === 'ar' ? 'right-0' : 'left-0'); ?> top-0 w-64 h-screen bg-white shadow-lg overflow-y-auto pb-32">
+            <!-- Logo Section -->
+            <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">BA</span>
+                    </div>
+                    <span class="font-bold text-lg text-gray-800">Admin</span>
+                </div>
+                <button onclick="document.getElementById('mobileSidebar').classList.add('hidden')"
+                    class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="px-4 py-6 space-y-2">
+                <a href="<?php echo e(auth()->user()->role === 'super_admin' ? route('admin.super.dashboard') : (auth()->user()->role === 'staff' ? route('admin.staff.dashboard') : route('admin.company.dashboard'))); ?>"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.dashboard', 'admin.company.dashboard', 'admin.staff.dashboard') ? 'sidebar-active' : ''); ?>">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <span class="font-medium"><?php echo e(__('app.dashboard')); ?></span>
+                </a>
+
+                <?php if(auth()->user()->role === 'company_admin'): ?>
+                    <a href="<?php echo e(route('admin.business.edit')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.business.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.business')); ?></span>
+                    </a>
+
+                    <a href="<?php echo e(route('admin.services.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.services.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm0-6h.01M3 10h.01M3 16h.01M7 4h.01M7 10h.01M7 16h.01M11 4h.01M11 10h.01M11 16h.01M15 4h.01M15 10h.01M15 16h.01" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.services')); ?></span>
+                    </a>
+
+                    <a href="<?php echo e(route('admin.time_off.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.time_off.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.time_off')); ?></span>
+                    </a>
+                <?php elseif(auth()->user()->role === 'staff'): ?>
+                    <!-- Staff Only: Bookings -->
+                    <a href="<?php echo e(route('admin.staff.bookings.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.staff.bookings.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.bookings')); ?></span>
+                    </a>
+                <?php endif; ?>
+
+                <?php if(auth()->user()->business_id && auth()->user()->role === 'company_admin'): ?>
+                    <a href="<?php echo e(route('admin.working_hours.edit')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.working_hours')); ?></span>
+                    </a>
+                <?php endif; ?>
+            </nav>
+
+            <!-- Mobile User Profile & Language Switcher -->
+            <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
+                <!-- Language Switcher -->
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-gray-600 uppercase"><?php echo e(__('app.language')); ?></span>
+                    <div class="flex gap-1">
+                        <a href="<?php echo e(route('lang.switch', 'en')); ?>"
+                            class="px-2 py-1 text-xs font-medium rounded transition <?php echo e(app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                            EN
+                        </a>
+                        <a href="<?php echo e(route('lang.switch', 'ar')); ?>"
+                            class="px-2 py-1 text-xs font-medium rounded transition <?php echo e(app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                            AR
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <form method="POST" action="<?php echo e(route('logout')); ?>">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit"
+                        class="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.logout')); ?></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (event) {
+            const userDropdown = document.getElementById('userDropdown');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+
+            // Close user dropdown if clicking outside
+            if (!event.target.closest('[onclick*="userDropdown"]') && userDropdown) {
+                userDropdown.classList.add('hidden');
+            }
+
+            // Close notification dropdown if clicking outside
+            if (!event.target.closest('[onclick*="notificationDropdown"]') && notificationDropdown) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html><?php /**PATH C:\laragon\www\booking-app\resources\views\layouts\admin.blade.php ENDPATH**/ ?>

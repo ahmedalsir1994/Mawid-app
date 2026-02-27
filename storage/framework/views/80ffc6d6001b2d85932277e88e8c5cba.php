@@ -5,24 +5,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100'/><text x='50' y='65' font-size='70' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>M</text></svg>">
+    <link rel="icon" type="image/png" href="/images/Mawidly-fav.png">
 
     <title>Mawid App</title>
     
     <!-- Arabic Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>
         [dir="rtl"] body {
-            font-family: 'Cairo', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
         
         .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #0ba83a     %);
         }
 
         .feature-card {
@@ -31,28 +30,15 @@
             overflow: hidden;
         }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .feature-card:hover::before {
-            left: 100%;
-        }
+        
 
         .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px -5px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 20px 40px -5px rgba(33, 173, 115, 0.3);
         }
 
         .cta-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: black;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -78,7 +64,7 @@
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 12px 30px rgba(17, 107, 80, 0.5);
         }
 
         @keyframes float {
@@ -114,15 +100,15 @@
         }
 
         .booking-mockup {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f2f2f3 100%);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
 
         .stat-counter {
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-weight: 600;
+            background: linear-gradient(135deg, #000000 0%, #0ba83a 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -140,7 +126,7 @@
             inset: -2px;
             border-radius: 1rem;
             padding: 2px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #0ba83a 100%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
@@ -150,24 +136,24 @@
 </head>
 
 <body class="antialiased">
+
+
+    
     <!-- Navigation -->
-    <nav class="fixed w-full bg-white bg-opacity-95 backdrop-blur-md shadow-md z-50">
+    <nav class="fixed w-full bg-white bg-opacity-95  z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <div
-                        class="w-32 sm:w-40 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-base sm:text-lg">Mawid App</span>
-                    </div>
+                    <img src="/images/Mawid.png" alt="Mawid Logo" class="h-12 w-full">
                 </div>
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-purple-600 transition">Features</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-purple-600 transition">How It Works</a>
-                    <a href="#testimonials" class="text-gray-600 hover:text-purple-600 transition">Testimonials</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-purple-600 transition">Pricing</a>
+                    <a href="#features" class="text-gray-600 hover:text-green-600 transition">Features</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-green-600 transition">How It Works</a>
+                    <a href="#testimonials" class="text-gray-600 hover:text-green-600 transition">Testimonials</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-green-600 transition">Pricing</a>
                 </div>
 
                 <!-- Desktop Auth Buttons -->
@@ -175,26 +161,26 @@
                     <!-- Language Switcher -->
                     <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
                         <a href="<?php echo e(route('lang.switch', 'en')); ?>"
-                            class="px-3 py-1 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-200'); ?>">
+                            class="px-3 py-1 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200'); ?>">
                             EN
                         </a>
                         <a href="<?php echo e(route('lang.switch', 'ar')); ?>"
-                            class="px-3 py-1 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-200'); ?>">
+                            class="px-3 py-1 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200'); ?>">
                             AR
                         </a>
                     </div>
                     
                     <?php if(auth()->guard()->check()): ?>
                         <a href="<?php echo e(route('admin.dashboard')); ?>"
-                            class="px-4 py-2 text-purple-600 font-semibold hover:bg-purple-50 rounded-lg transition">
+                            class="px-4 py-2 text-green-600 font-semibold hover:bg-green-50 rounded-lg transition">
                             Dashboard
                         </a>
                     <?php else: ?>
-                        <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 text-gray-700 hover:text-purple-600 transition">
+                        <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 text-gray-700 hover:text-green-600 transition">
                             Sign In
                         </a>
                         <a href="<?php echo e(route('register')); ?>"
-                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition">
+                            class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg hover:shadow-lg transition">
                             Get Started
                         </a>
                     <?php endif; ?>
@@ -203,7 +189,7 @@
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-button" type="button"
-                        class="text-gray-600 hover:text-purple-600 focus:outline-none focus:text-purple-600">
+                        class="text-gray-600 hover:text-green-600 focus:outline-none focus:text-green-600">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path id="menu-open-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16"></path>
@@ -221,35 +207,35 @@
                 <!-- Language Switcher for Mobile -->
                 <div class="flex gap-2 justify-center py-2">
                     <a href="<?php echo e(route('lang.switch', 'en')); ?>"
-                        class="px-4 py-2 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700'); ?>">
+                        class="px-4 py-2 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700'); ?>">
                         EN
                     </a>
                     <a href="<?php echo e(route('lang.switch', 'ar')); ?>"
-                        class="px-4 py-2 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700'); ?>">
+                        class="px-4 py-2 text-sm font-medium rounded transition <?php echo e(app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700'); ?>">
                         AR
                     </a>
                 </div>
                 
                 <a href="#features"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition">
+                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     Features
                 </a>
                 <a href="#how-it-works"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition">
+                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     How It Works
                 </a>
                 <a href="#testimonials"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition">
+                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     Testimonials
                 </a>
                 <a href="#pricing"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition">
+                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     Pricing
                 </a>
                 <div class="pt-3 space-y-2 border-t border-gray-200">
                     <?php if(auth()->guard()->check()): ?>
                         <a href="<?php echo e(route('admin.dashboard')); ?>"
-                            class="block px-3 py-2 rounded-lg text-purple-600 font-semibold bg-purple-50">
+                            class="block px-3 py-2 rounded-lg text-green-600 font-semibold bg-green-50">
                             Dashboard
                         </a>
                     <?php else: ?>
@@ -258,7 +244,7 @@
                             Sign In
                         </a>
                         <a href="<?php echo e(route('register')); ?>"
-                            class="block px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center font-semibold rounded-lg">
+                            class="block px-3 py-2 bg-gradient-to-r from-green-600 to-green-800 text-white text-center font-semibold rounded-lg">
                             Get Started
                         </a>
                     <?php endif; ?>
@@ -294,12 +280,12 @@
     </script>
 
     <!-- Hero Section -->
-    <section class="hero-gradient text-white pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section class="hero-gradient text-black-600 pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <!-- Decorative elements -->
         <div
-            class="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
+            class="absolute top-20 left-10 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
         </div>
-        <div class="absolute bottom-20 right-10 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
             style="animation-delay: 1s;"></div>
 
         <div class="max-w-7xl mx-auto relative z-10">
@@ -309,13 +295,13 @@
                         class="inline-block mb-4 px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full text-sm font-semibold">
                         🎉 Get 14 days free trial
                     </div>
-                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl  mb-6 leading-tight">
                         Booking Made
-                        <span class="block bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
+                        <span class="block bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-600">
                             Simple & Smart
                         </span>
                     </h1>
-                    <p class="text-xl md:text-2xl mb-8 text-purple-100 leading-relaxed">
+                    <p class="text-md md:text-xl  mb-8 text-black-600 leading-relaxed">
                         Transform your business with powerful appointment scheduling. Accept bookings 24/7, reduce
                         no-shows, and delight your customers.
                     </p>
@@ -331,7 +317,7 @@
                                 Start Free Trial →
                             </a>
                             <a href="<?php echo e(route('login')); ?>"
-                                class="px-8 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-purple-600 transition text-center text-lg backdrop-blur-sm bg-white bg-opacity-10">
+                                class="px-8 py-4 border-2 border-green-600 text-green-600 font-bold rounded-xl hover:bg-white hover:text-green-300 transition text-center text-lg backdrop-blur-sm bg-white bg-opacity-10">
                                 Sign In
                             </a>
                         <?php endif; ?>
@@ -370,7 +356,7 @@
                             <!-- Time slots -->
                             <div class="space-y-3">
                                 <div
-                                    class="flex items-center gap-3 p-3 bg-purple-50 border-l-4 border-purple-600 rounded-lg">
+                                    class="flex items-center gap-3 p-3 bg-green-50 border-l-4 border-green-600 rounded-lg">
                                     <div class="text-sm font-semibold text-gray-600">09:00</div>
                                     <div class="flex-1">
                                         <div class="font-semibold text-gray-800 text-sm">Hair Styling</div>
@@ -433,10 +419,10 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <div
-                    class="inline-block px-4 py-2 bg-purple-100 text-purple-600 rounded-full text-sm font-semibold mb-4">
+                    class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
                     POWERFUL FEATURES
                 </div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">Everything You Need to Succeed</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">Everything You Need to Succeed</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                     Built for service businesses who want to streamline operations and grow faster
                 </p>
@@ -444,9 +430,9 @@
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
-                <div class="feature-card gradient-border p-8">
+                <div class="feature-card border rounded-[10px] p-8">
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -458,9 +444,9 @@
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="feature-card gradient-border p-8">
+                <div class="feature-card border rounded-[10px] p-8">
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -472,7 +458,7 @@
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="feature-card gradient-border p-8">
+                <div class="feature-card border rounded-[10px] p-8">
                     <div
                         class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -486,9 +472,9 @@
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="feature-card gradient-border p-8">
+                <div class="feature-card border rounded-[10px] p-8">
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -500,9 +486,9 @@
                 </div>
 
                 <!-- Feature 5 -->
-                <div class="feature-card gradient-border p-8">
+                <div class="feature-card border rounded-[10px] p-8">
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -514,9 +500,9 @@
                 </div>
 
                 <!-- Feature 6 -->
-                <div class="feature-card gradient-border p-8">
+                <div class="feature-card border rounded-[10px] p-8">
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -534,10 +520,10 @@
     <section id="how-it-works" class="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <div class="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold mb-4">
+                <div class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
                     HOW IT WORKS
                 </div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">Get Started in Minutes</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">Get Started in Minutes</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                     Simple setup process to get your booking system up and running
                 </p>
@@ -545,12 +531,12 @@
 
             <div class="grid md:grid-cols-4 gap-8 relative">
                 <!-- Connection lines for desktop -->
-                <div class="hidden md:block absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-green-600 opacity-20"
+                <div class="hidden md:block absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-green-600 via-green-600 to-green-600 opacity-20"
                     style="margin: 0 12%;"></div>
 
                 <div class="text-center relative">
                     <div
-                        class="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-xl relative z-10">
+                        class="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-xl relative z-10">
                         1
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
@@ -562,7 +548,7 @@
 
                 <div class="text-center relative">
                     <div
-                        class="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-xl relative z-10">
+                        class="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-xl relative z-10">
                         2
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
@@ -586,7 +572,7 @@
 
                 <div class="text-center relative">
                     <div
-                        class="w-20 h-20 bg-gradient-to-br from-pink-600 to-pink-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-xl relative z-10">
+                        class="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-xl relative z-10">
                         4
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
@@ -604,10 +590,10 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <div
-                    class="inline-block px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold mb-4">
+                    class="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
                     TESTIMONIALS
                 </div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">Loved by Thousands</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">Loved by Thousands</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                     See what business owners are saying about our platform
                 </p>
@@ -631,7 +617,7 @@
                         to nearly zero!"</p>
                     <div class="flex items-center">
                         <div
-                            class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                             SJ
                         </div>
                         <div>
@@ -658,7 +644,7 @@
                         every week!"</p>
                     <div class="flex items-center">
                         <div
-                            class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                             MW
                         </div>
                         <div>
@@ -685,7 +671,7 @@
                         intuitive."</p>
                     <div class="flex items-center">
                         <div
-                            class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                             EC
                         </div>
                         <div>
@@ -703,10 +689,10 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <div
-                    class="inline-block px-4 py-2 bg-purple-100 text-purple-600 rounded-full text-sm font-semibold mb-4">
+                    class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
                     SIMPLE PRICING
                 </div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">One Plan, Everything Included</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">One Plan, Everything Included</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                     No hidden fees, no complicated tiers. Just powerful booking tools for your business.
                 </p>
@@ -717,14 +703,14 @@
                 <div class="relative">
                     <!-- Decorative gradient border effect -->
                     <div
-                        class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25">
+                        class="absolute -inset-1 bg-gradient-to-r from-green-600 to-green-700 rounded-2xl blur opacity-25">
                     </div>
 
                     <div
                         class="relative bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 hover:shadow-3xl transition-shadow duration-300">
                         <div class="text-center mb-5">
                             <div
-                                class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl mb-3">
+                                class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-xl mb-3">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7"></path>
@@ -734,9 +720,9 @@
                             <p class="text-gray-600 mb-4">Perfect for all businesses</p>
                             <div class="mb-3">
                                 <span
-                                    class="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">9</span>
+                                    class="text-5xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">9</span>
                                 <span
-                                    class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">OMR</span>
+                                    class="text-xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">OMR</span>
                                 <span class="text-xl text-gray-600">/month</span>
                             </div>
                             <p class="text-xs text-gray-500">Billed monthly, cancel anytime</p>
@@ -818,12 +804,12 @@
 
                         <?php if(auth()->guard()->check()): ?>
                             <a href="<?php echo e(route('admin.dashboard')); ?>"
-                                class="block w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center font-bold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                                class="block w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white text-center font-bold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                                 Go to Dashboard →
                             </a>
                         <?php else: ?>
                             <a href="<?php echo e(route('register')); ?>"
-                                class="block w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center font-bold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                                class="block w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white text-center font-bold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                                 Start Your 14-Day Free Trial →
                             </a>
                         <?php endif; ?>
@@ -838,37 +824,37 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="hero-gradient text-white py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section class="hero-gradient text-black py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <!-- Decorative elements -->
         <div
-            class="absolute top-0 left-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20">
+            class="absolute top-0 left-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20">
         </div>
         <div
-            class="absolute bottom-0 right-0 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20">
+            class="absolute bottom-0 right-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20">
         </div>
 
         <div class="max-w-4xl mx-auto text-center relative z-10">
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight">
                 Ready to Transform Your Business?
             </h2>
-            <p class="text-xl md:text-2xl mb-10 text-purple-100 leading-relaxed max-w-2xl mx-auto">
+            <p class="text-xl md:text-2xl mb-10 text-black-100 leading-relaxed max-w-2xl mx-auto">
                 Join thousands of businesses already using <?php echo e(config('app.name')); ?> to streamline their booking process
                 and grow faster.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
                 <?php if(auth()->guard()->check()): ?>
                     <a href="<?php echo e(route('admin.dashboard')); ?>"
-                        class="cta-button px-10 py-5 text-white font-bold rounded-xl inline-block text-lg shadow-2xl relative z-10">
+                        class="cta-button px-10 py-5 text-black font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
                         Go to Dashboard →
                     </a>
                 <?php else: ?>
                     <a href="<?php echo e(route('register')); ?>"
-                        class="cta-button px-10 py-5 text-white font-bold rounded-xl inline-block text-lg shadow-2xl relative z-10">
+                        class="cta-button px-10 py-5 text-white font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
                         Start Your 14-Day Free Trial →
                     </a>
                 <?php endif; ?>
             </div>
-            <div class="flex flex-wrap justify-center gap-6 text-sm text-purple-100">
+            <div class="flex flex-wrap justify-center gap-6 text-sm text-black-100">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -898,35 +884,35 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
+    <footer class="bg-white-900 text-black-300 py-12 px-4 sm:px-6 lg:px-8  border-gray-700 ">
         <div class="max-w-7xl mx-auto">
             <div class="grid md:grid-cols-4 gap-8 mb-8">
                 <div>
-                    <h4 class="font-bold text-white mb-4"><?php echo e(config('app.name')); ?></h4>
+                    <h4 class="font-bold text-black mb-4"><?php echo e(config('app.name')); ?></h4>
                     <p class="text-sm">Professional appointment scheduling for service-based businesses.</p>
                 </div>
                 <div>
-                    <h5 class="font-bold text-white mb-4">Product</h5>
+                    <h5 class="font-bold text-black mb-4">Product</h5>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#features" class="hover:text-white transition">Features</a></li>
-                        <li><a href="#pricing" class="hover:text-white transition">Pricing</a></li>
-                        <li><a href="#" class="hover:text-white transition">Security</a></li>
+                        <li><a href="#features" class="hover:text-black transition">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-black transition">Pricing</a></li>
+                        <li><a href="#" class="hover:text-black  transition">Security</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-bold text-white mb-4">Company</h5>
+                    <h5 class="font-bold text-black mb-4">Company</h5>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition">About</a></li>
-                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
-                        <li><a href="#" class="hover:text-white transition">Careers</a></li>
+                        <li><a href="#" class="hover:text-black transition">About</a></li>
+                        <li><a href="#" class="hover:text-black transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-black transition">Careers</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-bold text-white mb-4">Legal</h5>
+                    <h5 class="font-bold text-black mb-4">Legal</h5>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition">Privacy</a></li>
-                        <li><a href="#" class="hover:text-white transition">Terms</a></li>
-                        <li><a href="#" class="hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="hover:text-black transition">Privacy</a></li>
+                        <li><a href="#" class="hover:text-black transition">Terms</a></li>
+                        <li><a href="#" class="hover:text-black transition">Contact</a></li>
                     </ul>
                 </div>
             </div>
