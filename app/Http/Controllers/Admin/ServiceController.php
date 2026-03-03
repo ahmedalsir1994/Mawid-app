@@ -59,7 +59,7 @@ class ServiceController extends Controller
             'price'            => ['nullable', 'numeric', 'min:0'],
             'is_active'        => ['nullable', Rule::in(['on'])],
             'branch_ids'       => ['nullable', 'array'],
-            'branch_ids.*'     => ['integer', 'exists:branches,id'],
+            'branch_ids.*'     => ['integer', Rule::exists('branches', 'id')->where('business_id', $businessId)],
         ]);
 
         $service = Service::create([
@@ -106,7 +106,7 @@ class ServiceController extends Controller
             'price'             => ['nullable', 'numeric', 'min:0'],
             'is_active'         => ['nullable', Rule::in(['on'])],
             'branch_ids'        => ['nullable', 'array'],
-            'branch_ids.*'      => ['integer', 'exists:branches,id'],
+            'branch_ids.*'      => ['integer', Rule::exists('branches', 'id')->where('business_id', $service->business_id)],
         ]);
 
         $service->update([

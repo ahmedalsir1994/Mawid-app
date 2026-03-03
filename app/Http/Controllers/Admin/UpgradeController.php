@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\PlanService;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -89,7 +90,9 @@ class UpgradeController extends Controller
         if (!config('paymob.verify_ssl')) {
             $http = $http->withoutVerifying();
         }
-        $intentionRes = $http->post(config('paymob.base_url') . config('paymob.intention_path'), [
+
+        try {
+            $intentionRes = $http->post(config('paymob.base_url') . config('paymob.intention_path'), [
                 'amount'            => $amountCents,
                 'currency'          => config('paymob.currency'),
                 'expiration'        => config('paymob.expiration'),
@@ -113,13 +116,19 @@ class UpgradeController extends Controller
                     'country'      => 'OM',
                 ],
             ]);
+        } catch (ConnectionException $e) {
+            Log::error('Paymob: Connection error', ['message' => $e->getMessage(), 'userId' => $user->id]);
+            return redirect()->route('admin.upgrade.index')
+                ->with('error', 'Could not connect to the payment gateway. Please try again.');
+        }
 
         if (!$intentionRes->successful()) {
             Log::error('Paymob: Intention creation failed', [
                 'status'   => $intentionRes->status(),
                 'response' => $intentionRes->json(),
             ]);
-            return back()->with('error', 'Payment gateway error. Please try again.');
+            return redirect()->route('admin.upgrade.index')
+                ->with('error', 'Payment gateway error (' . $intentionRes->status() . '). Please try again or contact support.');
         }
 
         $clientSecret = $intentionRes->json('client_secret');
@@ -129,7 +138,8 @@ class UpgradeController extends Controller
 
         if (empty($clientSecret)) {
             Log::error('Paymob: No client_secret in response', ['response' => $intentionRes->json()]);
-            return back()->with('error', 'Payment gateway error. Please try again.');
+            return redirect()->route('admin.upgrade.index')
+                ->with('error', 'Payment gateway error: missing client secret. Please try again or contact support.');
         }
 
         // ── Cache pending plan — store under all possible lookup keys ─────
