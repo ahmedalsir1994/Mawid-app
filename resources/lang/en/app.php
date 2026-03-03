@@ -753,4 +753,11 @@ return [
     'reactivate_now'              => 'Reactivate Now',
 
     'session_expired'             => 'Your session expired. Please sign in again.',
+
+    // Public booking page
+    'book_appointment'            => 'Book appointment',
+    'select_service_hint'         => 'Select a service and date to see available times.',
+    'bookings_unavailable'        => 'Bookings Unavailable',
+    'return_to_home'              => 'Return to Home',
+    'questions_contact'           => 'Questions? Contact the business directly or check your email for booking details.',
 ];

@@ -144,14 +144,14 @@
                     </a>
                     <a href="{{ route('landing') }}"
                         class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition text-center">
-                        Return to Home
+                        {{ __('app.return_to_home') }}
                     </a>
                 </div>
             </div>
 
             <!-- Footer Note -->
             <div class="mt-8 text-center text-gray-600 text-sm">
-                <p>Questions? Contact the business directly or check your email for booking details.</p>
+                <p>{{ __('app.questions_contact') }}</p>
             </div>
         </div>
     </div>
