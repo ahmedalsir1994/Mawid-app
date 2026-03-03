@@ -653,4 +653,7 @@ return [
     // License expiry banner
     'license_inactive_title'      => 'اشتراكك غير نشط.',
     'license_inactive_desc'       => 'قد تكون بعض الميزات محدودة. أعد التفعيل لاستعادة الوصول الكامل.',
-    'reactivate_now'              => 'أعد التفعيل الآن',];
+    'reactivate_now'              => 'أعد التفعيل الآن',
+
+    'session_expired'             => 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.',
+];

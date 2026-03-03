@@ -751,4 +751,6 @@ return [
     'license_inactive_title'      => 'Your subscription is inactive.',
     'license_inactive_desc'       => 'Some features may be limited. Reactivate to restore full access.',
     'reactivate_now'              => 'Reactivate Now',
+
+    'session_expired'             => 'Your session expired. Please sign in again.',
 ];

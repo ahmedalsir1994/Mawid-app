@@ -54,6 +54,12 @@
             margin-left: 0;
             margin-right: 0.75rem;
         }
+
+        /* Compact mobile sidebar nav items */
+        #mobileSidebar nav a {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
     </style>
 </head>
 
@@ -557,7 +563,7 @@
 
         <!-- Sidebar Panel -->
         <div
-            class="absolute {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} top-0 w-64 h-screen bg-white shadow-lg overflow-y-auto pb-32">
+            class="absolute {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} top-0 w-72 h-screen bg-white shadow-lg flex flex-col">
             <!-- Logo Section -->
             <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
                 <div class="flex items-center space-x-2">
@@ -577,7 +583,7 @@
             </div>
 
             <!-- Navigation Links -->
-            <nav class="px-4 py-6 space-y-2">
+            <nav class="flex-1 px-4 py-3 space-y-1 overflow-y-auto">
                 <a href="{{ auth()->user()->role === 'super_admin' ? route('admin.super.dashboard') : (auth()->user()->role === 'staff' ? route('admin.staff.dashboard') : route('admin.company.dashboard')) }}"
                     class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.super.dashboard', 'admin.company.dashboard', 'admin.staff.dashboard') ? 'sidebar-active' : '' }}">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -707,7 +713,7 @@
             </nav>
 
             <!-- Mobile User Profile & Language Switcher -->
-            <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
+            <div class="flex-shrink-0 bg-white border-t border-gray-200 p-4 space-y-2">
                 @if(auth()->user()->role === 'company_admin' && auth()->user()->business_id)
                     @php
                         $mobileSidebarLicense   = auth()->user()->business?->license;
@@ -838,6 +844,32 @@
                 }
             }, true);
         }
+    </script>
+
+    {{-- Global 401 handler: redirect to login when session expires --}}
+    <script>
+    (function () {
+        const _fetch = window.fetch;
+        window.fetch = function (...args) {
+            return _fetch.apply(this, args).then(function (response) {
+                if (response.status === 401) {
+                    window.location.href = '{{ route('login') }}';
+                }
+                return response;
+            });
+        };
+
+        // Also handle XMLHttpRequest (used by some legacy code)
+        const _open = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function (...args) {
+            this.addEventListener('load', function () {
+                if (this.status === 401) {
+                    window.location.href = '{{ route('login') }}';
+                }
+            });
+            return _open.apply(this, args);
+        };
+    })();
     </script>
 
     {{-- Block Arabic input across all text fields --}}
