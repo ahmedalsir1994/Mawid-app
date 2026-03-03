@@ -123,7 +123,7 @@ return [
     // CTA
     'cta_title'         => 'Ready to Transform Your Business?',
     'cta_subtitle'      => 'Join thousands of businesses already using :name to streamline their booking process and grow faster.',
-    'cta_trial'         => '14-day free trial',
+    'cta_trial'         => 'free trial',
     'cta_no_card'       => 'No credit card needed',
     'cta_cancel'        => 'Cancel anytime',
     'cta_btn_trial'     => 'Start Free Trial →',
