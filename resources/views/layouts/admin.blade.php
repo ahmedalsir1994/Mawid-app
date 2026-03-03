@@ -385,6 +385,18 @@
                                             $notifIconBg = 'bg-green-100';
                                             $notifIconColor = 'text-green-600';
                                             $notifSub = ($notification->data['email'] ?? '') . ' · ' . ($notification->data['phone'] ?? '');
+                                        } elseif ($notifType === 'new_user') {
+                                            $notifUrl = route('admin.super.users.show', $notification->data['user_id'] ?? 0);
+                                            $notifIcon = 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z';
+                                            $notifIconBg = 'bg-blue-100';
+                                            $notifIconColor = 'text-blue-600';
+                                            $notifSub = ($notification->data['user_email'] ?? '') . ' · ' . ($notification->data['business_name'] ?? '');
+                                        } elseif ($notifType === 'new_license') {
+                                            $notifUrl = route('admin.super.licenses.show', $notification->data['license_id'] ?? 0);
+                                            $notifIcon = 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z';
+                                            $notifIconBg = 'bg-purple-100';
+                                            $notifIconColor = 'text-purple-600';
+                                            $notifSub = ucfirst($notification->data['plan'] ?? '') . ' · ' . ($notification->data['business_name'] ?? '');
                                         } else {
                                             $notifUrl = (auth()->user()->role === 'staff'
                                                 ? route('admin.staff.bookings.show', $notification->data['booking_id'] ?? 0)

@@ -8,11 +8,13 @@ use App\Models\User;
 use App\Models\Business;
 use App\Models\License;
 use App\Mail\OtpVerificationMail;
+use App\Notifications\NewUserRegisteredNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -82,6 +84,10 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+
+        // Notify all super admins about the new registration
+        $superAdmins = User::where('role', 'super_admin')->get();
+        Notification::send($superAdmins, new NewUserRegisteredNotification($user, $business));
 
         // If a paid plan was selected, remember it so we can initiate payment after OTP
         $plan  = $request->input('plan');

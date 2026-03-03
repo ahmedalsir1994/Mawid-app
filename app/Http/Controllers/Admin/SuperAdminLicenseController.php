@@ -5,15 +5,42 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\License;
 use App\Models\Business;
+use App\Models\User;
+use App\Notifications\NewLicenseCreatedNotification;
 use App\Services\PlanService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class SuperAdminLicenseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $licenses = License::with('business')->paginate(15);
+        $query = License::with('business')
+            ->join('businesses', 'licenses.business_id', '=', 'businesses.id')
+            ->select('licenses.*');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('businesses.name', 'like', "%{$search}%")
+                  ->orWhere('businesses.email', 'like', "%{$search}%")
+                  ->orWhere('licenses.license_key', 'like', "%{$search}%");
+            });
+        }
+
+        if ($plan = $request->input('plan')) {
+            $query->where('licenses.plan', $plan);
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('licenses.status', $status);
+        }
+
+        if ($payment = $request->input('payment')) {
+            $query->where('licenses.payment_status', $payment);
+        }
+
+        $licenses = $query->latest('licenses.created_at')->paginate(15)->withQueryString();
         return view('admin.super.licenses.index', compact('licenses'));
     }
 
@@ -55,7 +82,11 @@ class SuperAdminLicenseController extends Controller
                 : ($validated['billing_cycle'] === 'yearly' ? now()->addYear() : now()->addMonth());
         }
 
-        License::create($validated);
+        $license = License::create($validated);
+
+        // Notify all super admins
+        $superAdmins = User::where('role', 'super_admin')->get();
+        Notification::send($superAdmins, new NewLicenseCreatedNotification($license->load('business')));
 
         return redirect()->route('admin.super.licenses.index')
             ->with('success', 'License created successfully');

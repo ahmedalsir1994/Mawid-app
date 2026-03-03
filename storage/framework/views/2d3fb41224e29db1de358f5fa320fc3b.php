@@ -46,7 +46,12 @@
                             <td class="px-6 py-4">
                                 <div>
                                     <p class="font-semibold text-gray-900"><?php echo e($business->name); ?></p>
-                                    <p class="text-sm text-gray-600"><?php echo e($business->slug); ?></p>
+                                    <a href="<?php echo e(route('public.business', $business->slug)); ?>" target="_blank"
+                                       class="inline-flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 mt-0.5">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        <?php echo e($business->slug); ?>
+
+                                    </a>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600"><?php echo e($business->address); ?></td>
