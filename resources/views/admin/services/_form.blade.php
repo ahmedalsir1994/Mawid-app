@@ -132,6 +132,7 @@
                     value="{{ $isCustom ? $curDuration : '' }}"
                     min="15" step="15" max="480"
                     placeholder="e.g. 75"
+                    oninvalid="return false;"
                     class="w-full px-4 py-3 pr-14 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
                 <span class="absolute right-4 top-3 text-gray-400 text-sm">min</span>
                 <p class="text-xs text-gray-400 mt-1">Must be a multiple of 15 (e.g. 75, 105, 135…)</p>
