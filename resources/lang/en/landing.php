@@ -11,7 +11,7 @@ return [
     'nav_dashboard'     => 'Dashboard',
 
     // Hero
-    'hero_badge'        => '🎉 Get 14 days free trial',
+    'hero_badge'        => '🎉 Get free trial',
     'hero_title_1'      => 'Booking Made',
     'hero_title_2'      => 'Simple & Smart',
     'hero_subtitle'     => 'Transform your business with powerful appointment scheduling. Accept bookings 24/7, reduce no-shows, and delight your customers.',
