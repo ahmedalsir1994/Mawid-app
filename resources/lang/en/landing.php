@@ -126,7 +126,7 @@ return [
     'cta_trial'         => '14-day free trial',
     'cta_no_card'       => 'No credit card needed',
     'cta_cancel'        => 'Cancel anytime',
-    'cta_btn_trial'     => 'Start Your 14-Day Free Trial →',
+    'cta_btn_trial'     => 'Start Free Trial →',
     'cta_btn_dashboard' => 'Go to Dashboard →',
 
     // Footer

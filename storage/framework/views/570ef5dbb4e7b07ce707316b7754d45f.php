@@ -11,8 +11,8 @@
                 <div>
                     <h5 class="font-bold text-black mb-4"><?php echo e(__('landing.footer_product')); ?></h5>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#features" class="hover:text-black transition"><?php echo e(__('landing.footer_features')); ?></a></li>
-                        <li><a href="#pricing" class="hover:text-black transition"><?php echo e(__('landing.footer_pricing')); ?></a></li>
+                        <li><a href="/#features" class="hover:text-black transition"><?php echo e(__('landing.footer_features')); ?></a></li>
+                        <li><a href="/#pricing" class="hover:text-black transition"><?php echo e(__('landing.footer_pricing')); ?></a></li>
                     </ul>
                 </div>
                 <div>
@@ -37,4 +37,4 @@
             </div>
         </div>
     </footer>
-<?php $__env->stopSection(); ?><?php /**PATH C:\laragon\www\booking-app\resources\views\layouts\footer.blade.php ENDPATH**/ ?>
+<?php $__env->stopSection(); ?><?php /**PATH C:\laragon\www\booking-app\resources\views/layouts/footer.blade.php ENDPATH**/ ?>

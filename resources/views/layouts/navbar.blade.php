@@ -10,10 +10,10 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_features') }}</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_how_it_works') }}</a>
-                    <a href="#testimonials" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_testimonials') }}</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_pricing') }}</a>
+                    <a href="/#features" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_features') }}</a>
+                    <a href="/#how-it-works" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_how_it_works') }}</a>
+                    <a href="/#testimonials" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_testimonials') }}</a>
+                    <a href="/#pricing" class="text-gray-600 hover:text-green-600 transition">{{ __('landing.nav_pricing') }}</a>
                 </div>
 
                 <!-- Desktop Auth Buttons -->
@@ -76,19 +76,19 @@
                     </a>
                 </div>
                 
-                <a href="#features"
+                <a href="/#features"
                     class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     {{ __('landing.nav_features') }}
                 </a>
-                <a href="#how-it-works"
+                <a href="/#how-it-works"
                     class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     {{ __('landing.nav_how_it_works') }}
                 </a>
-                <a href="#testimonials"
+                <a href="/#testimonials"
                     class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     {{ __('landing.nav_testimonials') }}
                 </a>
-                <a href="#pricing"
+                <a href="/#pricing"
                     class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
                     {{ __('landing.nav_pricing') }}
                 </a>
