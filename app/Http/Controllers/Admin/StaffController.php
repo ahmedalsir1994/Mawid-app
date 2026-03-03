@@ -21,14 +21,19 @@ class StaffController extends Controller
 
     public function create()
     {
-        $license  = auth()->user()->business?->license;
-        $canAdd   = $license ? $license->canAddStaff() : true;
-        $plan     = $license ? ($license->plan ?? 'free') : 'free';
-        $branches = auth()->user()->business->branches()->where('is_active', true)->orderBy('name')->get();
+        $license = auth()->user()->business?->license;
+        $canAdd  = $license ? $license->canAddStaff() : true;
+        $plan    = $license ? ($license->plan ?? 'free') : 'free';
 
         if (!$canAdd) {
             return redirect()->route('admin.staff.index')
-                ->with('limit_message', 'You have reached the maximum number of staff for your current plan.');
+                ->with('limit_message', 'You have reached the maximum number of staff for your current plan. Upgrade to add more.');
+        }
+
+        try {
+            $branches = auth()->user()->business->branches()->where('is_active', true)->orderBy('name')->get();
+        } catch (\Exception $e) {
+            $branches = collect();
         }
 
         return view('admin.staff.create', compact('canAdd', 'plan', 'license', 'branches'));
@@ -92,7 +97,12 @@ class StaffController extends Controller
         abort_if($staff->business_id !== auth()->user()->business_id, 403);
         abort_if($staff->role !== 'staff', 403);
 
-        $branches = auth()->user()->business->branches()->where('is_active', true)->orderBy('name')->get();
+        try {
+            $branches = auth()->user()->business->branches()->where('is_active', true)->orderBy('name')->get();
+        } catch (\Exception $e) {
+            $branches = collect();
+        }
+
         return view('admin.staff.edit', compact('staff', 'branches'));
     }
 
