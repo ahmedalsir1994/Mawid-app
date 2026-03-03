@@ -11,6 +11,28 @@
         </a>
     </div>
 
+    <!-- Search & Filter -->
+    <form method="GET" action="{{ route('admin.super.users.index') }}" class="mb-6 flex flex-wrap gap-3">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Search by name or email..."
+            class="flex-1 min-w-[200px] px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+        />
+        <select name="role" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="">All Roles</option>
+            <option value="super_admin" @selected(request('role') === 'super_admin')>Super Admin</option>
+            <option value="company_admin" @selected(request('role') === 'company_admin')>Company Admin</option>
+            <option value="staff" @selected(request('role') === 'staff')>Staff</option>
+            <option value="customer" @selected(request('role') === 'customer')>Customer</option>
+        </select>
+        <button type="submit" class="px-5 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition">Search</button>
+        @if(request('search') || request('role'))
+            <a href="{{ route('admin.super.users.index') }}" class="px-5 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition">Clear</a>
+        @endif
+    </form>
+
     <!-- Users Table -->
     <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
