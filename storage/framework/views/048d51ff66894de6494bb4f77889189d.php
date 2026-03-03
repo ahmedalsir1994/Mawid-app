@@ -15,7 +15,7 @@
                 <p class="text-gray-500 text-sm mt-1"><?php echo e(__('app.manage_business_services')); ?></p>
             </div>
             <a href="<?php echo e(route('admin.services.create')); ?>"
-                class="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition">
+                class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold hover:shadow-lg transition">
                 <svg class="w-5 h-5 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
                 </svg>
@@ -44,7 +44,7 @@
             <h3 class="text-xl font-bold text-gray-800 mb-2"><?php echo e(__('app.no_services_yet')); ?></h3>
             <p class="text-gray-600 mb-6"><?php echo e(__('app.create_first_service')); ?></p>
             <a href="<?php echo e(route('admin.services.create')); ?>"
-                class="inline-block px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition">
+                class="inline-block px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold hover:shadow-lg transition">
                 <?php echo e(__('app.create_your_first_service')); ?>
 
             </a>
@@ -104,7 +104,7 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end space-x-2">
                                         <a href="<?php echo e(route('admin.services.edit', $service)); ?>"
-                                            class="px-4 py-2 rounded-lg text-sm font-medium text-purple-600 hover:bg-purple-50 transition">
+                                            class="px-4 py-2 rounded-lg text-sm font-medium text-green-600 hover:bg-green-50 transition">
                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                             </svg>

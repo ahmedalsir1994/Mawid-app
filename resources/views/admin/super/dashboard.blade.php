@@ -46,7 +46,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-900">${{ number_format($totalRevenue, 0) }}</p>
+            <p class="text-3xl font-bold text-gray-900">{{ number_format($totalRevenue, 3) }} {{ __('app.revenue_omr') }}</p>
         </div>
 
         <!-- Expiring Licenses -->
@@ -70,7 +70,7 @@
         <!-- Pending Revenue -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.pending_revenue') }}</h3>
-            <p class="text-3xl font-bold text-gray-900">${{ number_format($pendingRevenue, 0) }}</p>
+            <p class="text-3xl font-bold text-gray-900">{{ number_format($pendingRevenue, 3) }} {{ __('app.revenue_omr') }}</p>
             <p class="text-sm text-orange-600 mt-2">{{ __('app.awaiting_payment') }}</p>
         </div>
 
@@ -82,6 +82,131 @@
         </div>
     </div>
 
+    <!-- Revenue Breakdown by Plan -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Plan Distribution -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">{{ __('app.plan_distribution') }}</h2>
+            <div class="space-y-3">
+                @php
+                    $planColors = ['free' => 'bg-gray-400', 'pro' => 'bg-blue-500', 'plus' => 'bg-purple-600'];
+                    $planLabels = ['free' => __('app.free_plan'), 'pro' => __('app.pro_plan'), 'plus' => __('app.plus_plan')];
+                    $grandTotal  = $planDistribution->sum() ?: 1;
+                @endphp
+                @foreach(['free','pro','plus'] as $p)
+                    @php $cnt = $planDistribution[$p] ?? 0; $pct = round($cnt / $grandTotal * 100); @endphp
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700">{{ $planLabels[$p] }}</span>
+                            <span class="text-gray-500">{{ $cnt }} ({{ $pct }}%)</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="{{ $planColors[$p] }} h-2 rounded-full" style="width: {{ $pct }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Pro Plan Revenue -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-gray-900">{{ __('app.pro_plan') }}</h2>
+                <span class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </span>
+            </div>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                    <div>
+                        <p class="text-xs text-blue-600 font-medium uppercase tracking-wide">{{ __('app.monthly') }}</p>
+                        <p class="text-lg font-bold text-gray-900">{{ number_format($revenueByPlan['pro_monthly']->total ?? 0, 3) }} {{ __('app.revenue_omr') }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-blue-600">{{ $revenueByPlan['pro_monthly']->count ?? 0 }}</p>
+                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                    <div>
+                        <p class="text-xs text-blue-600 font-medium uppercase tracking-wide">{{ __('app.yearly') }}</p>
+                        <p class="text-lg font-bold text-gray-900">{{ number_format($revenueByPlan['pro_yearly']->total ?? 0, 3) }} {{ __('app.revenue_omr') }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-blue-600">{{ $revenueByPlan['pro_yearly']->count ?? 0 }}</p>
+                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plus Plan Revenue -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-gray-900">{{ __('app.plus_plan') }}</h2>
+                <span class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                    </svg>
+                </span>
+            </div>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                    <div>
+                        <p class="text-xs text-purple-600 font-medium uppercase tracking-wide">{{ __('app.monthly') }}</p>
+                        <p class="text-lg font-bold text-gray-900">{{ number_format($revenueByPlan['plus_monthly']->total ?? 0, 3) }} {{ __('app.revenue_omr') }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-purple-600">{{ $revenueByPlan['plus_monthly']->count ?? 0 }}</p>
+                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                    <div>
+                        <p class="text-xs text-purple-600 font-medium uppercase tracking-wide">{{ __('app.yearly') }}</p>
+                        <p class="text-lg font-bold text-gray-900">{{ number_format($revenueByPlan['plus_yearly']->total ?? 0, 3) }} {{ __('app.revenue_omr') }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-purple-600">{{ $revenueByPlan['plus_yearly']->count ?? 0 }}</p>
+                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Revenue Trend -->
+    @if($monthlyRevenue->isNotEmpty())
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">{{ __('app.monthly_revenue_trend') }}</h2>
+        @php
+            $maxMonthlyTotal = $monthlyRevenue->max('total') ?: 1;
+            // Fill last 12 months
+            $months = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $key = now()->subMonths($i)->format('Y-m');
+                $months[$key] = $monthlyRevenue[$key] ?? null;
+            }
+        @endphp
+        <div class="flex items-end gap-2 h-32">
+            @foreach($months as $month => $data)
+                @php
+                    $val   = $data->total ?? 0;
+                    $cnt   = $data->count ?? 0;
+                    $pct   = $maxMonthlyTotal > 0 ? round($val / $maxMonthlyTotal * 100) : 0;
+                    $label = \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M');
+                @endphp
+                <div class="flex-1 flex flex-col items-center gap-1" title="{{ $label }}: {{ number_format($val,3) }} OMR ({{ $cnt }} subs)">
+                    <div class="w-full rounded-t-sm {{ $val > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-100' }} transition" style="height: {{ max($pct, 2) }}%"></div>
+                    <p class="text-xs text-gray-400 text-center" style="font-size:10px">{{ $label }}</p>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Top Performing Businesses -->
@@ -89,7 +214,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900">{{ __('app.top_performing_businesses') }}</h2>
                 <a href="{{ route('admin.super.businesses.index') }}"
-                    class="text-purple-600 hover:text-purple-700 text-sm font-medium">{{ __('app.view_all') }}</a>
+                    class="text-green-600 hover:text-green-700 text-sm font-medium">{{ __('app.view_all') }}</a>
             </div>
 
             <div class="space-y-4">
@@ -100,7 +225,7 @@
                             <p class="text-sm text-gray-600">{{ $business->address }}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-lg font-bold text-purple-600">{{ $business->bookings_count }}</p>
+                            <p class="text-lg font-bold text-green-600">{{ $business->bookings_count }}</p>
                             <p class="text-xs text-gray-600">{{ __('app.bookings') }}</p>
                         </div>
                     </div>
@@ -115,7 +240,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900">{{ __('app.licenses_expiring_soon') }}</h2>
                 <a href="{{ route('admin.super.licenses.index') }}"
-                    class="text-purple-600 hover:text-purple-700 text-sm font-medium">{{ __('app.manage') }}</a>
+                    class="text-green-600 hover:text-green-700 text-sm font-medium">{{ __('app.manage') }}</a>
             </div>
 
             <div class="space-y-4">
@@ -151,13 +276,13 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900">{{ __('app.recent_businesses') }}</h2>
                 <a href="{{ route('admin.super.businesses.index') }}"
-                    class="text-purple-600 hover:text-purple-700 text-sm font-medium">{{ __('app.view_all') }}</a>
+                    class="text-green-600 hover:text-green-700 text-sm font-medium">{{ __('app.view_all') }}</a>
             </div>
 
             <div class="space-y-3">
                 @forelse($recentBusinesses as $business)
                     <a href="{{ route('admin.super.businesses.show', $business) }}"
-                        class="block p-4 bg-gray-50 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition border-l-4 border-purple-600">
+                        class="block p-4 bg-gray-50 rounded-lg hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 transition border-l-4 border-green-600">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="font-semibold text-gray-900">{{ $business->name }}</p>
@@ -182,6 +307,37 @@
                 @endforelse
             </div>
         </div>
+
+        <!-- Recent Paid Subscriptions -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-900">{{ __('app.recent_paid_subscriptions') }}</h2>
+                <a href="{{ route('admin.super.licenses.index') }}"
+                    class="text-green-600 hover:text-green-700 text-sm font-medium">{{ __('app.view_all') }}</a>
+            </div>
+            <div class="space-y-3">
+                @forelse($recentPayments as $payment)
+                    @php
+                        $planBadge = $payment->plan === 'plus' ? 'bg-purple-600' : 'bg-blue-600';
+                    @endphp
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border-l-4 {{ $payment->plan === 'plus' ? 'border-purple-500' : 'border-blue-500' }}">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-900 truncate">{{ $payment->business->name ?? '—' }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ __('app.activated_on') }}: {{ $payment->activated_at?->format('M d, Y') }}</p>
+                        </div>
+                        <div class="text-right ml-3 shrink-0">
+                            <div class="flex items-center gap-2 justify-end mb-1">
+                                <span class="text-xs font-bold text-white {{ $planBadge }} px-2 py-0.5 rounded capitalize">{{ ucfirst($payment->plan) }}</span>
+                                <span class="text-xs text-gray-500 capitalize">{{ $payment->billing_cycle }}</span>
+                            </div>
+                            <p class="text-sm font-bold text-green-600">{{ number_format($payment->price, 3) }} OMR</p>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-gray-500 text-center py-8">{{ __('app.no_paid_subscriptions') }}</p>
+                @endforelse
+            </div>
+        </div>
     </div>
 
     <!-- Management Links -->
@@ -196,7 +352,7 @@
         </a>
 
         <a href="{{ route('admin.super.licenses.index') }}"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center">
             <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
@@ -205,21 +361,71 @@
         </a>
 
         <a href="{{ route('admin.super.users.index') }}"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
-            <svg class="w-8 h-8 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center">
+            <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M17 20h5v-2a3 3 0 0 0-5.856-3.487M9 20H4v-2a3 3 0 0 1 5.856-3.487m0 0A5.002 5.002 0 0 1 19 12a5 5 0 1 1-10 0z" />
             </svg>
             <p class="font-semibold text-gray-900">{{ __('app.manage_users') }}</p>
         </a>
 
-        <a href="#"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
-            <svg class="w-8 h-8 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <a href="{{ route('admin.contact-submissions.index') }}"
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center relative">
+            @if($unreadContactSubmissions > 0)
+                <span class="absolute top-3 right-3 min-w-[20px] h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold px-1">{{ $unreadContactSubmissions }}</span>
+            @endif
+            <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            <p class="font-semibold text-gray-900">{{ __('app.platform_analytics') }}</p>
+            <p class="font-semibold text-gray-900">Contact Submissions</p>
         </a>
     </div>
+
+    <!-- Recent Contact Submissions -->
+    <div class="mt-8 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h2 class="text-xl font-bold text-gray-900">Recent Contact Submissions</h2>
+                @if($unreadContactSubmissions > 0)
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block"></span>
+                        {{ $unreadContactSubmissions }} unread
+                    </span>
+                @endif
+            </div>
+            <a href="{{ route('admin.contact-submissions.index') }}"
+               class="text-sm text-green-600 hover:text-green-700 font-semibold transition">View all &rarr;</a>
+        </div>
+        @forelse($recentContactSubmissions as $submission)
+        <div class="flex items-start gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50 transition {{ $submission->is_read ? '' : 'bg-green-50/30' }}">
+            <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white font-bold flex-shrink-0 text-sm">
+                {{ strtoupper(substr($submission->name, 0, 1)) }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <p class="font-semibold text-gray-900 text-sm">
+                        {{ $submission->name }}
+                        @unless($submission->is_read)
+                            <span class="ms-1 inline-block w-2 h-2 rounded-full bg-green-500 align-middle"></span>
+                        @endunless
+                    </p>
+                    <span class="text-xs text-gray-400 whitespace-nowrap">{{ $submission->created_at->diffForHumans() }}</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-0.5">{{ $submission->email }} &middot; {{ $submission->phone }}</p>
+                @if($submission->subject)
+                    <p class="text-xs font-medium text-gray-700 mt-1">{{ $submission->subject }}</p>
+                @endif
+                <p class="text-xs text-gray-400 mt-0.5">{{ \Illuminate\Support\Str::limit($submission->message, 90) }}</p>
+            </div>
+            <a href="{{ route('admin.contact-submissions.show', $submission) }}"
+               class="flex-shrink-0 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition">
+                View
+            </a>
+        </div>
+        @empty
+        <div class="px-6 py-10 text-center text-gray-400 text-sm">No contact submissions yet.</div>
+        @endforelse
+    </div>
+
 </x-admin-layout>

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,10 +27,8 @@ class SetLanguage
             }
         }
 
-        // Priority 2: Business default language
-        if (Auth::check() && Auth::user()->business) {
-            app()->setLocale(Auth::user()->business->default_language);
-        }
+        // Priority 2: Fall back to app default locale (ar/en from .env)
+        app()->setLocale(config('app.locale', 'en'));
 
         return $next($request);
     }

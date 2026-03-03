@@ -1,4 +1,4 @@
-<div class="space-y-6">
+﻿<div class="space-y-6">
     <p class="text-sm text-gray-600">
         {{ __('app.delete_account_warning') }}
     </p>
@@ -25,7 +25,7 @@
             <div>
                 <label for="delete_password"
                     class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.confirm_password_label') }}</label>
-                <input type="password" id="delete_password" name="password"
+                <input lang="en" dir="ltr" type="password" id="delete_password" name="password"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="{{ __('app.enter_your_password') }}" required />
                 @error('password', 'userDeletion')

@@ -15,7 +15,7 @@
             <p class="text-gray-600 mt-2"><?php echo e(__('app.create_manage_platform_users')); ?></p>
         </div>
         <a href="<?php echo e(route('admin.super.users.create')); ?>"
-            class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
+            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
             + <?php echo e(__('app.add_user')); ?>
 
         </a>
@@ -33,6 +33,7 @@
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.business')); ?>
 
                         </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.plan')); ?></th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.status')); ?></th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.joined')); ?></th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.actions')); ?></th>
@@ -73,6 +74,25 @@
 
                             </td>
                             <td class="px-6 py-4 text-sm">
+                                <?php
+                                    $userPlan = $user->business?->license?->plan ?? 'free';
+                                    $userBadge = match($userPlan) {
+                                        'pro'  => 'bg-blue-100 text-blue-800',
+                                        'plus' => 'bg-purple-100 text-purple-800',
+                                        default => 'bg-gray-100 text-gray-600',
+                                    };
+                                    $userEmoji = match($userPlan) { 'pro'=>'💼','plus'=>'🚀',default=>'🆓' };
+                                ?>
+                                <?php if($user->business): ?>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold <?php echo e($userBadge); ?>">
+                                        <?php echo e($userEmoji); ?> <?php echo e(ucfirst($userPlan)); ?>
+
+                                    </span>
+                                <?php else: ?>
+                                    <span class="text-gray-400">—</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-6 py-4 text-sm">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold 
                                             <?php if($user->is_active): ?> 
                                                 bg-green-100 text-green-800
@@ -108,10 +128,10 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                 <p class="text-lg mb-2"><?php echo e(__('app.no_users_yet')); ?></p>
                                 <a href="<?php echo e(route('admin.super.users.create')); ?>"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     <?php echo e(__('app.create_first_user')); ?>
 
                                 </a>

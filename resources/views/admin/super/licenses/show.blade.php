@@ -7,9 +7,17 @@
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.super.licenses.edit', $license) }}"
-                    class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium">
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
                     {{ __('app.edit') }}
                 </a>
+                <form method="POST" action="{{ route('admin.super.licenses.destroy', $license) }}"
+                      class="inline" onsubmit="return confirm('{{ __('app.delete_license_confirm') }}')">
+                    @csrf @method('DELETE')
+                    <button type="submit"
+                        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+                        {{ __('app.delete') }}
+                    </button>
+                </form>
                 <a href="{{ route('admin.super.licenses.index') }}"
                     class="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium">
                     {{ __('app.back') }}
@@ -28,9 +36,35 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.business') }}</label>
                         <a href="{{ route('admin.super.businesses.show', $license->business) }}"
-                            class="text-purple-600 hover:text-purple-700 font-semibold">
+                            class="text-green-600 hover:text-green-700 font-semibold">
                             {{ $license->business->name }}
                         </a>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.plan') }}</label>
+                        @php
+                            $planBadge = match($license->plan ?? 'free') {
+                                'pro'  => 'bg-blue-100 text-blue-800',
+                                'plus' => 'bg-purple-100 text-purple-800',
+                                default => 'bg-gray-100 text-gray-700',
+                            };
+                            $planEmoji = match($license->plan ?? 'free') {
+                                'pro'  => '💼',
+                                'plus' => '🚀',
+                                default => '🆓',
+                            };
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold {{ $planBadge }}">
+                            {{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}
+                        </span>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.billing_cycle') }}</label>
+                        <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold capitalize">
+                            {{ $license->billing_cycle ?? 'monthly' }}
+                        </span>
                     </div>
 
                     <div>
@@ -76,7 +110,7 @@
                     <div>
                         <label
                             class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.payment_status') }}</label>
-                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm font-semibold">
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded text-sm font-semibold">
                             {{ ucfirst($license->payment_status) }}
                         </span>
                     </div>
@@ -91,9 +125,9 @@
                                         <span class="text-red-600">({{ __('app.expired_days') }}
                                             {{ $license->daysUntilExpiry() }} {{ __('app.days_ago_full') }})</span>
                                     @elseif($license->isExpiring())
-                                        ({{ $license->daysUntilExpiry() }} {{ __('app.days_left_full') }})
+                                        <span class="text-yellow-600">({{ $license->daysUntilExpiry() }} {{ __('app.days_left_full') }})</span>
                                     @elseif($license->isActive())
-                                        ({{ $license->daysUntilExpiry() }} {{ __('app.days_left_full') }})
+                                        <span class="text-green-600">({{ $license->daysUntilExpiry() }} {{ __('app.days_left_full') }})</span>
                                     @endif
                                 </small>
                             @else
@@ -108,21 +142,25 @@
         <!-- Sidebar -->
         <div>
             <!-- Quick Stats -->
-            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-md p-6 text-white">
+            <div class="bg-gradient-to-br from-green-600 to-green-600 rounded-xl shadow-md p-6 text-white">
                 <h2 class="text-lg font-bold mb-4">{{ __('app.license_status') }}</h2>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-purple-100">{{ __('app.status') }}</span>
+                        <span class="text-green-100">{{ __('app.plan') }}</span>
+                        <span class="font-bold capitalize">{{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-green-100">{{ __('app.status') }}</span>
                         <span class="font-bold">{{ ucfirst($license->status) }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-purple-100">{{ __('app.users_used') }}</span>
+                        <span class="text-green-100">{{ __('app.users_used') }}</span>
                         <span class="font-bold">{{ $license->business->users->count() }} /
                             {{ $license->max_users }}</span>
                     </div>
                     @if ($license->expires_at)
                         <div class="flex items-center justify-between">
-                            <span class="text-purple-100">
+                            <span class="text-green-100">
                                 @if(!$license->isActive() && $license->expires_at->isPast())
                                     {{ __('app.days_expired') }}
                                 @else
@@ -140,7 +178,7 @@
                 <h2 class="text-lg font-bold text-gray-900 mb-4">{{ __('app.quick_actions') }}</h2>
                 <div class="space-y-2">
                     <a href="{{ route('admin.super.licenses.edit', $license) }}"
-                        class="w-full block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-center font-medium text-sm">
+                        class="w-full block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center font-medium text-sm">
                         {{ __('app.edit_license_action') }}
                     </a>
                     @if(!$license->isActive())

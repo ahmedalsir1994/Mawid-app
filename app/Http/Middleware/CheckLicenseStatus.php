@@ -28,15 +28,8 @@ class CheckLicenseStatus
                 ->with('error', 'No business associated with your account.');
         }
 
-        $business = $user->business;
-        $license = $business->license;
-
-        // Check if license exists and is active
-        if (!$license || !$license->isActive()) {
-            return redirect()->route('admin.license.suspended')
-                ->with('error', 'Your license is ' . ($license ? $license->status : 'missing') . '. Please contact support to reactivate.');
-        }
-
+        // License may be inactive/expired — we no longer block access.
+        // A banner in the admin layout will prompt the user to reactivate.
         return $next($request);
     }
 }

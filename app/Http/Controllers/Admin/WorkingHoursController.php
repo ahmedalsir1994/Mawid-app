@@ -27,7 +27,7 @@ class WorkingHoursController extends Controller
         foreach (array_keys($this->days) as $dow) {
             WorkingHour::firstOrCreate(
                 ['business_id' => $businessId, 'day_of_week' => $dow],
-                ['start_time' => '09:00', 'end_time' => '18:00', 'is_closed' => false]
+                ['first_shift_start' => '09:00', 'first_shift_end' => '18:00', 'is_closed' => false]
             );
         }
 
@@ -50,26 +50,41 @@ class WorkingHoursController extends Controller
         $request->validate([
             'hours' => ['required', 'array'],
             'hours.*.is_closed' => ['nullable'],
-            'hours.*.start_time' => ['nullable'],
-            'hours.*.end_time' => ['nullable'],
+            'hours.*.first_shift_start' => ['nullable'],
+            'hours.*.first_shift_end' => ['nullable'],
+            'hours.*.second_shift_start' => ['nullable'],
+            'hours.*.second_shift_end' => ['nullable'],
         ]);
 
         foreach ($request->input('hours') as $dow => $row) {
             $isClosed = isset($row['is_closed']);
 
-            $start = $isClosed ? null : ($row['start_time'] ?? null);
-            $end   = $isClosed ? null : ($row['end_time'] ?? null);
+            $firstStart = $isClosed ? null : ($row['first_shift_start'] ?? null);
+            $firstEnd   = $isClosed ? null : ($row['first_shift_end'] ?? null);
+            $secondStart = $isClosed ? null : ($row['second_shift_start'] ?? null);
+            $secondEnd   = $isClosed ? null : ($row['second_shift_end'] ?? null);
 
-            // Optional: basic sanity check
-            if (!$isClosed && $start && $end && $start >= $end) {
+            // Optional: basic sanity check for both shifts
+            if (!$isClosed && $firstStart && $firstEnd && $firstStart >= $firstEnd) {
                 return back()
-                    ->withErrors(["hours.$dow.end_time" => "End time must be after start time for day $dow"])
+                    ->withErrors(["hours.$dow.first_shift_end" => "First shift end time must be after start time for day $dow"])
+                    ->withInput();
+            }
+            if (!$isClosed && $secondStart && $secondEnd && $secondStart >= $secondEnd) {
+                return back()
+                    ->withErrors(["hours.$dow.second_shift_end" => "Second shift end time must be after start time for day $dow"])
                     ->withInput();
             }
 
             WorkingHour::updateOrCreate(
                 ['business_id' => $businessId, 'day_of_week' => (int)$dow],
-                ['start_time' => $start, 'end_time' => $end, 'is_closed' => $isClosed]
+                [
+                    'first_shift_start' => $firstStart,
+                    'first_shift_end' => $firstEnd,
+                    'second_shift_start' => $secondStart,
+                    'second_shift_end' => $secondEnd,
+                    'is_closed' => $isClosed
+                ]
             );
         }
 

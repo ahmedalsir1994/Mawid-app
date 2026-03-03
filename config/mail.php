@@ -47,6 +47,22 @@ return [
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'stream' => [
+                'ssl' => [
+                    'allow_self_signed' => true,
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                ],
+            ],
+        ],
+
+        // Gmail-compatible SMTP with Windows SSL fix
+        'gmail' => [
+            'transport' => 'smtp-ssl-fix',
+            'host'      => env('MAIL_HOST', 'smtp.gmail.com'),
+            'port'      => env('MAIL_PORT', 587),
+            'username'  => env('MAIL_USERNAME'),
+            'password'  => env('MAIL_PASSWORD'),
         ],
 
         'ses' => [

@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">{{ __('app.create_business') }}</h1>
         <p class="text-gray-600 mt-2">{{ __('app.add_new_business') }}</p>
@@ -12,8 +12,8 @@
             <div>
                 <label for="name"
                     class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.business_name') }}</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="text" id="name" name="name" value="{{ old('name') }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., Acme Beauty Salon">
                 @error('name')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -23,8 +23,8 @@
             <!-- Slug -->
             <div>
                 <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.url_slug') }}</label>
-                <input type="text" id="slug" name="slug" value="{{ old('slug') }}" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="text" id="slug" name="slug" value="{{ old('slug') }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., acme-beauty-salon">
                 <p class="text-gray-500 text-xs mt-1">{{ __('app.url_slug_hint') }}</p>
                 @error('slug')
@@ -36,8 +36,8 @@
             <div>
                 <label for="address"
                     class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.address') }}</label>
-                <input type="text" id="address" name="address" value="{{ old('address') }}" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="text" id="address" name="address" value="{{ old('address') }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., 123 Main Street">
                 @error('address')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -48,8 +48,8 @@
             <div>
                 <label for="country"
                     class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.country') }}</label>
-                <select id="country" name="country" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select lang="en" dir="ltr" id="country" name="country" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">{{ __('app.select_country') }}</option>
                     <option value="OM" {{ old('country') == 'OM' ? 'selected' : '' }}>{{ __('app.oman_om') }}</option>
                     <option value="SA" {{ old('country') == 'SA' ? 'selected' : '' }}>{{ __('app.saudi_arabia_sa') }}
@@ -63,8 +63,8 @@
             <!-- Phone -->
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.phone') }}</label>
-                <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="tel" id="phone" name="phone" value="{{ old('phone') }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., +1 555-1234">
                 @error('phone')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -75,8 +75,8 @@
             <div>
                 <label for="currency"
                     class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.currency') }}</label>
-                <select id="currency" name="currency" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select lang="en" dir="ltr" id="currency" name="currency" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">{{ __('app.select_currency') }}</option>
                     <option value="OMR" {{ old('currency') == 'OMR' ? 'selected' : '' }}>{{ __('app.omr_oman_rial') }}
                     </option>
@@ -92,8 +92,8 @@
             <div>
                 <label for="timezone"
                     class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.timezone') }}</label>
-                <select id="timezone" name="timezone" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select lang="en" dir="ltr" id="timezone" name="timezone" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">{{ __('app.select_timezone') }}</option>
                     <option value="Asia/Muscat" {{ old('timezone') == 'Asia/Muscat' ? 'selected' : '' }}>
                         {{ __('app.asia_muscat') }}
@@ -107,7 +107,7 @@
             <!-- Actions -->
             <div class="flex items-center gap-4 pt-6 border-t border-gray-200">
                 <button type="submit"
-                    class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+                    class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:shadow-lg transition font-medium">
                     {{ __('app.create_business') }}
                 </button>
                 <a href="{{ route('admin.super.businesses.index') }}"

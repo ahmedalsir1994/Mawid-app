@@ -6,7 +6,7 @@
             <p class="text-gray-600 mt-2">{{ __('app.create_manage_licenses') }}</p>
         </div>
         <a href="{{ route('admin.super.licenses.create') }}"
-            class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
+            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
             + {{ __('app.create_license') }}
         </a>
     </div>
@@ -19,6 +19,7 @@
                     <tr>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">{{ __('app.business') }}
                         </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">{{ __('app.plan') }}</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">{{ __('app.license_key') }}
                         </th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">{{ __('app.expires') }}</th>
@@ -36,6 +37,26 @@
                                     <p class="font-semibold text-gray-900">{{ $license->business->name }}</p>
                                     <p class="text-sm text-gray-600">{{ $license->business->slug }}</p>
                                 </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                @php
+                                    $planBadge = match($license->plan ?? 'free') {
+                                        'pro'  => 'bg-blue-100 text-blue-800',
+                                        'plus' => 'bg-purple-100 text-purple-800',
+                                        default => 'bg-gray-100 text-gray-700',
+                                    };
+                                    $planEmoji = match($license->plan ?? 'free') {
+                                        'pro'  => '💼',
+                                        'plus' => '🚀',
+                                        default => '🆓',
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold {{ $planBadge }}">
+                                    {{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}
+                                </span>
+                                @if(($license->plan ?? 'free') !== 'free')
+                                    <p class="text-xs text-gray-400 mt-1 capitalize">{{ $license->billing_cycle }}</p>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <code class="text-sm bg-gray-100 px-2 py-1 rounded">{{ $license->license_key }}</code>
@@ -85,7 +106,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm space-x-2">
                                 <a href="{{ route('admin.super.licenses.show', $license) }}"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     {{ __('app.view') }}
                                 </a>
                                 <a href="{{ route('admin.super.licenses.edit', $license) }}"
@@ -102,10 +123,10 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                 <p class="text-lg mb-2">{{ __('app.no_licenses_yet') }}</p>
                                 <a href="{{ route('admin.super.licenses.create') }}"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     {{ __('app.create_first_license') }}
                                 </a>
                             </td>

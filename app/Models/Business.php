@@ -56,6 +56,16 @@ class Business extends Model
         return $this->hasOne(License::class);
     }
 
+    public function branches()
+    {
+        return $this->hasMany(Branch::class);
+    }
+
+    public function mainBranch()
+    {
+        return $this->hasOne(Branch::class)->where('is_main', true)->latestOfMany('id');
+    }
+
     public function admin()
     {
         return $this->users()->where('role', 'company_admin')->first();

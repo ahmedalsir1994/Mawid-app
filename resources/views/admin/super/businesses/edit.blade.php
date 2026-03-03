@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <div class="mb-8">
         <div class="flex items-center justify-between">
             <div>
@@ -22,8 +22,8 @@
                 <div>
                     <label for="name"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.business_name_required') }}</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $business->name) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <input lang="en" dir="ltr" type="text" name="name" id="name" value="{{ old('name', $business->name) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                     @error('name')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -34,8 +34,8 @@
                 <div>
                     <label for="slug"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.slug_required') }}</label>
-                    <input type="text" name="slug" id="slug" value="{{ old('slug', $business->slug) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <input lang="en" dir="ltr" type="text" name="slug" id="slug" value="{{ old('slug', $business->slug) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                     @error('slug')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -46,8 +46,8 @@
                 <div class="md:col-span-2">
                     <label for="address"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.address_required') }}</label>
-                    <input type="text" name="address" id="address" value="{{ old('address', $business->address) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <input lang="en" dir="ltr" type="text" name="address" id="address" value="{{ old('address', $business->address) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                     @error('address')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -58,8 +58,8 @@
                 <div>
                     <label for="country"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.country_required') }}</label>
-                    <input type="text" name="country" id="country" value="{{ old('country', $business->country) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <input lang="en" dir="ltr" type="text" name="country" id="country" value="{{ old('country', $business->country) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                     @error('country')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -70,8 +70,8 @@
                 <div>
                     <label for="phone"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.phone_required') }}</label>
-                    <input type="tel" name="phone" id="phone" value="{{ old('phone', $business->phone) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <input lang="en" dir="ltr" type="tel" name="phone" id="phone" value="{{ old('phone', $business->phone) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                     @error('phone')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -82,8 +82,8 @@
                 <div>
                     <label for="currency"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.currency_required') }}</label>
-                    <select name="currency" id="currency"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <select lang="en" dir="ltr" name="currency" id="currency"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                         <option value="">{{ __('app.select_currency') }}</option>
                         <option value="USD" @selected(old('currency', $business->currency) === 'USD')>
@@ -111,8 +111,8 @@
                 <div>
                     <label for="timezone"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.timezone_required') }}</label>
-                    <select name="timezone" id="timezone"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <select lang="en" dir="ltr" name="timezone" id="timezone"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                         <option value="">{{ __('app.select_timezone') }}</option>
                         <option value="UTC" @selected(old('timezone', $business->timezone) === 'UTC')>{{ __('app.utc') }}
@@ -139,8 +139,8 @@
                 <div>
                     <label for="is_active"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.status') }}</label>
-                    <select name="is_active" id="is_active"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                    <select lang="en" dir="ltr" name="is_active" id="is_active"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent">
                         <option value="0" @selected(!$business->is_active)>{{ __('app.inactive') }}</option>
                         <option value="1" @selected($business->is_active)>{{ __('app.active') }}</option>
                     </select>
@@ -168,7 +168,7 @@
                         {{ __('app.cancel') }}
                     </a>
                     <button type="submit"
-                        class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+                        class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:shadow-lg transition font-medium">
                         {{ __('app.update_business') }}
                     </button>
                 </div>

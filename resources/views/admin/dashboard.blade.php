@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
@@ -75,8 +75,8 @@
                     <p class="text-3xl font-bold text-gray-800 mt-2">$0</p>
                     <p class="text-green-600 text-xs mt-2">↑ 0% {{ __('app.from_last_month') }}</p>
                 </div>
-                <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                         <path
                             d="M8.16 2.75a.75.75 0 00-.328 1.385A10.998 10.998 0 0010 3c3.537 0 6.837 1.595 8.977 4.1a.75.75 0 01-1.194.912A9.499 9.499 0 0010 4.5c-2.999 0-5.795 1.26-7.728 3.276a.75.75 0 01-1.194-.912A10.998 10.998 0 018.16 2.75z" />
                         <path fill-rule="evenodd"
@@ -94,7 +94,7 @@
         <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-gray-800">{{ __('app.weekly_bookings') }}</h3>
-                <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none">
+                <select lang="en" dir="ltr" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none">
                     <option>{{ __('app.this_week') }}</option>
                     <option>{{ __('app.last_week') }}</option>
                     <option>{{ __('app.this_month') }}</option>
@@ -145,7 +145,7 @@
                         <p class="text-xs text-gray-500 mt-1">15 {{ __('app.bookings') }}</p>
                     </div>
                     <div class="w-16 bg-gray-200 rounded-full h-2">
-                        <div class="bg-purple-600 h-2 rounded-full" style="width: 85%"></div>
+                        <div class="bg-green-600 h-2 rounded-full" style="width: 85%"></div>
                     </div>
                 </div>
 
@@ -155,7 +155,7 @@
                         <p class="text-xs text-gray-500 mt-1">12 {{ __('app.bookings') }}</p>
                     </div>
                     <div class="w-16 bg-gray-200 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 68%"></div>
+                        <div class="bg-green-600 h-2 rounded-full" style="width: 68%"></div>
                     </div>
                 </div>
 
@@ -175,7 +175,7 @@
                         <p class="text-xs text-gray-500 mt-1">5 {{ __('app.bookings') }}</p>
                     </div>
                     <div class="w-16 bg-gray-200 rounded-full h-2">
-                        <div class="bg-pink-600 h-2 rounded-full" style="width: 28%"></div>
+                        <div class="bg-green-600 h-2 rounded-full" style="width: 28%"></div>
                     </div>
                 </div>
             </div>
@@ -201,7 +201,7 @@
                         </svg>
                     </button>
                     <button id="todayBtn"
-                        class="ml-4 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition">
+                        class="ml-4 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">
                         {{ __('app.today') }}
                     </button>
                 </div>
@@ -236,7 +236,7 @@
                 <span class="text-gray-600">{{ __('app.pending') }}</span>
             </div>
             <div class="flex items-center space-x-2">
-                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                 <span class="text-gray-600">{{ __('app.completed') }}</span>
             </div>
             <div class="flex items-center space-x-2">
@@ -357,7 +357,7 @@
         <div class="p-6 border-b border-gray-200 flex items-center justify-between">
             <h3 class="text-lg font-bold text-gray-800">{{ __('app.recent_bookings') }}</h3>
             <a href="{{ route('admin.bookings.index') }}"
-                class="text-purple-600 hover:text-purple-800 text-sm font-medium">{{ __('app.view_all') }}</a>
+                class="text-green-600 hover:text-green-800 text-sm font-medium">{{ __('app.view_all') }}</a>
         </div>
 
         <div class="overflow-x-auto">
@@ -399,14 +399,14 @@
                         </td>
                         <td class="px-6 py-4 text-sm">
                             <button
-                                class="text-purple-600 hover:text-purple-800 font-medium">{{ __('app.view') }}</button>
+                                class="text-green-600 hover:text-green-800 font-medium">{{ __('app.view') }}</button>
                         </td>
                     </tr>
                     <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
                         <td class="px-6 py-4 text-sm">
                             <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-pink-200 rounded-full flex items-center justify-center">
-                                    <span class="text-pink-700 font-bold text-xs">SM</span>
+                                <div class="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
+                                    <span class="text-green-700 font-bold text-xs">SM</span>
                                 </div>
                                 <span class="font-medium text-gray-800">Sarah Miller</span>
                             </div>
@@ -419,7 +419,7 @@
                         </td>
                         <td class="px-6 py-4 text-sm">
                             <button
-                                class="text-purple-600 hover:text-purple-800 font-medium">{{ __('app.view') }}</button>
+                                class="text-green-600 hover:text-green-800 font-medium">{{ __('app.view') }}</button>
                         </td>
                     </tr>
                     <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
@@ -439,7 +439,7 @@
                         </td>
                         <td class="px-6 py-4 text-sm">
                             <button
-                                class="text-purple-600 hover:text-purple-800 font-medium">{{ __('app.view') }}</button>
+                                class="text-green-600 hover:text-green-800 font-medium">{{ __('app.view') }}</button>
                         </td>
                     </tr>
                 </tbody>
@@ -451,7 +451,7 @@
                 {{ __('app.bookings') }}
             </p>
             <a href="{{ route('admin.bookings.index') }}"
-                class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium rounded-lg hover:shadow-lg transition">
+                class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition">
                 {{ __('app.see_all_bookings') }}
             </a>
         </div>

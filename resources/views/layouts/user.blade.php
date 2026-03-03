@@ -5,8 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100'/><text x='50' y='65' font-size='70' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>M</text></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('/images/Mawidly-fav.png') }}">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -30,7 +29,7 @@
         }
         
         .nav-active {
-            @apply border-b-4 border-purple-600 text-purple-700;
+            @apply border-b-4 border-green-600 text-green-700;
         }
     </style>
 </head>
@@ -43,26 +42,31 @@
                 <div class="flex items-center justify-between h-16">
                     <!-- Logo -->
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('landing') }}" class="flex items-center space-x-2">
-                            <div
-                                class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-sm">BA</span>
-                            </div>
-                            <span
-                                class="font-bold text-lg text-gray-800 hidden sm:block">{{ config('app.name') }}</span>
-                        </a>
-                    </div>
+                    <a href="{{ route('landing') }}">
+                        <img src="/images/Mawid.png" alt="Mawid App" class="h-10 w-auto"></div>
+
+                    </a>
 
                     <!-- User Menu -->
                     <div class="flex items-center space-x-4">
+                        <!-- Home Button -->
+                        <a href="{{ route('landing') }}"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span class="hidden sm:inline">{{ __('app.home') }}</span>
+                        </a>
+
                         <!-- Language Switcher -->
                         <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
                             <a href="{{ route('lang.switch', 'en') }}"
-                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-200' }}">
+                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200' }}">
                                 EN
                             </a>
                             <a href="{{ route('lang.switch', 'ar') }}"
-                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-200' }}">
+                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200' }}">
                                 AR
                             </a>
                         </div>
@@ -70,9 +74,9 @@
                         <div class="relative">
                             <button onclick="document.getElementById('userMenu').classList.toggle('hidden')"
                                 class="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg transition">
-                                <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                                <div class="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
                                     <span
-                                        class="text-purple-700 font-bold text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                                        class="text-green-700 font-bold text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                                 </div>
                                 <span
                                     class="hidden sm:block text-sm font-medium text-gray-700">{{ auth()->user()->name }}</span>
@@ -135,6 +139,37 @@
                 userMenu?.classList.add('hidden');
             }
         });
+    </script>
+
+    {{-- Block Arabic input across all text fields --}}
+    <script>
+    (function () {
+        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g;
+
+        function stripArabic(el) {
+            const before = el.value;
+            const after  = before.replace(ARABIC, '');
+            if (before !== after) {
+                const pos = el.selectionStart - (before.length - after.length);
+                el.value = after;
+                el.setSelectionRange(pos, pos);
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key && ARABIC.test(e.key)) {
+                e.preventDefault();
+            }
+            ARABIC.lastIndex = 0;
+        }, true);
+
+        document.addEventListener('input', function (e) {
+            const el = e.target;
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                stripArabic(el);
+            }
+        }, true);
+    })();
     </script>
 </body>
 

@@ -7,7 +7,7 @@
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.super.businesses.edit', $business) }}"
-                    class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium">
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
                     {{ __('app.edit') }}
                 </a>
                 <a href="{{ route('admin.super.businesses.index') }}"
@@ -136,14 +136,14 @@
                         </div>
 
                         <a href="{{ route('admin.super.licenses.edit', $business->license) }}"
-                            class="w-full mt-3 inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-center font-medium text-sm">
+                            class="w-full mt-3 inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center font-medium text-sm">
                             {{ __('app.manage_license') }}
                         </a>
                     </div>
                 @else
                     <p class="text-gray-600 text-sm mb-4">{{ __('app.no_license_assigned') }}</p>
                     <a href="{{ route('admin.super.licenses.create') }}"
-                        class="w-full inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-center font-medium text-sm">
+                        class="w-full inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center font-medium text-sm">
                         {{ __('app.create_license') }}
                     </a>
                 @endif
@@ -157,7 +157,7 @@
                         @foreach ($business->users as $user)
                             <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
                                 <div
-                                    class="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                                    class="w-8 h-8 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center">
                                     <span class="text-white text-xs font-bold">{{ substr($user->name, 0, 1) }}</span>
                                 </div>
                                 <div class="flex-1">
@@ -173,15 +173,15 @@
             </div>
 
             <!-- Stats -->
-            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-md p-6 mt-6 text-white">
+            <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-xl shadow-md p-6 mt-6 text-white">
                 <h2 class="text-lg font-bold mb-4">{{ __('app.quick_stats') }}</h2>
                 <div class="space-y-3">
                     <div>
-                        <p class="text-purple-100 text-sm">{{ __('app.total_team') }}</p>
+                        <p class="text-green-100 text-sm">{{ __('app.total_team') }}</p>
                         <p class="text-2xl font-bold">{{ $business->users ? $business->users->count() : 0 }}</p>
                     </div>
                     <div>
-                        <p class="text-purple-100 text-sm">{{ __('app.services') }}</p>
+                        <p class="text-green-100 text-sm">{{ __('app.services') }}</p>
                         <p class="text-2xl font-bold">{{ $business->services ? $business->services->count() : 0 }}</p>
                     </div>
                 </div>

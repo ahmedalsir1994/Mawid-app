@@ -20,7 +20,7 @@
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Today's Bookings -->
-        <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-md p-6 text-white">
+        <div class="bg-gradient-to-br from-green-600 to-green-500 rounded-xl shadow-md p-6 text-white">
             <h3 class="font-medium mb-2 opacity-90">{{ __('app.today_bookings') }}</h3>
             <p class="text-4xl font-bold">{{ $todayBookings }}</p>
             <p class="text-sm mt-2 opacity-90">{{ now()->format('l') }}</p>
@@ -106,15 +106,15 @@
                 <!-- View Switcher -->
                 <div class="flex bg-gray-100 rounded-lg p-1 gap-1">
                     <a href="{{ route('admin.staff.dashboard', ['view' => 'day', 'date' => $currentDate->format('Y-m-d')]) }}"
-                        class="px-4 py-2 rounded-md text-sm font-medium transition {{ $view === 'day' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
+                        class="px-4 py-2 rounded-md text-sm font-medium transition {{ $view === 'day' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
                         {{ __('app.day') }}
                     </a>
                     <a href="{{ route('admin.staff.dashboard', ['view' => 'week', 'date' => $currentDate->format('Y-m-d')]) }}"
-                        class="px-4 py-2 rounded-md text-sm font-medium transition {{ $view === 'week' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
+                        class="px-4 py-2 rounded-md text-sm font-medium transition {{ $view === 'week' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
                         {{ __('app.week') }}
                     </a>
                     <a href="{{ route('admin.staff.dashboard', ['view' => 'month', 'date' => $currentDate->format('Y-m-d')]) }}"
-                        class="px-4 py-2 rounded-md text-sm font-medium transition {{ $view === 'month' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
+                        class="px-4 py-2 rounded-md text-sm font-medium transition {{ $view === 'month' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
                         {{ __('app.month') }}
                     </a>
                 </div>
@@ -154,7 +154,7 @@
                     </a>
 
                     <a href="{{ route('admin.staff.dashboard', ['view' => $view, 'date' => now()->format('Y-m-d')]) }}"
-                        class="ml-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
+                        class="ml-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
                         {{ __('app.today') }}
                     </a>
                 </div>
@@ -168,7 +168,7 @@
             @endphp
 
             <div class="border rounded-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
+                <div class="bg-gradient-to-r from-green-600 to-green-500 text-white p-4">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-2xl font-bold">{{ $currentDate->format('l') }}</h3>
@@ -252,13 +252,13 @@
                     @endphp
 
                     <div class="min-h-[150px] border rounded-lg p-3 
-                                @if($isToday) bg-purple-50 border-purple-400 border-2
+                                @if($isToday) bg-green-50 border-green-400 border-2
                                 @else bg-white border-gray-200 @endif transition hover:shadow-md">
 
-                        <div class="text-center mb-3 pb-2 border-b {{ $isToday ? 'border-purple-300' : 'border-gray-200' }}">
+                        <div class="text-center mb-3 pb-2 border-b {{ $isToday ? 'border-green-300' : 'border-gray-200' }}">
                             <div class="text-xs font-medium text-gray-600">{{ $day->format('D') }}</div>
                             <div class="text-xl font-bold 
-                                        @if($isToday) text-purple-600 
+                                        @if($isToday) text-green-600 
                                         @else text-gray-900 @endif">
                                 {{ $day->format('j') }}
                             </div>
@@ -331,11 +331,11 @@
 
                             <div class="min-h-[100px] p-2 border-r last:border-r-0 
                                         @if(!$isCurrentMonth) bg-gray-50 
-                                        @elseif($isToday) bg-purple-50 
+                                        @elseif($isToday) bg-green-50 
                                         @else bg-white @endif hover:bg-gray-50 transition">
 
                                 <div class="text-sm font-medium mb-1 
-                                            @if($isToday) text-purple-600 font-bold
+                                            @if($isToday) text-green-600 font-bold
                                             @elseif(!$isCurrentMonth) text-gray-400
                                             @else text-gray-900 @endif">
                                     {{ $day->format('j') }}
@@ -357,7 +357,7 @@
                                     @endforeach
 
                                     @if($dayBookings->count() > 3)
-                                        <div class="text-[10px] text-purple-600 font-semibold">
+                                        <div class="text-[10px] text-green-600 font-semibold">
                                             +{{ $dayBookings->count() - 3 }} {{ __('app.more') }}
                                         </div>
                                     @endif
@@ -378,11 +378,11 @@
             <div class="space-y-3">
                 @foreach($upcomingBookings as $booking)
                     <div
-                        class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition">
-                        <div class="flex-shrink-0 text-center bg-purple-100 rounded-lg p-3">
-                            <div class="text-xs font-medium text-purple-600">
+                        class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition">
+                        <div class="flex-shrink-0 text-center bg-green-100 rounded-lg p-3">
+                            <div class="text-xs font-medium text-green-600">
                                 {{ \Carbon\Carbon::parse($booking->booking_date)->format('M') }}</div>
-                            <div class="text-2xl font-bold text-purple-600">
+                            <div class="text-2xl font-bold text-green-600">
                                 {{ \Carbon\Carbon::parse($booking->booking_date)->format('d') }}</div>
                         </div>
 
@@ -397,7 +397,7 @@
 
                         <div class="flex-shrink-0">
                             <a href="{{ route('admin.staff.bookings.show', $booking) }}"
-                                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
                                 {{ __('app.view_details') }}
                             </a>
                         </div>

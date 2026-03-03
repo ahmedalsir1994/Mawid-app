@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
@@ -16,8 +17,26 @@ class Service extends Model
     }
 
     public function bookings()
-{
-    return $this->hasMany(Booking::class);
-}
+    {
+        return $this->hasMany(Booking::class);
+    }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(ServiceImage::class)->orderBy('sort_order');
+    }
+
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'branch_service');
+    }
+
+    /**
+     * Returns the first uploaded image path, falling back to the legacy `image` field.
+     */
+    public function getPrimaryImageAttribute(): ?string
+    {
+        $first = $this->images->first();
+        return $first ? $first->path : $this->image;
+    }
 }

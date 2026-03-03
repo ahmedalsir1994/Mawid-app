@@ -7,7 +7,7 @@
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.super.users.edit', $user) }}"
-                    class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium">
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
                     {{ __('app.edit') }}
                 </a>
                 <a href="{{ route('admin.super.users.index') }}"
@@ -91,14 +91,14 @@
         <!-- Sidebar -->
         <div>
             <!-- Profile Avatar -->
-            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-md p-6 text-center text-white">
+            <div class="bg-gradient-to-br from-green-600 to-green-600 rounded-xl shadow-md p-6 text-center text-white">
                 <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span class="text-4xl font-bold">{{ substr($user->name, 0, 1) }}</span>
                 </div>
                 <h3 class="text-2xl font-bold">{{ $user->name }}</h3>
-                <p class="text-purple-100 mt-2">{{ $user->email }}</p>
+                <p class="text-green-100 mt-2">{{ $user->email }}</p>
                 <div class="mt-4 pt-4 border-t border-white/20">
-                    <p class="text-sm text-purple-100">Role</p>
+                    <p class="text-sm text-green-100">Role</p>
                     <p class="text-lg font-semibold">{{ ucfirst(str_replace('_', ' ', $user->role)) }}</p>
                 </div>
             </div>
@@ -108,7 +108,7 @@
                 <h2 class="text-lg font-bold text-gray-900 mb-4">{{ __('app.quick_actions') }}</h2>
                 <div class="space-y-2">
                     <a href="{{ route('admin.super.users.edit', $user) }}"
-                        class="w-full block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-center font-medium text-sm">
+                        class="w-full block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center font-medium text-sm">
                         {{ __('app.edit_user') }}
                     </a>
                     @if ($user->business)
@@ -119,6 +119,28 @@
                     @endif
                 </div>
             </div>
+
+            <!-- License Plan Badge -->
+            @if($user->business?->license)
+            @php
+                $uPlan  = $user->business->license->plan ?? 'free';
+                $uBadge = match($uPlan) { 'pro'=>'from-blue-500 to-blue-600','plus'=>'from-purple-500 to-purple-700',default=>'from-gray-400 to-gray-500' };
+                $uEmoji = match($uPlan) { 'pro'=>'💼','plus'=>'🚀',default=>'🆓' };
+                $uCycle = $user->business->license->billing_cycle ?? 'monthly';
+            @endphp
+            <div class="bg-gradient-to-br {{ $uBadge }} rounded-xl shadow-md p-6 mt-6 text-white">
+                <p class="text-sm font-medium text-white/80 mb-1">{{ __('app.plan') }}</p>
+                <p class="text-2xl font-bold">{{ $uEmoji }} {{ ucfirst($uPlan) }}</p>
+                <p class="text-sm text-white/80 mt-1 capitalize">{{ $uCycle }}</p>
+                @if($user->business->license->expires_at)
+                    <p class="text-xs text-white/70 mt-3 pt-3 border-t border-white/20">
+                        Expires: {{ $user->business->license->expires_at->format('M d, Y') }}
+                    </p>
+                @else
+                    <p class="text-xs text-white/70 mt-3 pt-3 border-t border-white/20">No expiry</p>
+                @endif
+            </div>
+            @endif
 
             <!-- Status Badge -->
             <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mt-6">

@@ -8,8 +8,30 @@
 <?php $attributes = $attributes->except(\App\View\Components\GuestLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
+    <?php
+        $selectedPlan  = old('plan',          request('plan',  'free'));
+        $selectedCycle = old('billing_cycle',  request('cycle', 'monthly'));
+        $planLabels    = ['pro' => 'Pro', 'plus' => 'Plus'];
+        $planColors    = ['pro' => 'bg-blue-600', 'plus' => 'bg-green-600'];
+        $planPrices    = ['pro' => ['monthly' => '5 OMR/mo', 'yearly' => '57 OMR/yr'],
+                          'plus' => ['monthly' => '9 OMR/mo', 'yearly' => '102.60 OMR/yr']];
+        $isPaid        = in_array($selectedPlan, ['pro', 'plus']);
+    ?>
+
+    
+    <?php if($isPaid): ?>
+        <div class="mb-6 p-4 rounded-xl <?php echo e($planColors[$selectedPlan]); ?> text-white text-center">
+            <p class="font-bold text-lg"><?php echo e($planLabels[$selectedPlan]); ?> Plan — <?php echo e($planPrices[$selectedPlan][$selectedCycle]); ?></p>
+            <p class="text-sm opacity-90 mt-1">Create your account, then complete payment to activate.</p>
+        </div>
+    <?php endif; ?>
+
     <form method="POST" action="<?php echo e(route('register')); ?>">
         <?php echo csrf_field(); ?>
+
+        
+        <input type="hidden" name="plan"          value="<?php echo e($selectedPlan); ?>">
+        <input type="hidden" name="billing_cycle" value="<?php echo e($selectedCycle); ?>">
 
         <!-- Name -->
         <div>
@@ -272,6 +294,16 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
+            <?php $__errorArgs = ['plan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="text-sm text-red-600 me-auto"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="<?php echo e(route('login')); ?>">
                 <?php echo e(__('Already registered?')); ?>
 
@@ -287,7 +319,7 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['class' => 'ms-4']); ?>
-                <?php echo e(__('Register')); ?>
+                <?php echo e($isPaid ? __('Register & Proceed to Payment') : __('Register')); ?>
 
              <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

@@ -16,8 +16,10 @@ return new class extends Migration
             $table->foreignId('business_id')->constrained()->cascadeOnDelete();
 
             $table->unsignedTinyInteger('day_of_week'); // 0=Sun ... 6=Sat
-            $table->time('start_time')->nullable();
-            $table->time('end_time')->nullable();
+            $table->time('first_shift_start')->nullable();
+            $table->time('first_shift_end')->nullable();
+            $table->time('second_shift_start')->nullable();
+            $table->time('second_shift_end')->nullable();
             $table->boolean('is_closed')->default(false);
 
             $table->timestamps();

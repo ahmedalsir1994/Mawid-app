@@ -1,4 +1,4 @@
-<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
+﻿<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal91fdd17964e43374ae18c674f95cdaa3 = $attributes; } ?>
 <?php $component = App\View\Components\AdminLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('admin-layout'); ?>
@@ -21,8 +21,8 @@
             <div>
                 <label for="name"
                     class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.business_name')); ?></label>
-                <input type="text" id="name" name="name" value="<?php echo e(old('name')); ?>" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="text" id="name" name="name" value="<?php echo e(old('name')); ?>" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., Acme Beauty Salon">
                 <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -39,8 +39,8 @@ unset($__errorArgs, $__bag); ?>
             <!-- Slug -->
             <div>
                 <label for="slug" class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.url_slug')); ?></label>
-                <input type="text" id="slug" name="slug" value="<?php echo e(old('slug')); ?>" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="text" id="slug" name="slug" value="<?php echo e(old('slug')); ?>" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., acme-beauty-salon">
                 <p class="text-gray-500 text-xs mt-1"><?php echo e(__('app.url_slug_hint')); ?></p>
                 <?php $__errorArgs = ['slug'];
@@ -59,8 +59,8 @@ unset($__errorArgs, $__bag); ?>
             <div>
                 <label for="address"
                     class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.address')); ?></label>
-                <input type="text" id="address" name="address" value="<?php echo e(old('address')); ?>" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="text" id="address" name="address" value="<?php echo e(old('address')); ?>" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., 123 Main Street">
                 <?php $__errorArgs = ['address'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -78,8 +78,8 @@ unset($__errorArgs, $__bag); ?>
             <div>
                 <label for="country"
                     class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.country')); ?></label>
-                <select id="country" name="country" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select lang="en" dir="ltr" id="country" name="country" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value=""><?php echo e(__('app.select_country')); ?></option>
                     <option value="OM" <?php echo e(old('country') == 'OM' ? 'selected' : ''); ?>><?php echo e(__('app.oman_om')); ?></option>
                     <option value="SA" <?php echo e(old('country') == 'SA' ? 'selected' : ''); ?>><?php echo e(__('app.saudi_arabia_sa')); ?>
@@ -101,8 +101,8 @@ unset($__errorArgs, $__bag); ?>
             <!-- Phone -->
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.phone')); ?></label>
-                <input type="tel" id="phone" name="phone" value="<?php echo e(old('phone')); ?>" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                <input lang="en" dir="ltr" type="tel" id="phone" name="phone" value="<?php echo e(old('phone')); ?>" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., +1 555-1234">
                 <?php $__errorArgs = ['phone'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -120,8 +120,8 @@ unset($__errorArgs, $__bag); ?>
             <div>
                 <label for="currency"
                     class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.currency')); ?></label>
-                <select id="currency" name="currency" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select lang="en" dir="ltr" id="currency" name="currency" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value=""><?php echo e(__('app.select_currency')); ?></option>
                     <option value="OMR" <?php echo e(old('currency') == 'OMR' ? 'selected' : ''); ?>><?php echo e(__('app.omr_oman_rial')); ?>
 
@@ -146,8 +146,8 @@ unset($__errorArgs, $__bag); ?>
             <div>
                 <label for="timezone"
                     class="block text-sm font-medium text-gray-700 mb-2"><?php echo e(__('app.timezone')); ?></label>
-                <select id="timezone" name="timezone" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select lang="en" dir="ltr" id="timezone" name="timezone" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value=""><?php echo e(__('app.select_timezone')); ?></option>
                     <option value="Asia/Muscat" <?php echo e(old('timezone') == 'Asia/Muscat' ? 'selected' : ''); ?>>
                         <?php echo e(__('app.asia_muscat')); ?>
@@ -169,7 +169,7 @@ unset($__errorArgs, $__bag); ?>
             <!-- Actions -->
             <div class="flex items-center gap-4 pt-6 border-t border-gray-200">
                 <button type="submit"
-                    class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+                    class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:shadow-lg transition font-medium">
                     <?php echo e(__('app.create_business')); ?>
 
                 </button>

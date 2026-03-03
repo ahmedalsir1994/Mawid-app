@@ -6,7 +6,7 @@
                 <p class="text-gray-600 mt-2">{{ __('app.manage_staff_members') }}</p>
             </div>
             <a href="{{ route('admin.staff.create') }}"
-                class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-3 rounded-lg transition">
+                class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition">
                 ➕ {{ __('app.add_staff_member') }}
             </a>
         </div>
@@ -34,6 +34,9 @@
                                 {{ __('app.status') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{ __('app.branch') }}
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {{ __('app.created') }}
                             </th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -46,9 +49,9 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                                             <span
-                                                class="text-purple-600 font-bold">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
+                                                class="text-green-600 font-bold">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900">{{ $member->name }}</div>
@@ -71,12 +74,21 @@
                                         </span>
                                     @endif
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    @if($member->branch)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            📍 {{ $member->branch->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $member->created_at->format('M d, Y') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('admin.staff.show', $member) }}"
-                                        class="text-purple-600 hover:text-purple-900 mr-3">{{ __('app.view') }}</a>
+                                        class="text-green-600 hover:text-green-900 mr-3">{{ __('app.view') }}</a>
                                     <a href="{{ route('admin.staff.edit', $member) }}"
                                         class="text-blue-600 hover:text-blue-900 mr-3">{{ __('app.edit') }}</a>
                                     <form action="{{ route('admin.staff.destroy', $member) }}" method="POST" class="inline"

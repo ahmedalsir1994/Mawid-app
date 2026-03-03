@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <div class="mb-8">
         <div class="flex items-center justify-between">
             <div>
@@ -22,8 +22,8 @@
                 <div>
                     <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.full_name') }}
                         *</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <input lang="en" dir="ltr" type="text" name="name" id="name" value="{{ old('name', $user->name) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                     @error('name')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -34,7 +34,7 @@
                 <div>
                     <label for="email"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.email') }}</label>
-                    <input type="email" name="email" id="email" value="{{ $user->email }}"
+                    <input lang="en" dir="ltr" type="email" name="email" id="email" value="{{ $user->email }}"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600" readonly>
                     <p class="text-gray-600 text-sm mt-1">{{ __('app.email_cannot_change') }}</p>
                 </div>
@@ -43,8 +43,8 @@
                 <div>
                     <label for="role" class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.role') }}
                         *</label>
-                    <select name="role" id="role"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <select lang="en" dir="ltr" name="role" id="role"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required
                         onchange="document.getElementById('business_id').disabled = this.value === 'super_admin'">
                         <option value="">{{ __('app.select_role') }}</option>
@@ -67,8 +67,8 @@
                 <div>
                     <label for="business_id"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.business') }}</label>
-                    <select name="business_id" id="business_id"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    <select lang="en" dir="ltr" name="business_id" id="business_id"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         @disabled(old('role', $user->role) === 'super_admin')>
                         <option value="">{{ __('app.no_business') }}</option>
                         @foreach ($businesses as $business)
@@ -87,8 +87,8 @@
                 <div>
                     <label for="is_active"
                         class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.status') }}</label>
-                    <select name="is_active" id="is_active"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                    <select lang="en" dir="ltr" name="is_active" id="is_active"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent">
                         <option value="0" @selected(!$user->is_active)>{{ __('app.inactive') }}</option>
                         <option value="1" @selected($user->is_active)>{{ __('app.active') }}</option>
                     </select>
@@ -108,8 +108,8 @@
                     <div>
                         <label for="password"
                             class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.new_password') }}</label>
-                        <input type="password" name="password" id="password"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        <input lang="en" dir="ltr" type="password" name="password" id="password"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                             placeholder="{{ __('app.enter_new_password_optional') }}">
                         @error('password')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -120,8 +120,8 @@
                     <div>
                         <label for="password_confirmation"
                             class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.confirm_password') }}</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        <input lang="en" dir="ltr" type="password" name="password_confirmation" id="password_confirmation"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                             placeholder="{{ __('app.confirm_new_password_optional') }}">
                     </div>
                 </div>
@@ -172,7 +172,7 @@
                         {{ __('app.cancel') }}
                     </a>
                     <button type="submit"
-                        class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+                        class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-600 text-white rounded-lg hover:shadow-lg transition font-medium">
                         {{ __('app.update_user') }}
                     </button>
                 </div>

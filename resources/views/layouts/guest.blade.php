@@ -5,8 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100'/><text x='50' y='65' font-size='70' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>M</text></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('/images/Mawidly-fav.png') }}">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -32,29 +31,14 @@
 </head>
 
 <body class="font-sans text-gray-900 antialiased">
-    <!-- Language Switcher -->
-    <div class="fixed top-4 {{ app()->getLocale() === 'ar' ? 'left-4' : 'right-4' }} z-50">
-        <div class="flex gap-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2">
-            <a href="{{ route('lang.switch', 'en') }}"
-                class="px-3 py-1.5 text-sm font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                EN
-            </a>
-            <a href="{{ route('lang.switch', 'ar') }}"
-                class="px-3 py-1.5 text-sm font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                AR
-            </a>
-        </div>
-    </div>
+   
     
     <div
         class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-gray-50 via-white to-gray-100">
         <!-- Logo Section -->
         <div class="w-full sm:max-w-md px-6 py-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-center mb-6">
-                <a href="/"
-                    class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    Mawid App
-                </a>
+                <img src="/images/Mawid.png" alt="Mawid App" class="h-10 w-auto">
             </div>
 
             {{ $slot }}
@@ -62,10 +46,10 @@
 
         <!-- Decorative Elements -->
         <div
-            class="absolute top-0 right-0 -z-10 w-96 h-96 bg-gradient-to-bl from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+            class="absolute top-0 right-0 -z-10 w-96 h-96 bg-gradient-to-bl from-green-200 to-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
         </div>
         <div
-            class="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-gradient-to-tr from-pink-200 to-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+            class="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-gradient-to-tr from-green-200 to-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
         </div>
     </div>
 
@@ -94,6 +78,37 @@
             animation-delay: 2s;
         }
     </style>
+
+    {{-- Block Arabic input across all text fields --}}
+    <script>
+    (function () {
+        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g;
+
+        function stripArabic(el) {
+            const before = el.value;
+            const after  = before.replace(ARABIC, '');
+            if (before !== after) {
+                const pos = el.selectionStart - (before.length - after.length);
+                el.value = after;
+                el.setSelectionRange(pos, pos);
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key && ARABIC.test(e.key)) {
+                e.preventDefault();
+            }
+            ARABIC.lastIndex = 0;
+        }, true);
+
+        document.addEventListener('input', function (e) {
+            const el = e.target;
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                stripArabic(el);
+            }
+        }, true);
+    })();
+    </script>
 </body>
 
 </html>

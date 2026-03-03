@@ -137,121 +137,10 @@
 
 <body class="antialiased">
 
-
+@include('layouts.navbar')
+@yield('navbar')
     
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white bg-opacity-95  z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <img src="/images/Mawid.png" alt="Mawid Logo" class="h-12 w-full">
-                </div>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-green-600 transition">Features</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-green-600 transition">How It Works</a>
-                    <a href="#testimonials" class="text-gray-600 hover:text-green-600 transition">Testimonials</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-green-600 transition">Pricing</a>
-                </div>
-
-                <!-- Desktop Auth Buttons -->
-                <div class="hidden md:flex space-x-4 items-center">
-                    <!-- Language Switcher -->
-                    <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
-                        <a href="{{ route('lang.switch', 'en') }}"
-                            class="px-3 py-1 text-sm font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200' }}">
-                            EN
-                        </a>
-                        <a href="{{ route('lang.switch', 'ar') }}"
-                            class="px-3 py-1 text-sm font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200' }}">
-                            AR
-                        </a>
-                    </div>
-                    
-                    @auth
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="px-4 py-2 text-green-600 font-semibold hover:bg-green-50 rounded-lg transition">
-                            Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 text-gray-700 hover:text-green-600 transition">
-                            Sign In
-                        </a>
-                        <a href="{{ route('register') }}"
-                            class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg hover:shadow-lg transition">
-                            Get Started
-                        </a>
-                    @endauth
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" type="button"
-                        class="text-gray-600 hover:text-green-600 focus:outline-none focus:text-green-600">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path id="menu-open-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                            <path id="menu-close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
-            <div class="px-4 pt-2 pb-4 space-y-2">
-                <!-- Language Switcher for Mobile -->
-                <div class="flex gap-2 justify-center py-2">
-                    <a href="{{ route('lang.switch', 'en') }}"
-                        class="px-4 py-2 text-sm font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700' }}">
-                        EN
-                    </a>
-                    <a href="{{ route('lang.switch', 'ar') }}"
-                        class="px-4 py-2 text-sm font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700' }}">
-                        AR
-                    </a>
-                </div>
-                
-                <a href="#features"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
-                    Features
-                </a>
-                <a href="#how-it-works"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
-                    How It Works
-                </a>
-                <a href="#testimonials"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
-                    Testimonials
-                </a>
-                <a href="#pricing"
-                    class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600 transition">
-                    Pricing
-                </a>
-                <div class="pt-3 space-y-2 border-t border-gray-200">
-                    @auth
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="block px-3 py-2 rounded-lg text-green-600 font-semibold bg-green-50">
-                            Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                            Sign In
-                        </a>
-                        <a href="{{ route('register') }}"
-                            class="block px-3 py-2 bg-gradient-to-r from-green-600 to-green-800 text-white text-center font-semibold rounded-lg">
-                            Get Started
-                        </a>
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </nav>
 
     <script>
         // Mobile menu toggle
@@ -293,32 +182,31 @@
                 <div>
                     <div
                         class="inline-block mb-4 px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full text-sm font-semibold">
-                        🎉 Get 14 days free trial
+                        {{ __('landing.hero_badge') }}
                     </div>
                     <h1 class="text-5xl md:text-6xl lg:text-7xl  mb-6 leading-tight">
-                        Booking Made
+                        {{ __('landing.hero_title_1') }}
                         <span class="block bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-600">
-                            Simple & Smart
+                            {{ __('landing.hero_title_2') }}
                         </span>
                     </h1>
                     <p class="text-md md:text-xl  mb-8 text-black-600 leading-relaxed">
-                        Transform your business with powerful appointment scheduling. Accept bookings 24/7, reduce
-                        no-shows, and delight your customers.
+                        {{ __('landing.hero_subtitle') }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 mb-8">
                         @auth
                             <a href="{{ route('admin.dashboard') }}"
                                 class="cta-button px-8 py-4 text-white font-bold rounded-xl text-center text-lg relative z-10">
-                                Go to Dashboard →
+                                {{ __('landing.hero_cta_dashboard') }}
                             </a>
                         @else
                             <a href="{{ route('register') }}"
                                 class="cta-button px-8 py-4 text-white font-bold rounded-xl text-center text-lg relative z-10">
-                                Start Free Trial →
+                                {{ __('landing.hero_cta_trial') }}
                             </a>
                             <a href="{{ route('login') }}"
                                 class="px-8 py-4 border-2 border-green-600 text-green-600 font-bold rounded-xl hover:bg-white hover:text-green-300 transition text-center text-lg backdrop-blur-sm bg-white bg-opacity-10">
-                                Sign In
+                                {{ __('landing.hero_cta_signin') }}
                             </a>
                         @endauth
                     </div>
@@ -329,7 +217,7 @@
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                     clip-rule="evenodd" />
                             </svg>
-                            <span>No credit card required</span>
+                            <span>{{ __('landing.hero_no_card') }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
@@ -337,7 +225,7 @@
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                     clip-rule="evenodd" />
                             </svg>
-                            <span>Setup in 5 minutes</span>
+                            <span>{{ __('landing.hero_setup') }}</span>
                         </div>
                     </div>
                 </div>
@@ -346,7 +234,7 @@
                         <!-- Calendar mockup -->
                         <div class="bg-white rounded-xl p-6 shadow-2xl">
                             <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-bold text-gray-800 text-lg">Today's Schedule</h3>
+                                <h3 class="font-bold text-gray-800 text-lg">{{ __('landing.hero_schedule_title') }}</h3>
                                 <div class="flex gap-2">
                                     <div class="w-3 h-3 bg-red-400 rounded-full"></div>
                                     <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
@@ -396,19 +284,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div>
                     <div class="text-5xl font-bold stat-counter mb-2">50+</div>
-                    <div class="text-gray-600 font-medium">Active Businesses</div>
+                    <div class="text-gray-600 font-medium">{{ __('landing.stats_businesses') }}</div>
                 </div>
                 <div>
                     <div class="text-5xl font-bold stat-counter mb-2">200K+</div>
-                    <div class="text-gray-600 font-medium">Monthly Bookings</div>
+                    <div class="text-gray-600 font-medium">{{ __('landing.stats_bookings') }}</div>
                 </div>
                 <div>
                     <div class="text-5xl font-bold stat-counter mb-2">98%</div>
-                    <div class="text-gray-600 font-medium">Customer Satisfaction</div>
+                    <div class="text-gray-600 font-medium">{{ __('landing.stats_satisfaction') }}</div>
                 </div>
                 <div>
                     <div class="text-5xl font-bold stat-counter mb-2">24/7</div>
-                    <div class="text-gray-600 font-medium">Booking Availability</div>
+                    <div class="text-gray-600 font-medium">{{ __('landing.stats_availability') }}</div>
                 </div>
             </div>
         </div>
@@ -420,11 +308,11 @@
             <div class="text-center mb-16">
                 <div
                     class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
-                    POWERFUL FEATURES
+                    {{ __('landing.features_badge') }}
                 </div>
-                <h2 class="text-4xl md:text-5xl font-semibold mb-4">Everything You Need to Succeed</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">{{ __('landing.features_title') }}</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Built for service businesses who want to streamline operations and grow faster
+                    {{ __('landing.features_subtitle') }}
                 </p>
             </div>
 
@@ -438,9 +326,8 @@
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Online Booking 24/7</h3>
-                    <p class="text-gray-600 leading-relaxed">Let customers book appointments anytime, anywhere with
-                        real-time availability and instant confirmations.</p>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">{{ __('landing.feature_1_title') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('landing.feature_1_desc') }}</p>
                 </div>
 
                 <!-- Feature 2 -->
@@ -452,9 +339,8 @@
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Team Management</h3>
-                    <p class="text-gray-600 leading-relaxed">Coordinate multiple staff members with individual
-                        schedules, services, and performance tracking.</p>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">{{ __('landing.feature_2_title') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('landing.feature_2_desc') }}</p>
                 </div>
 
                 <!-- Feature 3 -->
@@ -466,9 +352,8 @@
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Smart Reminders</h3>
-                    <p class="text-gray-600 leading-relaxed">Automated email and SMS notifications reduce no-shows and
-                        keep everyone informed.</p>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">{{ __('landing.feature_3_title') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('landing.feature_3_desc') }}</p>
                 </div>
 
                 <!-- Feature 4 -->
@@ -480,9 +365,8 @@
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Analytics Dashboard</h3>
-                    <p class="text-gray-600 leading-relaxed">Track revenue, popular services, peak times, and customer
-                        trends with beautiful reports.</p>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">{{ __('landing.feature_4_title') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('landing.feature_4_desc') }}</p>
                 </div>
 
                 <!-- Feature 5 -->
@@ -494,9 +378,8 @@
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Flexible Scheduling</h3>
-                    <p class="text-gray-600 leading-relaxed">Set custom working hours, break times, and time-off periods
-                        with automatic conflict detection.</p>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">{{ __('landing.feature_5_title') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('landing.feature_5_desc') }}</p>
                 </div>
 
                 <!-- Feature 6 -->
@@ -508,9 +391,8 @@
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Customer Database</h3>
-                    <p class="text-gray-600 leading-relaxed">Store customer details, booking history, and preferences
-                        for personalized service.</p>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">{{ __('landing.feature_6_title') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('landing.feature_6_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -521,11 +403,11 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <div class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
-                    HOW IT WORKS
+                    {{ __('landing.hiw_badge') }}
                 </div>
-                <h2 class="text-4xl md:text-5xl font-semibold mb-4">Get Started in Minutes</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">{{ __('landing.hiw_title') }}</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Simple setup process to get your booking system up and running
+                    {{ __('landing.hiw_subtitle') }}
                 </p>
             </div>
 
@@ -540,9 +422,8 @@
                         1
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                        <h3 class="text-xl font-bold mb-3 text-gray-800">Sign Up Free</h3>
-                        <p class="text-gray-600">Create your account in under 2 minutes. No credit card needed for the
-                            14-day trial.</p>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">{{ __('landing.hiw_step1_title') }}</h3>
+                        <p class="text-gray-600">{{ __('landing.hiw_step1_desc') }}</p>
                     </div>
                 </div>
 
@@ -552,9 +433,8 @@
                         2
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                        <h3 class="text-xl font-bold mb-3 text-gray-800">Configure Services</h3>
-                        <p class="text-gray-600">Add your services, set prices, duration, and assign staff members in
-                            minutes.</p>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">{{ __('landing.hiw_step2_title') }}</h3>
+                        <p class="text-gray-600">{{ __('landing.hiw_step2_desc') }}</p>
                     </div>
                 </div>
 
@@ -564,9 +444,8 @@
                         3
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                        <h3 class="text-xl font-bold mb-3 text-gray-800">Share Your Link</h3>
-                        <p class="text-gray-600">Get your unique booking page and share it with customers via website,
-                            email, or social media.</p>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">{{ __('landing.hiw_step3_title') }}</h3>
+                        <p class="text-gray-600">{{ __('landing.hiw_step3_desc') }}</p>
                     </div>
                 </div>
 
@@ -576,9 +455,8 @@
                         4
                     </div>
                     <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                        <h3 class="text-xl font-bold mb-3 text-gray-800">Accept Bookings</h3>
-                        <p class="text-gray-600">Watch bookings roll in 24/7 while you focus on delivering great
-                            service.</p>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">{{ __('landing.hiw_step4_title') }}</h3>
+                        <p class="text-gray-600">{{ __('landing.hiw_step4_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -591,11 +469,11 @@
             <div class="text-center mb-16">
                 <div
                     class="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
-                    TESTIMONIALS
+                    {{ __('landing.testimonials_badge') }}
                 </div>
-                <h2 class="text-4xl md:text-5xl font-semibold mb-4">Loved by Thousands</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">{{ __('landing.testimonials_title') }}</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    See what business owners are saying about our platform
+                    {{ __('landing.testimonials_subtitle') }}
                 </p>
             </div>
 
@@ -612,17 +490,15 @@
                             @endfor
                         </div>
                     </div>
-                    <p class="text-gray-700 mb-6 text-lg leading-relaxed italic">"This booking system has completely
-                        transformed how we operate. We've seen a 40% increase in bookings and our no-show rate dropped
-                        to nearly zero!"</p>
+                    <p class="text-gray-700 mb-6 text-lg leading-relaxed italic">{{ __('landing.t1_text') }}</p>
                     <div class="flex items-center">
                         <div
                             class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                             SJ
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800">Sarah Johnson</p>
-                            <p class="text-gray-600 text-sm">Beauty Salon Owner</p>
+                            <p class="font-bold text-gray-800">{{ __('landing.t1_name') }}</p>
+                            <p class="text-gray-600 text-sm">{{ __('landing.t1_role') }}</p>
                         </div>
                     </div>
                 </div>
@@ -639,17 +515,15 @@
                             @endfor
                         </div>
                     </div>
-                    <p class="text-gray-700 mb-6 text-lg leading-relaxed italic">"The customer management features are
-                        outstanding. I can track all my clients' histories and preferences effortlessly. Saves me hours
-                        every week!"</p>
+                    <p class="text-gray-700 mb-6 text-lg leading-relaxed italic">{{ __('landing.t2_text') }}</p>
                     <div class="flex items-center">
                         <div
                             class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                             MW
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800">Marcus Williams</p>
-                            <p class="text-gray-600 text-sm">Fitness Coach</p>
+                            <p class="font-bold text-gray-800">{{ __('landing.t2_name') }}</p>
+                            <p class="text-gray-600 text-sm">{{ __('landing.t2_role') }}</p>
                         </div>
                     </div>
                 </div>
@@ -666,17 +540,15 @@
                             @endfor
                         </div>
                     </div>
-                    <p class="text-gray-700 mb-6 text-lg leading-relaxed italic">"Perfect for our consulting firm. The
-                        automated reminders have significantly reduced no-shows, and the interface is incredibly
-                        intuitive."</p>
+                    <p class="text-gray-700 mb-6 text-lg leading-relaxed italic">{{ __('landing.t3_text') }}</p>
                     <div class="flex items-center">
                         <div
                             class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                             EC
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800">Emily Chen</p>
-                            <p class="text-gray-600 text-sm">Business Consultant</p>
+                            <p class="font-bold text-gray-800">{{ __('landing.t3_name') }}</p>
+                            <p class="text-gray-600 text-sm">{{ __('landing.t3_role') }}</p>
                         </div>
                     </div>
                 </div>
@@ -687,140 +559,194 @@
     <!-- Pricing Section -->
     <section id="pricing" class="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <div
-                    class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
-                    SIMPLE PRICING
+            <div class="text-center mb-12">
+                <div class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
+                    {{ __('landing.pricing_badge') }}
                 </div>
-                <h2 class="text-4xl md:text-5xl font-semibold mb-4">One Plan, Everything Included</h2>
+                <h2 class="text-4xl md:text-5xl font-semibold mb-4">{{ __('landing.pricing_title') }}</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    No hidden fees, no complicated tiers. Just powerful booking tools for your business.
+                    {{ __('landing.pricing_subtitle') }}
                 </p>
             </div>
 
-            <div class="max-w-md mx-auto">
-                <!-- Starter Plan -->
-                <div class="relative">
-                    <!-- Decorative gradient border effect -->
-                    <div
-                        class="absolute -inset-1 bg-gradient-to-r from-green-600 to-green-700 rounded-2xl blur opacity-25">
-                    </div>
-
-                    <div
-                        class="relative bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 hover:shadow-3xl transition-shadow duration-300">
-                        <div class="text-center mb-5">
-                            <div
-                                class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-xl mb-3">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-2xl font-bold mb-1 text-gray-900">Starter Plan</h3>
-                            <p class="text-gray-600 mb-4">Perfect for all businesses</p>
-                            <div class="mb-3">
-                                <span
-                                    class="text-5xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">9</span>
-                                <span
-                                    class="text-xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">OMR</span>
-                                <span class="text-xl text-gray-600">/month</span>
-                            </div>
-                            <p class="text-xs text-gray-500">Billed monthly, cancel anytime</p>
-                        </div>
-
-                        <div class="space-y-2.5 mb-5">
-                            <div class="flex items-center">
-                                <div
-                                    class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p class="ml-3 text-gray-800 font-semibold text-sm">Unlimited Services</p>
-                            </div>
-
-                            <div class="flex items-center">
-                                <div
-                                    class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p class="ml-3 text-gray-800 font-semibold text-sm">24/7 Online Booking</p>
-                            </div>
-
-                            <div class="flex items-center">
-                                <div
-                                    class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p class="ml-3 text-gray-800 font-semibold text-sm">WhatsApp Reminders</p>
-                            </div>
-
-                            <div class="flex items-center">
-                                <div
-                                    class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p class="ml-3 text-gray-800 font-semibold text-sm">Analytics Dashboard</p>
-                            </div>
-
-                            <div class="flex items-center">
-                                <div
-                                    class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p class="ml-3 text-gray-800 font-semibold text-sm">Customer Database</p>
-                            </div>
-
-                            <div class="flex items-center">
-                                <div
-                                    class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p class="ml-3 text-gray-800 font-semibold text-sm">Priority Support</p>
-                            </div>
-                        </div>
-
-                        @auth
-                            <a href="{{ route('admin.dashboard') }}"
-                                class="block w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white text-center font-bold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                                Go to Dashboard →
-                            </a>
-                        @else
-                            <a href="{{ route('register') }}"
-                                class="block w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white text-center font-bold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                                Start Your 14-Day Free Trial →
-                            </a>
-                        @endauth
-
-                        <p class="text-center text-xs text-gray-500 mt-4">
-                            No credit card required • Cancel anytime
-                        </p>
-                    </div>
+            <!-- Monthly / Yearly Toggle -->
+            <div class="flex flex-col items-center mb-10 gap-3">
+                <div class="inline-flex items-center bg-gray-100 rounded-xl p-1 gap-1">
+                    <button id="lp-btn-monthly" onclick="lpSetCycle('monthly')"
+                        class="px-6 py-2 rounded-lg font-medium text-sm transition bg-white shadow text-gray-900">
+                        {{ __('landing.billing_monthly') }}
+                    </button>
+                    <button id="lp-btn-yearly" onclick="lpSetCycle('yearly')"
+                        class="px-6 py-2 rounded-lg font-medium text-sm transition text-gray-500">
+                        {{ __('landing.billing_yearly') }}
+                        <span class="ml-1 text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                            {{ __('landing.billing_save') }}
+                        </span>
+                    </button>
                 </div>
+                {{-- Best-value caption, shown only in yearly mode --}}
+                <p class="lp-yearly-caption text-sm font-medium text-green-700 bg-green-50 border border-green-200 px-4 py-1.5 rounded-full" style="display:none">
+                    🎉 Best value – save 5% with annual billing
+                </p>
             </div>
+
+            <!-- Plan Cards -->
+            <div class="grid md:grid-cols-3 gap-8 items-start">
+
+                <!-- Free Plan -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition">
+                    <div class="text-3xl mb-3">🆓</div>
+                    <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_free_name') }}</h3>
+                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_free_tagline') }}</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-800">{{ __('landing.plan_free_price') }}</span>
+                        <span class="text-gray-500 text-sm ml-1">{{ __('landing.plan_free_period') }}</span>
+                    </div>
+                    <ul class="space-y-2 mb-8">
+                        @foreach(['plan_free_f1','plan_free_f2','plan_free_f3','plan_free_f4'] as $fkey)
+                            <li class="flex items-center gap-2 text-sm text-gray-700">
+                                <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs flex-shrink-0">✓</span>
+                                {{ __("landing.{$fkey}") }}
+                            </li>
+                        @endforeach
+                    </ul>
+                    @auth
+                        <a href="{{ route('admin.dashboard') }}"
+                            class="block w-full py-3 rounded-xl border-2 border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition">
+                            {{ __('landing.cta_btn_dashboard') }}
+                        </a>
+                    @else
+                        <a href="{{ route('register') }}"
+                            class="block w-full py-3 rounded-xl border-2 border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition">
+                            {{ __('landing.plan_free_cta') }}
+                        </a>
+                    @endauth
+                </div>
+
+                <!-- Pro Plan (highlighted) -->
+                <div class="relative bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-xl">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full">
+                        {{ __('landing.plan_popular') }}
+                    </div>
+                    <div class="text-3xl mb-3">💼</div>
+                    <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_pro_name') }}</h3>
+                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_pro_tagline') }}</p>
+                    <div class="mb-6">
+                        {{-- Monthly --}}
+                        <div class="lp-cycle-monthly">
+                            <span class="text-4xl font-bold text-gray-900">5</span>
+                            <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
+                            <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
+                        </div>
+                        {{-- Yearly --}}
+                        <div class="lp-cycle-yearly" style="display:none">
+                            <div class="flex items-end gap-2">
+                                <span class="text-4xl font-bold text-gray-900">4.75</span>
+                                <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-sm text-gray-500">57 OMR {{ __('landing.per_year') }}</span>
+                                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Save 5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 mb-8">
+                        @foreach(['plan_pro_f1','plan_pro_f2','plan_pro_f3','plan_pro_f4','plan_pro_f5'] as $fkey)
+                            <li class="flex items-center gap-2 text-sm text-gray-700">
+                                <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs flex-shrink-0">✓</span>
+                                {{ __("landing.{$fkey}") }}
+                            </li>
+                        @endforeach
+                    </ul>
+                    @auth
+                        <a href="{{ route('admin.upgrade.index') }}?plan=pro"
+                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center font-semibold hover:shadow-lg transition">
+                            {{ __('landing.plan_pro_cta') }}
+                        </a>
+                    @else
+                        <a id="lp-cta-pro"
+                           href="{{ route('register') }}?plan=pro&cycle=monthly"
+                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center font-semibold hover:shadow-lg transition">
+                            {{ __('landing.plan_pro_cta') }}
+                        </a>
+                    @endauth
+                </div>
+
+                <!-- Plus Plan -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition">
+                    <div class="text-3xl mb-3">🚀</div>
+                    <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_plus_name') }}</h3>
+                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_plus_tagline') }}</p>
+                    <div class="mb-6">
+                        {{-- Monthly --}}
+                        <div class="lp-cycle-monthly">
+                            <span class="text-4xl font-bold text-gray-900">9</span>
+                            <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
+                            <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
+                        </div>
+                        {{-- Yearly --}}
+                        <div class="lp-cycle-yearly" style="display:none">
+                            <div class="flex items-end gap-2">
+                                <span class="text-4xl font-bold text-gray-900">8.50</span>
+                                <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-sm text-gray-500">102 OMR {{ __('landing.per_year') }}</span>
+                                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Save 5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 mb-8">
+                        @foreach(['plan_plus_f1','plan_plus_f2','plan_plus_f3','plan_plus_f4','plan_plus_f5'] as $fkey)
+                            <li class="flex items-center gap-2 text-sm text-gray-700">
+                                <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs flex-shrink-0">✓</span>
+                                {{ __("landing.{$fkey}") }}
+                            </li>
+                        @endforeach
+                    </ul>
+                    @auth
+                        <a href="{{ route('admin.upgrade.index') }}?plan=plus"
+                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center font-semibold hover:shadow-lg transition">
+                            {{ __('landing.plan_plus_cta') }}
+                        </a>
+                    @else
+                        <a id="lp-cta-plus"
+                           href="{{ route('register') }}?plan=plus&cycle=monthly"
+                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center font-semibold hover:shadow-lg transition">
+                            {{ __('landing.plan_plus_cta') }}
+                        </a>
+                    @endauth
+                </div>
+
+            </div>
+
+            <p class="text-center text-sm text-gray-500 mt-8">
+                {{ __('landing.plan_no_card') }}
+            </p>
         </div>
+
+        <script>
+        function lpSetCycle(cycle) {
+            const isYearly = cycle === 'yearly';
+            const mBtn = document.getElementById('lp-btn-monthly');
+            const yBtn = document.getElementById('lp-btn-yearly');
+            mBtn.className = isYearly
+                ? 'px-6 py-2 rounded-lg font-medium text-sm transition text-gray-500'
+                : 'px-6 py-2 rounded-lg font-medium text-sm transition bg-white shadow text-gray-900';
+            yBtn.className = isYearly
+                ? 'px-6 py-2 rounded-lg font-medium text-sm transition bg-white shadow text-gray-900'
+                : 'px-6 py-2 rounded-lg font-medium text-sm transition text-gray-500';
+            document.querySelectorAll('.lp-cycle-monthly').forEach(el => el.style.display = isYearly ? 'none' : 'block');
+            document.querySelectorAll('.lp-cycle-yearly').forEach(el => el.style.display = isYearly ? 'block' : 'none');
+            document.querySelectorAll('.lp-yearly-caption').forEach(el => el.style.display = isYearly ? 'block' : 'none');
+            // Update plan CTA register links so cycle is carried over
+            const selectedCycle = isYearly ? 'yearly' : 'monthly';
+            const proBtn = document.getElementById('lp-cta-pro');
+            const plusBtn = document.getElementById('lp-cta-plus');
+            if (proBtn)  proBtn.href  = proBtn.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
+            if (plusBtn) plusBtn.href = plusBtn.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
+        }
+        </script>
     </section>
 
     <!-- CTA Section -->
@@ -835,22 +761,21 @@
 
         <div class="max-w-4xl mx-auto text-center relative z-10">
             <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight">
-                Ready to Transform Your Business?
+                {{ __('landing.cta_title') }}
             </h2>
             <p class="text-xl md:text-2xl mb-10 text-black-100 leading-relaxed max-w-2xl mx-auto">
-                Join thousands of businesses already using {{ config('app.name') }} to streamline their booking process
-                and grow faster.
+                {{ __('landing.cta_subtitle', ['name' => config('app.name')]) }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
                 @auth
                     <a href="{{ route('admin.dashboard') }}"
                         class="cta-button px-10 py-5 text-black font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
-                        Go to Dashboard →
+                        {{ __('landing.cta_btn_dashboard') }}
                     </a>
                 @else
                     <a href="{{ route('register') }}"
                         class="cta-button px-10 py-5 text-white font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
-                        Start Your 14-Day Free Trial →
+                        {{ __('landing.cta_btn_trial') }}
                     </a>
                 @endauth
             </div>
@@ -861,7 +786,7 @@
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                             clip-rule="evenodd" />
                     </svg>
-                    <span>14-day free trial</span>
+                    <span>{{ __('landing.cta_trial') }}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
@@ -869,7 +794,7 @@
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                             clip-rule="evenodd" />
                     </svg>
-                    <span>No credit card needed</span>
+                    <span>{{ __('landing.cta_no_card') }}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
@@ -877,50 +802,15 @@
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                             clip-rule="evenodd" />
                     </svg>
-                    <span>Cancel anytime</span>
+                    <span>{{ __('landing.cta_cancel') }}</span>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white-900 text-black-300 py-12 px-4 sm:px-6 lg:px-8  border-gray-700 ">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <h4 class="font-bold text-black mb-4">{{ config('app.name') }}</h4>
-                    <p class="text-sm">Professional appointment scheduling for service-based businesses.</p>
-                </div>
-                <div>
-                    <h5 class="font-bold text-black mb-4">Product</h5>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#features" class="hover:text-black transition">Features</a></li>
-                        <li><a href="#pricing" class="hover:text-black transition">Pricing</a></li>
-                        <li><a href="#" class="hover:text-black  transition">Security</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-bold text-black mb-4">Company</h5>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-black transition">About</a></li>
-                        <li><a href="#" class="hover:text-black transition">Blog</a></li>
-                        <li><a href="#" class="hover:text-black transition">Careers</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-bold text-black mb-4">Legal</h5>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-black transition">Privacy</a></li>
-                        <li><a href="#" class="hover:text-black transition">Terms</a></li>
-                        <li><a href="#" class="hover:text-black transition">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 pt-8 text-center text-sm">
-                <p>&copy; 2026 {{ config('app.name') }}. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+   @include('layouts.footer')
+   @yield('footer')
 </body>
 
 </html>

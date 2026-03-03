@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -11,16 +11,24 @@
                     $bookingsIndexRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.index' : 'admin.bookings.index';
                 @endphp
                 <a href="{{ route($bookingsIndexRoute, ['filter' => 'today']) }}"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'today' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'today' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     {{ __('app.today') }} ({{ $today }})
                 </a>
                 <a href="{{ route($bookingsIndexRoute, ['filter' => 'upcoming']) }}"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'upcoming' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'upcoming' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     {{ __('app.upcoming') }}
                 </a>
                 <a href="{{ route($bookingsIndexRoute, ['filter' => 'all']) }}"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'all' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     {{ __('app.all') }}
+                </a>
+                @php $createRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.create' : 'admin.bookings.create'; @endphp
+                <a href="{{ route($createRoute) }}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    New Walk-In
                 </a>
             </div>
         </div>
@@ -60,6 +68,8 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 {{ __('app.service') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                {{ __('app.branch') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 {{ __('app.customer') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 {{ __('app.staff') }}</th>
@@ -80,10 +90,19 @@
                                 <td class="px-6 py-4 text-gray-600">{{ substr($b->start_time, 0, 5) }}</td>
                                 <td class="px-6 py-4 text-gray-600">{{ $b->service->name }}</td>
                                 <td class="px-6 py-4">
+                                    @if($b->branch)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            📍 {{ $b->branch->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-xs text-gray-400">—</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4">
                                     <div class="flex items-center space-x-2">
-                                        <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                                        <div class="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
                                             <span
-                                                class="text-purple-700 font-bold text-xs">{{ strtoupper(substr($b->customer_name, 0, 1)) }}</span>
+                                                class="text-green-700 font-bold text-xs">{{ strtoupper(substr($b->customer_name, 0, 1)) }}</span>
                                         </div>
                                         <span class="font-medium text-gray-800">{{ $b->customer_name }}</span>
                                     </div>
@@ -109,7 +128,7 @@
                                     @endphp
                                     <form method="POST" action="{{ route($statusRoute, $b) }}" class="inline">
                                         @csrf
-                                        <select name="status"
+                                        <select lang="en" dir="ltr" name="status"
                                             class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             onchange="this.form.submit()">
                                             @foreach (['pending' => __('app.pending'), 'confirmed' => __('app.confirmed'), 'cancelled' => __('app.cancelled'), 'completed' => __('app.completed')] as $st => $label)
@@ -152,7 +171,12 @@
                                         $message .= "Date: {$date}\n";
                                         $message .= "Time: {$time}\n";
 
-                                        if (auth()->user()->business->address) {
+                                        if ($b->branch) {
+                                            $message .= "Branch: " . $b->branch->name . "\n";
+                                            if ($b->branch->address) {
+                                                $message .= "Location: " . $b->branch->address . "\n";
+                                            }
+                                        } elseif (auth()->user()->business->address) {
                                             $message .= "Location: " . auth()->user()->business->address . "\n";
                                         }
 

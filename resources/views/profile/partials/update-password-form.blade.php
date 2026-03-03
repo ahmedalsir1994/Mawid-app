@@ -1,4 +1,4 @@
-<form method="post" action="{{ route('password.update') }}" class="space-y-6">
+﻿<form method="post" action="{{ route('password.update') }}" class="space-y-6">
     @csrf
     @method('put')
 
@@ -6,7 +6,7 @@
     <div>
         <label for="update_password_current_password"
             class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.current_password') }}</label>
-        <input type="password" id="update_password_current_password" name="current_password"
+        <input lang="en" dir="ltr" type="password" id="update_password_current_password" name="current_password"
             autocomplete="current-password"
             class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
             placeholder="{{ __('app.enter_current_password') }}" />
@@ -19,7 +19,7 @@
     <div>
         <label for="update_password_password"
             class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.new_password') }}</label>
-        <input type="password" id="update_password_password" name="password" autocomplete="new-password"
+        <input lang="en" dir="ltr" type="password" id="update_password_password" name="password" autocomplete="new-password"
             class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
             placeholder="{{ __('app.enter_new_password') }}" />
         @error('password', 'updatePassword')
@@ -32,9 +32,9 @@
     <div>
         <label for="update_password_password_confirmation"
             class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.confirm_password') }}</label>
-        <input type="password" id="update_password_password_confirmation" name="password_confirmation"
+        <input lang="en" dir="ltr" type="password" id="update_password_password_confirmation" name="password_confirmation"
             autocomplete="new-password"
-            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
             placeholder="{{ __('app.confirm_new_password') }}" />
         @error('password_confirmation', 'updatePassword')
             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -51,7 +51,7 @@
     <!-- Submit Button -->
     <div class="flex items-center justify-end">
         <button type="submit"
-            class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
+            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
             {{ __('app.update_password') }}
         </button>
     </div>

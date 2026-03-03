@@ -25,11 +25,11 @@
     <div class="fixed top-4 {{ app()->getLocale() === 'ar' ? 'left-4' : 'right-4' }} z-50">
         <div class="flex gap-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2">
             <a href="{{ route('lang.switch', 'en') }}"
-                class="px-3 py-1.5 text-sm font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                class="px-3 py-1.5 text-sm font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                 EN
             </a>
             <a href="{{ route('lang.switch', 'ar') }}"
-                class="px-3 py-1.5 text-sm font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                class="px-3 py-1.5 text-sm font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                 AR
             </a>
         </div>
@@ -61,7 +61,7 @@
                     <div class="flex items-start justify-between pb-4 border-b border-purple-200">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">{{ __('app.reference_code') }}</p>
-                            <p class="text-2xl font-bold text-purple-600 font-mono">{{ $booking->reference_code }}</p>
+                            <p class="text-2xl font-bold text-green-600 font-mono">{{ $booking->reference_code }}</p>
                         </div>
                         <button onclick="navigator.clipboard.writeText('{{ $booking->reference_code }}')"
                             class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 transition">
@@ -90,13 +90,30 @@
                             <p class="text-sm text-gray-600 mb-1">{{ __('app.time') }}</p>
                             <p class="font-semibold text-gray-900">{{ substr($booking->start_time, 0, 5) }}</p>
                         </div>
+                        @if($booking->staff)
+                        <div class="col-span-2 sm:col-span-1">
+                            <p class="text-sm text-gray-600 mb-1">{{ __('app.staff') ?? 'Staff' }}</p>
+                            <p class="font-semibold text-gray-900">{{ $booking->staff->name }}</p>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- Business Info -->
                     <div class="pt-4 border-t border-purple-200">
-                        <p class="text-sm text-gray-600 mb-1">{{ __('app.business') }}</p>
-                        <p class="font-semibold text-gray-900">{{ $business->name }}</p>
-                        <p class="text-sm text-gray-600">{{ $business->address }}</p>
+                        @if($booking->branch)
+                            <p class="text-sm text-gray-600 mb-1">📍 {{ __('app.branch') ?? 'Branch' }}</p>
+                            <p class="font-semibold text-gray-900">{{ $booking->branch->name }}</p>
+                            @if($booking->branch->address)
+                                <p class="text-sm text-gray-600">{{ $booking->branch->address }}</p>
+                            @endif
+                            @if($booking->branch->phone)
+                                <p class="text-xs text-gray-500 mt-1">📞 {{ $booking->branch->phone }}</p>
+                            @endif
+                        @else
+                            <p class="text-sm text-gray-600 mb-1">{{ __('app.business') }}</p>
+                            <p class="font-semibold text-gray-900">{{ $business->name }}</p>
+                            <p class="text-sm text-gray-600">{{ $business->address }}</p>
+                        @endif
                     </div>
                 </div>
 
@@ -118,7 +135,7 @@
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="{{ route('public.business', $business->slug) }}"
-                        class="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition text-center">
+                        class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition text-center">
                         <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -35,9 +35,9 @@
         <div class="lg:col-span-1">
             <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
                 <div class="text-center">
-                    <div class="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <span
-                            class="text-4xl font-bold text-purple-600">{{ strtoupper(substr($staff->name, 0, 1)) }}</span>
+                            class="text-4xl font-bold text-green-600">{{ strtoupper(substr($staff->name, 0, 1)) }}</span>
                     </div>
                     <h2 class="text-2xl font-bold text-gray-900">{{ $staff->name }}</h2>
                     <p class="text-gray-600 mt-1">{{ $staff->email }}</p>
@@ -114,6 +114,17 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">{{ __('app.role') }}</label>
                             <p class="text-base text-gray-900">{{ __('app.staff') }}</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">{{ __('app.branch') }}</label>
+                            @if($staff->branch)
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    📍 {{ $staff->branch->name }}
+                                </span>
+                            @else
+                                <p class="text-sm text-gray-400 italic">{{ __('app.no_branch_assigned') ?? 'No specific branch' }}</p>
+                            @endif
                         </div>
 
                         <div>

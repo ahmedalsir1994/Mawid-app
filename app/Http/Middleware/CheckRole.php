@@ -19,6 +19,11 @@ class CheckRole
             return redirect()->route('login');
         }
 
+        // Super admin can access any role-gated route
+        if (auth()->user()->role === 'super_admin') {
+            return $next($request);
+        }
+
         // Support multiple roles separated by comma
         $allowedRoles = array_map('trim', explode(',', $role));
         

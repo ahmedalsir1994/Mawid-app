@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <x-slot name="header">
         <div>
             <h2 class="font-bold text-3xl text-gray-800">{{ __('app.working_hours') }}</h2>
@@ -27,8 +27,8 @@
                             <tr class="border-b-2 border-gray-200 bg-gray-50">
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">{{ __('app.day') }}</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">{{ __('app.closed') }}</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">{{ __('app.start_time') }}</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">{{ __('app.end_time') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">First Shift</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Second Shift</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,36 +41,64 @@
                                     <td class="px-6 py-4 font-semibold text-gray-800">{{ $label }}</td>
 
                                     <td class="px-6 py-4">
-                                        <input type="checkbox" name="hours[{{ $dow }}][is_closed]"
+                                        <input lang="en" dir="ltr" type="checkbox" name="hours[{{ $dow }}][is_closed]"
                                             @checked($isClosed)
                                             onchange="toggleTimeInputs(this)"
-                                            class="w-4 h-4 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer" />
+                                            class="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500 cursor-pointer" />
                                     </td>
 
                                     <td class="px-6 py-4">
                                         @if($isClosed)
                                             <span class="text-gray-400">{{ __('app.closed') }}</span>
                                         @else
-                                            <input type="time" name="hours[{{ $dow }}][start_time]"
-                                                value="{{ old("hours.$dow.start_time", $row->start_time ?? '') }}"
-                                                class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                                            <div class="flex flex-col space-y-2">
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">Start</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[{{ $dow }}][first_shift_start]"
+                                                        value="{{ old("hours.$dow.first_shift_start", $row->first_shift_start ?? '') }}"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    @error("hours.$dow.first_shift_start")
+                                                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">End</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[{{ $dow }}][first_shift_end]"
+                                                        value="{{ old("hours.$dow.first_shift_end", $row->first_shift_end ?? '') }}"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    @error("hours.$dow.first_shift_end")
+                                                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </div>
                                         @endif
-                                        @error("hours.$dow.start_time")
-                                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                                        @enderror
                                     </td>
 
                                     <td class="px-6 py-4">
                                         @if($isClosed)
                                             <span class="text-gray-400">{{ __('app.closed') }}</span>
                                         @else
-                                            <input type="time" name="hours[{{ $dow }}][end_time]"
-                                                value="{{ old("hours.$dow.end_time", $row->end_time ?? '') }}"
-                                                class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                                            <div class="flex flex-col space-y-2">
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">Start</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[{{ $dow }}][second_shift_start]"
+                                                        value="{{ old("hours.$dow.second_shift_start", $row->second_shift_start ?? '') }}"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    @error("hours.$dow.second_shift_start")
+                                                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">End</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[{{ $dow }}][second_shift_end]"
+                                                        value="{{ old("hours.$dow.second_shift_end", $row->second_shift_end ?? '') }}"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    @error("hours.$dow.second_shift_end")
+                                                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </div>
                                         @endif
-                                        @error("hours.$dow.end_time")
-                                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                                        @enderror
                                     </td>
                                 </tr>
                             @endforeach
@@ -83,7 +111,7 @@
                         class="px-6 py-3 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition">
                         {{ __('app.cancel') }}
                     </a>
-                    <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
+                    <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                         </svg>
@@ -107,8 +135,8 @@
                 const dow = checkbox.name.match(/hours\[(\d+)\]/)[1];
                 const startValue = checkbox.dataset.startTime || '';
                 const endValue = checkbox.dataset.endTime || '';
-                startCell.innerHTML = `<input type="time" name="hours[${dow}][start_time]" value="${startValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
-                endCell.innerHTML = `<input type="time" name="hours[${dow}][end_time]" value="${endValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
+                startCell.innerHTML = `<input lang="en" dir="ltr" type="time" name="hours[${dow}][start_time]" value="${startValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
+                endCell.innerHTML = `<input lang="en" dir="ltr" type="time" name="hours[${dow}][end_time]" value="${endValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
             }
         }
     </script>

@@ -23,12 +23,35 @@
      <?php $__env->endSlot(); ?>
 
     <div class="max-w-2xl">
+        <?php if(isset($canAdd) && !$canAdd): ?>
+            <?php if (isset($component)) { $__componentOriginal6f6c36906fa9dd4916b6ca3018689147 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal6f6c36906fa9dd4916b6ca3018689147 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.upgrade-modal','data' => ['license' => $license,'plan' => $plan,'limitType' => 'services']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('upgrade-modal'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['license' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($license),'plan' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($plan),'limitType' => 'services']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal6f6c36906fa9dd4916b6ca3018689147)): ?>
+<?php $attributes = $__attributesOriginal6f6c36906fa9dd4916b6ca3018689147; ?>
+<?php unset($__attributesOriginal6f6c36906fa9dd4916b6ca3018689147); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal6f6c36906fa9dd4916b6ca3018689147)): ?>
+<?php $component = $__componentOriginal6f6c36906fa9dd4916b6ca3018689147; ?>
+<?php unset($__componentOriginal6f6c36906fa9dd4916b6ca3018689147); ?>
+<?php endif; ?>
+        <?php else: ?>
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">
             <form method="POST" action="<?php echo e(route('admin.services.store')); ?>" class="space-y-6"
                 enctype="multipart/form-data">
                 <?php echo $__env->make('admin.services._form', ['service' => null], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             </form>
         </div>
+        <?php endif; ?>
     </div>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

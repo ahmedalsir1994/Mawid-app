@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\License;
 use App\Models\Business;
+use App\Services\PlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,24 +20,40 @@ class SuperAdminLicenseController extends Controller
     public function create()
     {
         $businesses = Business::doesntHave('license')->get();
-        return view('admin.super.licenses.create', compact('businesses'));
+        $plans      = PlanService::all();
+        return view('admin.super.licenses.create', compact('businesses', 'plans'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'business_id' => 'required|exists:businesses,id|unique:licenses,business_id',
-            'license_key' => 'required|unique:licenses',
-            'status' => 'required|in:active,expired,suspended,cancelled',
-            'max_users' => 'required|integer|min:1',
-            'max_daily_bookings' => 'required|integer|min:1',
-            'expires_at' => 'required|date|after:today',
-            'price' => 'required|numeric|min:0',
-            'payment_status' => 'required|in:paid,unpaid',
-            'notes' => 'nullable|string',
+            'business_id'        => 'required|exists:businesses,id|unique:licenses,business_id',
+            'license_key'        => 'required|unique:licenses',
+            'plan'               => 'required|in:free,pro,plus',
+            'billing_cycle'      => 'required|in:monthly,yearly',
+            'status'             => 'required|in:active,expired,suspended,cancelled',
+            'payment_status'     => 'required|in:paid,unpaid',
+            'expires_at'         => 'nullable|date',
+            'price'              => 'required|numeric|min:0',
+            'max_branches'       => 'required|integer|min:1',
+            'max_staff'          => 'required|integer|min:1',
+            'max_services'       => 'required|integer|min:0',
+            'whatsapp_reminders' => 'boolean',
+            'notes'              => 'nullable|string',
         ]);
 
-        $validated['activated_at'] = now();
+        $planDef = PlanService::get($validated['plan']);
+        $validated['activated_at']      = now();
+        $validated['max_daily_bookings'] = $planDef['max_daily_bookings'] ?? 50;
+        $validated['max_users']          = $validated['max_staff'];
+        $validated['whatsapp_reminders'] = $request->boolean('whatsapp_reminders');
+
+        // Auto-calculate expires_at if not manually provided
+        if (empty($validated['expires_at'])) {
+            $validated['expires_at'] = $validated['plan'] === 'free'
+                ? now()->addYears(100)
+                : ($validated['billing_cycle'] === 'yearly' ? now()->addYear() : now()->addMonth());
+        }
 
         License::create($validated);
 
@@ -54,20 +71,36 @@ class SuperAdminLicenseController extends Controller
         $businesses = Business::where('id', $license->business_id)
             ->orWhereDoesntHave('license')
             ->get();
-        return view('admin.super.licenses.edit', compact('license', 'businesses'));
+        $plans = PlanService::all();
+        return view('admin.super.licenses.edit', compact('license', 'businesses', 'plans'));
     }
 
     public function update(Request $request, License $license)
     {
         $validated = $request->validate([
-            'status' => 'required|in:active,expired,suspended,cancelled',
-            'max_users' => 'required|integer|min:1',
-            'max_daily_bookings' => 'required|integer|min:1',
-            'expires_at' => 'required|date',
-            'price' => 'required|numeric|min:0',
-            'payment_status' => 'required|in:paid,unpaid',
-            'notes' => 'nullable|string',
+            'plan'               => 'required|in:free,pro,plus',
+            'billing_cycle'      => 'required|in:monthly,yearly',
+            'status'             => 'required|in:active,expired,suspended,cancelled',
+            'payment_status'     => 'required|in:paid,unpaid',
+            'expires_at'         => 'nullable|date',
+            'price'              => 'required|numeric|min:0',
+            'max_branches'       => 'required|integer|min:1',
+            'max_staff'          => 'required|integer|min:1',
+            'max_services'       => 'required|integer|min:0',
+            'whatsapp_reminders' => 'boolean',
+            'notes'              => 'nullable|string',
         ]);
+
+        $planDef = PlanService::get($validated['plan']);
+        $validated['max_daily_bookings'] = $planDef['max_daily_bookings'] ?? 50;
+        $validated['max_users']          = $validated['max_staff'];
+        $validated['whatsapp_reminders'] = $request->boolean('whatsapp_reminders');
+
+        if (empty($validated['expires_at'])) {
+            $validated['expires_at'] = $validated['plan'] === 'free'
+                ? now()->addYears(100)
+                : ($validated['billing_cycle'] === 'yearly' ? now()->addYear() : now()->addMonth());
+        }
 
         $license->update($validated);
 
@@ -77,9 +110,11 @@ class SuperAdminLicenseController extends Controller
 
     public function destroy(License $license)
     {
-        // Licenses should never be deleted - just mark as cancelled
-        return redirect()->route('admin.super.licenses.show', $license)
-            ->with('error', 'Licenses cannot be deleted. Please mark as cancelled instead.');
+        $businessName = $license->business->name ?? 'Unknown';
+        $license->delete();
+
+        return redirect()->route('admin.super.licenses.index')
+            ->with('success', "License for \"{$businessName}\" deleted successfully.");
     }
 
     public function reactivate(License $license)

@@ -15,7 +15,7 @@
                 <p class="text-gray-600 mt-2"><?php echo e(__('app.manage_staff_members')); ?></p>
             </div>
             <a href="<?php echo e(route('admin.staff.create')); ?>"
-                class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-3 rounded-lg transition">
+                class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition">
                 ➕ <?php echo e(__('app.add_staff_member')); ?>
 
             </a>
@@ -48,6 +48,10 @@
 
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <?php echo e(__('app.branch')); ?>
+
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <?php echo e(__('app.created')); ?>
 
                             </th>
@@ -62,9 +66,9 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                                             <span
-                                                class="text-purple-600 font-bold"><?php echo e(strtoupper(substr($member->name, 0, 1))); ?></span>
+                                                class="text-green-600 font-bold"><?php echo e(strtoupper(substr($member->name, 0, 1))); ?></span>
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900"><?php echo e($member->name); ?></div>
@@ -89,13 +93,23 @@
                                         </span>
                                     <?php endif; ?>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <?php if($member->branch): ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            📍 <?php echo e($member->branch->name); ?>
+
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400">—</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <?php echo e($member->created_at->format('M d, Y')); ?>
 
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="<?php echo e(route('admin.staff.show', $member)); ?>"
-                                        class="text-purple-600 hover:text-purple-900 mr-3"><?php echo e(__('app.view')); ?></a>
+                                        class="text-green-600 hover:text-green-900 mr-3"><?php echo e(__('app.view')); ?></a>
                                     <a href="<?php echo e(route('admin.staff.edit', $member)); ?>"
                                         class="text-blue-600 hover:text-blue-900 mr-3"><?php echo e(__('app.edit')); ?></a>
                                     <form action="<?php echo e(route('admin.staff.destroy', $member)); ?>" method="POST" class="inline"

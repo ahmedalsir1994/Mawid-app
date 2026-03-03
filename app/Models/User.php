@@ -20,10 +20,16 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
         'role',
         'is_active',
         'business_id',
+        'branch_id',
+        'photo',
+        'title',
+        'otp_code',
+        'otp_expires_at',
     ];
 
     /**
@@ -45,8 +51,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
+            'otp_expires_at'    => 'datetime',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
         ];
     }
 
@@ -75,6 +82,11 @@ class User extends Authenticatable
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function staffBookings()

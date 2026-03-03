@@ -1,4 +1,4 @@
-<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
+﻿<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal91fdd17964e43374ae18c674f95cdaa3 = $attributes; } ?>
 <?php $component = App\View\Components\AdminLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('admin-layout'); ?>
@@ -20,18 +20,26 @@
                     $bookingsIndexRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.index' : 'admin.bookings.index';
                 ?>
                 <a href="<?php echo e(route($bookingsIndexRoute, ['filter' => 'today'])); ?>"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($filter === 'today' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($filter === 'today' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e(__('app.today')); ?> (<?php echo e($today); ?>)
                 </a>
                 <a href="<?php echo e(route($bookingsIndexRoute, ['filter' => 'upcoming'])); ?>"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($filter === 'upcoming' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($filter === 'upcoming' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e(__('app.upcoming')); ?>
 
                 </a>
                 <a href="<?php echo e(route($bookingsIndexRoute, ['filter' => 'all'])); ?>"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($filter === 'all' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e(__('app.all')); ?>
 
+                </a>
+                <?php $createRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.create' : 'admin.bookings.create'; ?>
+                <a href="<?php echo e(route($createRoute)); ?>"
+                   class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    New Walk-In
                 </a>
             </div>
         </div>
@@ -71,6 +79,8 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 <?php echo e(__('app.service')); ?></th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
+                                <?php echo e(__('app.branch')); ?></th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 <?php echo e(__('app.customer')); ?></th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 <?php echo e(__('app.staff')); ?></th>
@@ -91,10 +101,20 @@
                                 <td class="px-6 py-4 text-gray-600"><?php echo e(substr($b->start_time, 0, 5)); ?></td>
                                 <td class="px-6 py-4 text-gray-600"><?php echo e($b->service->name); ?></td>
                                 <td class="px-6 py-4">
+                                    <?php if($b->branch): ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            📍 <?php echo e($b->branch->name); ?>
+
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-xs text-gray-400">—</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4">
                                     <div class="flex items-center space-x-2">
-                                        <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                                        <div class="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
                                             <span
-                                                class="text-purple-700 font-bold text-xs"><?php echo e(strtoupper(substr($b->customer_name, 0, 1))); ?></span>
+                                                class="text-green-700 font-bold text-xs"><?php echo e(strtoupper(substr($b->customer_name, 0, 1))); ?></span>
                                         </div>
                                         <span class="font-medium text-gray-800"><?php echo e($b->customer_name); ?></span>
                                     </div>
@@ -120,7 +140,7 @@
                                     ?>
                                     <form method="POST" action="<?php echo e(route($statusRoute, $b)); ?>" class="inline">
                                         <?php echo csrf_field(); ?>
-                                        <select name="status"
+                                        <select lang="en" dir="ltr" name="status"
                                             class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             onchange="this.form.submit()">
                                             <?php $__currentLoopData = ['pending' => __('app.pending'), 'confirmed' => __('app.confirmed'), 'cancelled' => __('app.cancelled'), 'completed' => __('app.completed')]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $st => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -164,7 +184,12 @@
                                         $message .= "Date: {$date}\n";
                                         $message .= "Time: {$time}\n";
 
-                                        if (auth()->user()->business->address) {
+                                        if ($b->branch) {
+                                            $message .= "Branch: " . $b->branch->name . "\n";
+                                            if ($b->branch->address) {
+                                                $message .= "Location: " . $b->branch->address . "\n";
+                                            }
+                                        } elseif (auth()->user()->business->address) {
                                             $message .= "Location: " . auth()->user()->business->address . "\n";
                                         }
 

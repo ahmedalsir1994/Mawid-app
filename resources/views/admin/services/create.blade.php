@@ -14,11 +14,15 @@
     </x-slot>
 
     <div class="max-w-2xl">
+        @if(isset($canAdd) && !$canAdd)
+            <x-upgrade-modal :license="$license" :plan="$plan" limitType="services" />
+        @else
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">
             <form method="POST" action="{{ route('admin.services.store') }}" class="space-y-6"
                 enctype="multipart/form-data">
                 @include('admin.services._form', ['service' => null])
             </form>
         </div>
+        @endif
     </div>
 </x-admin-layout>

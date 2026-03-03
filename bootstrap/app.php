@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // CSRF exceptions
+        $middleware->validateCsrfTokens(except: [
+            '/paymob/callback',
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\SetLanguage::class,
             \App\Http\Middleware\EnsureUserIsActive::class,

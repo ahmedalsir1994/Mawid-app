@@ -1,4 +1,4 @@
-<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
+﻿<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal91fdd17964e43374ae18c674f95cdaa3 = $attributes; } ?>
 <?php $component = App\View\Components\AdminLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('admin-layout'); ?>
@@ -49,8 +49,8 @@
                                         class="h-24 w-auto rounded-lg shadow-md border border-gray-200">
                                 </div>
                             <?php endif; ?>
-                            <input type="file" name="logo" accept="image/*"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                            <input lang="en" dir="ltr" type="file" name="logo" accept="image/*"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             <p class="text-gray-600 text-xs mt-2"><?php echo e(__('app.upload_logo_hint')); ?></p>
                             <?php $__errorArgs = ['logo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -66,9 +66,9 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.business_name')); ?></label>
-                            <input type="text" name="name" value="<?php echo e(old('name', $business->name)); ?>"
+                            <input lang="en" dir="ltr" type="text" name="name" value="<?php echo e(old('name', $business->name)); ?>"
                                 placeholder="<?php echo e(__('app.your_business_name')); ?>"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -84,10 +84,10 @@ unset($__errorArgs, $__bag); ?>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.business_slug')); ?></label>
                             <div class="relative">
-                                <span class="absolute left-4 top-3 text-gray-500">yoursite.com/</span>
-                                <input type="text" name="slug" value="<?php echo e(old('slug', $business->slug)); ?>"
+                                <span class="absolute left-4 top-3 text-gray-500">mawid.om/</span>
+                                <input lang="en" dir="ltr" type="text" name="slug" id="slugInput" value="<?php echo e(old('slug', $business->slug)); ?>"
                                     placeholder="business-slug"
-                                    class="w-full pl-48 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                                    class="w-full pl-28 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             </div>
                             <p class="text-gray-600 text-xs mt-2"><?php echo e(__('app.slug_hint')); ?></p>
                             <?php $__errorArgs = ['slug'];
@@ -98,7 +98,64 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-600 text-sm mt-
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+
+                            <!-- Public Booking Link -->
+                            <div class="mt-3">
+                                <p class="text-xs font-semibold text-gray-600 mb-1"><?php echo e(__('app.public_booking_link') ?? 'Public Booking Link'); ?></p>
+                                <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
+                                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    <span id="publicLinkDisplay" class="flex-1 text-sm text-gray-700 truncate select-all"><?php echo e(url('/')); ?>/<?php echo e(old('slug', $business->slug)); ?></span>
+                                    <button type="button" id="copyLinkBtn" onclick="copyBookingLink()"
+                                        class="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">
+                                        <svg id="copyIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        <span id="copyBtnText">Copy</span>
+                                    </button>
+                                    <a id="openLinkBtn" href="<?php echo e(url('/')); ?>/<?php echo e(old('slug', $business->slug)); ?>" target="_blank"
+                                        class="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                        Open
+                                    </a>
+                                </div>
+                            </div>
                         </div>
+
+                        <script>
+                            (function () {
+                                const base = '<?php echo e(url('/')); ?>/';
+                                const slugInput = document.getElementById('slugInput');
+                                const display = document.getElementById('publicLinkDisplay');
+                                const openBtn = document.getElementById('openLinkBtn');
+
+                                slugInput.addEventListener('input', function () {
+                                    const full = base + this.value;
+                                    display.textContent = full;
+                                    openBtn.href = full;
+                                });
+
+                                window.copyBookingLink = function () {
+                                    const text = document.getElementById('publicLinkDisplay').textContent;
+                                    navigator.clipboard.writeText(text).then(() => {
+                                        const btn = document.getElementById('copyBtnText');
+                                        const icon = document.getElementById('copyIcon');
+                                        btn.textContent = 'Copied!';
+                                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+                                        setTimeout(() => {
+                                            btn.textContent = 'Copy';
+                                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
+                                        }, 2000);
+                                    });
+                                };
+                            })();
+                        </script>
                     </div>
                 </div>
 
@@ -111,12 +168,11 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.country')); ?></label>
-                            <select name="country"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select lang="en" dir="ltr" name="country"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="OM" <?php if(old('country', $business->country) === 'OM'): echo 'selected'; endif; ?>>🇴🇲 Oman (OM)
                                 </option>
-                                <option value="SA" <?php if(old('country', $business->country) === 'SA'): echo 'selected'; endif; ?>>🇸🇦 Saudi
-                                    Arabia (SA)</option>
+                             
                             </select>
                             <?php $__errorArgs = ['country'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -132,8 +188,8 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.default_language')); ?></label>
-                            <select name="default_language"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select lang="en" dir="ltr" name="default_language"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="en" <?php if(old('default_language', $business->default_language) === 'en'): echo 'selected'; endif; ?>>English</option>
                                 <option value="ar" <?php if(old('default_language', $business->default_language) === 'ar'): echo 'selected'; endif; ?>>العربية</option>
                             </select>
@@ -151,10 +207,9 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.timezone')); ?></label>
-                            <select name="timezone"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select lang="en" dir="ltr" name="timezone"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="Asia/Muscat" <?php if(old('timezone', $business->timezone) === 'Asia/Muscat'): echo 'selected'; endif; ?>>Asia/Muscat (GMT+4)</option>
-                                <option value="Asia/Riyadh" <?php if(old('timezone', $business->timezone) === 'Asia/Riyadh'): echo 'selected'; endif; ?>>Asia/Riyadh (GMT+3)</option>
                             </select>
                             <?php $__errorArgs = ['timezone'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -170,12 +225,11 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.currency')); ?></label>
-                            <select name="currency"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select lang="en" dir="ltr" name="currency"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="OMR" <?php if(old('currency', $business->currency) === 'OMR'): echo 'selected'; endif; ?>>OMR - Omani
                                     Rial</option>
-                                <option value="SAR" <?php if(old('currency', $business->currency) === 'SAR'): echo 'selected'; endif; ?>>SAR - Saudi
-                                    Riyal</option>
+                                
                             </select>
                             <?php $__errorArgs = ['currency'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -198,9 +252,9 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.phone_number')); ?></label>
-                            <input type="tel" name="phone" value="<?php echo e(old('phone', $business->phone)); ?>"
+                            <input lang="en" dir="ltr" type="tel" name="phone" value="<?php echo e(old('phone', $business->phone)); ?>"
                                 placeholder="+968 XXXX XXXX"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             <?php $__errorArgs = ['phone'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -215,8 +269,8 @@ unset($__errorArgs, $__bag); ?>
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.address')); ?></label>
-                            <textarea name="address" rows="3" placeholder="<?php echo e(__('app.your_business_address')); ?>"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"><?php echo e(old('address', $business->address)); ?></textarea>
+                            <textarea lang="en" dir="ltr" name="address" rows="3" placeholder="<?php echo e(__('app.your_business_address')); ?>"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"><?php echo e(old('address', $business->address)); ?></textarea>
                             <?php $__errorArgs = ['address'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -237,7 +291,7 @@ unset($__errorArgs, $__bag); ?>
 
                     </a>
                     <button type="submit"
-                        class="px-8 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
+                        class="px-8 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-600 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

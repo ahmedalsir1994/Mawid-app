@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100'/><text x='50' y='65' font-size='70' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>M</text></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('/images/Mawidly-fav.png') }}">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -21,7 +20,7 @@
 
     <style>
         .sidebar-active {
-            @apply bg-purple-100 text-purple-700 border-purple-600;
+            @apply bg-green-100 text-green-700 border-green-600;
         }
 
         [dir="ltr"] .sidebar-active {
@@ -64,12 +63,7 @@
         <div class="hidden md:flex md:flex-col md:w-64 md:bg-white md:shadow-lg">
             <!-- Logo Section -->
             <div class="flex items-center justify-center h-16 px-6 border-b border-gray-200">
-                <div class="flex items-center space-x-2">
-                    <div
-                        class="w-40 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">Mawid App</span>
-                    </div>
-                </div>
+                <img src="/images/Mawid.png" alt="Mawid App" class="h-10 w-auto pr-[90px]">
             </div>
 
             <!-- Navigation Links -->
@@ -115,6 +109,20 @@
                         </svg>
                         <span class="font-medium">{{ __('app.users') }}</span>
                     </a>
+
+                    <!-- Super Admin Only: Contact Submissions -->
+                    @php $_unreadContacts = \App\Models\ContactSubmission::where('is_read', false)->count(); @endphp
+                    <a href="{{ route('admin.contact-submissions.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.contact-submissions.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium flex-1">Contact Submissions</span>
+                        @if($_unreadContacts > 0)
+                            <span class="min-w-[20px] h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold px-1">{{ $_unreadContacts }}</span>
+                        @endif
+                    </a>
                 @elseif (auth()->user()->role === 'company_admin')
                     <!-- Company Admin Only: Business Settings -->
                     <a href="{{ route('admin.business.edit') }}"
@@ -125,6 +133,19 @@
                                 clip-rule="evenodd" />
                         </svg>
                         <span class="font-medium">{{ __('app.business') }}</span>
+                    </a>
+
+                    <!-- Branches -->
+                    @php $sidebarLicense = auth()->user()->business?->license; @endphp
+                    <a href="{{ route('admin.branches.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.branches.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="font-medium">{{ __('app.branches') }}</span>
+                        @if($sidebarLicense && $sidebarLicense->isPlus())
+                            <span class="ml-auto text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">🚀</span>
+                        @endif
                     </a>
 
                     <!-- Services -->
@@ -201,9 +222,9 @@
             <!-- User Profile Section -->
             <div class="border-t border-gray-200 px-4 py-6">
                 <div class="flex items-center space-x-3 mb-4">
-                    <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center">
+                    <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
                         <span
-                            class="text-purple-700 font-bold">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                            class="text-green-700 font-bold">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-gray-800 truncate">{{ auth()->user()->name }}</p>
@@ -211,17 +232,61 @@
                     </div>
                 </div>
 
-                <!-- Language Switcher -->
+                @if(auth()->user()->role === 'company_admin' && auth()->user()->business_id)
+                    @php
+                        $sidebarLicense   = auth()->user()->business?->license;
+                        $sidebarPlan      = $sidebarLicense?->plan ?? 'free';
+                        $sidebarPlanBadge = match($sidebarPlan) {
+                            'pro'  => 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                            'plus' => 'bg-purple-100 text-purple-800 hover:bg-purple-200',
+                            default => 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                        };
+                        $sidebarPlanEmoji = match($sidebarPlan) { 'pro' => '💼', 'plus' => '🚀', default => '🆓' };
+                    @endphp
+                    <a href="{{ route('admin.upgrade.index') }}"
+                       class="flex items-center justify-between w-full px-3 py-2 rounded-lg {{ $sidebarPlanBadge }} text-sm font-semibold transition mb-2">
+                        <span>{{ $sidebarPlanEmoji }} {{ ucfirst($sidebarPlan) }} {{ __('app.plan') }}</span>
+                        @if($sidebarPlan === 'free')
+                            <span class="text-xs opacity-75">↑ {{ __('app.upgrade') }}</span>
+                        @endif
+                    </a>
+                    @if($sidebarPlan === 'free' && $sidebarLicense)
+                        @php
+                            $__sbUsed    = $sidebarLicense->monthlyBookingsUsed();
+                            $__sbMax     = $sidebarLicense->maxMonthlyBookings();
+                            $__sbPct     = $__sbMax > 0 ? min(100, (int) round($__sbUsed / $__sbMax * 100)) : 0;
+                            $__sbColor   = $__sbPct >= 100 ? 'bg-red-500' : ($__sbPct >= 80 ? 'bg-amber-500' : 'bg-green-500');
+                        @endphp
+                        <div class="mb-3 px-1">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Bookings this month</span>
+                                <span class="{{ $__sbPct >= 100 ? 'text-red-600 font-bold' : '' }}">{{ $__sbUsed }}/{{ $__sbMax }}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="{{ $__sbColor }} h-1.5 rounded-full transition-all" style="width: {{ $__sbPct }}%"></div>
+                            </div>
+                            @if($__sbPct >= 100)
+                                <a href="{{ route('admin.upgrade.index') }}" class="mt-1.5 block text-xs text-center text-red-600 font-semibold hover:underline">
+                                    ⚠️ Limit reached — Upgrade now
+                                </a>
+                            @elseif($__sbPct >= 80)
+                                <a href="{{ route('admin.upgrade.index') }}" class="mt-1.5 block text-xs text-center text-amber-600 hover:underline">
+                                    Approaching limit — Upgrade
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+                @endif
                 <div class="px-4 py-2 border-t border-gray-200">
                     <div class="flex items-center justify-between gap-2">
                         <span class="text-xs font-semibold text-gray-600 uppercase">{{ __('app.language') }}</span>
                         <div class="flex gap-1">
                             <a href="{{ route('lang.switch', 'en') }}"
-                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                                 EN
                             </a>
                             <a href="{{ route('lang.switch', 'ar') }}"
-                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                                class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                                 AR
                             </a>
                         </div>
@@ -261,6 +326,17 @@
 
                     <!-- Right Side Navigation -->
                     <div class="flex items-center space-x-4">
+                        <!-- Home Button -->
+                        <a href="{{ route('landing') }}"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition"
+                           title="{{ __('app.back_to_home') }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span class="hidden sm:inline">{{ __('app.home') }}</span>
+                        </a>
+
                         <!-- Notifications -->
                         <div class="relative">
                             <button onclick="document.getElementById('notificationDropdown').classList.toggle('hidden')"
@@ -287,7 +363,7 @@
                                             class="inline">
                                             @csrf
                                             <button type="submit"
-                                                class="text-xs text-purple-600 hover:text-purple-700 font-medium">
+                                                class="text-xs text-green-600 hover:text-green-700 font-medium">
                                                 {{ __('app.mark_all_read') }}
                                             </button>
                                         </form>
@@ -296,29 +372,40 @@
 
                                 @forelse(auth()->user()->notifications->take(10) as $notification)
                                     @php
-                                        $bookingRoute = auth()->user()->role === 'staff'
-                                            ? route('admin.staff.bookings.show', $notification->data['booking_id'])
-                                            : route('admin.bookings.show', $notification->data['booking_id']);
+                                        $notifType = $notification->data['type'] ?? 'booking';
+                                        if ($notifType === 'contact_submission') {
+                                            $notifUrl = route('admin.contact-submissions.show', $notification->data['id']);
+                                            $notifIcon = 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z';
+                                            $notifIconBg = 'bg-green-100';
+                                            $notifIconColor = 'text-green-600';
+                                            $notifSub = ($notification->data['email'] ?? '') . ' · ' . ($notification->data['phone'] ?? '');
+                                        } else {
+                                            $notifUrl = (auth()->user()->role === 'staff'
+                                                ? route('admin.staff.bookings.show', $notification->data['booking_id'] ?? 0)
+                                                : route('admin.bookings.show', $notification->data['booking_id'] ?? 0)) . '?notification=' . $notification->id;
+                                            $notifIcon = 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z';
+                                            $notifIconBg = 'bg-green-100';
+                                            $notifIconColor = 'text-green-600';
+                                            $notifSub = isset($notification->data['booking_date'])
+                                                ? \Carbon\Carbon::parse($notification->data['booking_date'])->format('M d, Y') . (isset($notification->data['start_time']) ? ' at ' . substr($notification->data['start_time'], 0, 5) : '')
+                                                : '';
+                                        }
                                     @endphp
-                                    <a href="{{ $bookingRoute }}?notification={{ $notification->id }}"
+                                    <a href="{{ $notifUrl }}"
                                         class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 {{ $notification->read_at ? 'bg-white' : 'bg-blue-50' }}">
                                         <div class="flex items-start space-x-3">
-                                            <div
-                                                class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            <div class="flex-shrink-0 w-10 h-10 {{ $notifIconBg }} rounded-full flex items-center justify-center">
+                                                <svg class="w-5 h-5 {{ $notifIconColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $notifIcon }}" />
                                                 </svg>
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    {{ $notification->data['message'] }}
+                                                    {{ $notification->data['message'] ?? '' }}
                                                 </p>
-                                                <p class="text-xs text-gray-500 mt-1">
-                                                    {{ \Carbon\Carbon::parse($notification->data['booking_date'])->format('M d, Y') }}
-                                                    at {{ substr($notification->data['start_time'], 0, 5) }}
-                                                </p>
+                                                @if($notifSub)
+                                                <p class="text-xs text-gray-500 mt-1">{{ $notifSub }}</p>
+                                                @endif
                                                 <p class="text-xs text-gray-400 mt-1">
                                                     {{ $notification->created_at->diffForHumans() }}
                                                 </p>
@@ -345,9 +432,9 @@
                         <div class="relative">
                             <button onclick="document.getElementById('userDropdown').classList.toggle('hidden')"
                                 class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
-                                <div class="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
+                                <div class="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
                                     <span
-                                        class="text-purple-700 font-bold text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                                        class="text-green-700 font-bold text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                                 </div>
                             </button>
 
@@ -370,6 +457,80 @@
                     </div>
                 </div>
             </header>
+
+            {{-- License expiry / inactive banner --}}
+            @php
+                $__license = auth()->user()->business?->license;
+            @endphp
+            @if(auth()->user()->role !== 'super_admin' && (!$__license || (!$__license->isFree() && !$__license->isActive())))
+            <div class="bg-red-50 border-b border-red-200 px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-3 text-red-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <span class="font-semibold">{{ __('app.license_inactive_title') }}</span>
+                        <span class="text-sm ms-2 text-red-700">{{ __('app.license_inactive_desc') }}</span>
+                    </div>
+                </div>
+                @if(auth()->user()->role === 'company_admin')
+                <a href="{{ route('admin.upgrade.index') }}"
+                   class="inline-flex items-center gap-1 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition shrink-0">
+                    {{ __('app.reactivate_now') }}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </a>
+                @endif
+            </div>
+            @endif
+
+            {{-- License Inactive — Block Modal --}}
+            @if(auth()->user()->role !== 'super_admin' && (!$__license || (!$__license->isFree() && !$__license->isActive())))
+            <div id="licenseBlockModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                     onclick="document.getElementById('licenseBlockModal').classList.add('hidden')"></div>
+                <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
+                    <div class="mx-auto mb-5 w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Action Not Allowed</h2>
+                    <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                        Your license is
+                        <strong class="text-red-600">
+                            @if(!$__license)
+                                missing
+                            @elseif($__license->status !== 'active')
+                                {{ $__license->status }}
+                            @else
+                                expired
+                            @endif
+                        </strong>.
+                        Adding or editing content has been disabled until you reactivate your plan.
+                    </p>
+                    @if(auth()->user()->role === 'company_admin')
+                    <a href="{{ route('admin.upgrade.index') }}"
+                       class="flex items-center justify-center gap-2 w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition text-sm mb-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Reactivate Now
+                    </a>
+                    @else
+                    <p class="text-xs text-gray-500 mb-3">Please ask your account owner to reactivate the plan.</p>
+                    @endif
+                    <button type="button"
+                        onclick="document.getElementById('licenseBlockModal').classList.add('hidden')"
+                        class="text-sm text-gray-400 hover:text-gray-600 underline underline-offset-2 transition">
+                        Dismiss
+                    </button>
+                </div>
+            </div>
+            <script>window.licenseInactive = true;</script>
+            @endif
 
             <!-- Page Content -->
             <main class="flex-1 overflow-auto">
@@ -401,7 +562,7 @@
             <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
                 <div class="flex items-center space-x-2">
                     <div
-                        class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                        class="w-8 h-8 bg-gradient-to-br from-green-600 to-green-600 rounded-lg flex items-center justify-center">
                         <span class="text-white font-bold text-sm">BA</span>
                     </div>
                     <span class="font-bold text-lg text-gray-800">Admin</span>
@@ -426,7 +587,47 @@
                     <span class="font-medium">{{ __('app.dashboard') }}</span>
                 </a>
 
-                @if (auth()->user()->role === 'company_admin')
+                @if (auth()->user()->role === 'super_admin')
+                    <a href="{{ route('admin.super.businesses.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.super.businesses.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.businesses') }}</span>
+                    </a>
+
+                    <a href="{{ route('admin.super.licenses.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.super.licenses.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.licenses') }}</span>
+                    </a>
+
+                    <a href="{{ route('admin.super.users.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.super.users.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM9 6a3 3 0 11-6 0 3 3 0 016 0zm12 0a3 3 0 11-6 0 3 3 0 016 0zm0 0a3 3 0 11-6 0 3 3 0 016 0zM9 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.users') }}</span>
+                    </a>
+
+                    <a href="{{ route('admin.contact-submissions.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.contact-submissions.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium flex-1">Contact Submissions</span>
+                        @if($_unreadContacts > 0)
+                            <span class="min-w-[20px] h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold px-1">{{ $_unreadContacts }}</span>
+                        @endif
+                    </a>
+                @elseif (auth()->user()->role === 'company_admin')
                     <a href="{{ route('admin.business.edit') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.business.*') ? 'sidebar-active' : '' }}">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -437,6 +638,14 @@
                         <span class="font-medium">{{ __('app.business') }}</span>
                     </a>
 
+                    <a href="{{ route('admin.branches.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.branches.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="font-medium">{{ __('app.branches') }}</span>
+                    </a>
+
                     <a href="{{ route('admin.services.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.services.*') ? 'sidebar-active' : '' }}">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -444,6 +653,34 @@
                                 d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm0-6h.01M3 10h.01M3 16h.01M7 4h.01M7 10h.01M7 16h.01M11 4h.01M11 10h.01M11 16h.01M15 4h.01M15 10h.01M15 16h.01" />
                         </svg>
                         <span class="font-medium">{{ __('app.services') }}</span>
+                    </a>
+
+                    <a href="{{ route('admin.staff.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.staff.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.staff') }}</span>
+                    </a>
+
+                    <a href="{{ route('admin.bookings.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.bookings.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.bookings') }}</span>
+                    </a>
+
+                    <a href="{{ route('admin.working_hours.edit') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.working_hours') }}</span>
                     </a>
 
                     <a href="{{ route('admin.time_off.index') }}"
@@ -467,32 +704,65 @@
                         <span class="font-medium">{{ __('app.bookings') }}</span>
                     </a>
                 @endif
-
-                @if (auth()->user()->business_id && auth()->user()->role === 'company_admin')
-                    <a href="{{ route('admin.working_hours.edit') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : '' }}">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-medium">{{ __('app.working_hours') }}</span>
-                    </a>
-                @endif
             </nav>
 
             <!-- Mobile User Profile & Language Switcher -->
             <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
+                @if(auth()->user()->role === 'company_admin' && auth()->user()->business_id)
+                    @php
+                        $mobileSidebarLicense   = auth()->user()->business?->license;
+                        $mobileSidebarPlan      = $mobileSidebarLicense?->plan ?? 'free';
+                        $mobileSidebarPlanBadge = match($mobileSidebarPlan) {
+                            'pro'  => 'bg-blue-100 text-blue-800',
+                            'plus' => 'bg-purple-100 text-purple-800',
+                            default => 'bg-gray-100 text-gray-700',
+                        };
+                        $mobileSidebarPlanEmoji = match($mobileSidebarPlan) { 'pro' => '💼', 'plus' => '🚀', default => '🆓' };
+                    @endphp
+                    <a href="{{ route('admin.upgrade.index') }}"
+                       class="flex items-center justify-between w-full px-3 py-2 rounded-lg {{ $mobileSidebarPlanBadge }} text-sm font-semibold transition mb-1">
+                        <span>{{ $mobileSidebarPlanEmoji }} {{ ucfirst($mobileSidebarPlan) }} {{ __('app.plan') }}</span>
+                        @if($mobileSidebarPlan === 'free')
+                            <span class="text-xs opacity-75">↑ {{ __('app.upgrade') }}</span>
+                        @endif
+                    </a>
+                    @if($mobileSidebarPlan === 'free' && $mobileSidebarLicense)
+                        @php
+                            $__mbUsed    = $mobileSidebarLicense->monthlyBookingsUsed();
+                            $__mbMax     = $mobileSidebarLicense->maxMonthlyBookings();
+                            $__mbPct     = $__mbMax > 0 ? min(100, (int) round($__mbUsed / $__mbMax * 100)) : 0;
+                            $__mbColor   = $__mbPct >= 100 ? 'bg-red-500' : ($__mbPct >= 80 ? 'bg-amber-500' : 'bg-green-500');
+                        @endphp
+                        <div class="mb-1 px-1">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Bookings this month</span>
+                                <span class="{{ $__mbPct >= 100 ? 'text-red-600 font-bold' : '' }}">{{ $__mbUsed }}/{{ $__mbMax }}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="{{ $__mbColor }} h-1.5 rounded-full transition-all" style="width: {{ $__mbPct }}%"></div>
+                            </div>
+                            @if($__mbPct >= 100)
+                                <a href="{{ route('admin.upgrade.index') }}" class="mt-1.5 block text-xs text-center text-red-600 font-semibold hover:underline">
+                                    ⚠️ Limit reached — Upgrade now
+                                </a>
+                            @elseif($__mbPct >= 80)
+                                <a href="{{ route('admin.upgrade.index') }}" class="mt-1.5 block text-xs text-center text-amber-600 hover:underline">
+                                    Approaching limit — Upgrade
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+                @endif
                 <!-- Language Switcher -->
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-gray-600 uppercase">{{ __('app.language') }}</span>
                     <div class="flex gap-1">
                         <a href="{{ route('lang.switch', 'en') }}"
-                            class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             EN
                         </a>
                         <a href="{{ route('lang.switch', 'ar') }}"
-                            class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            class="px-2 py-1 text-xs font-medium rounded transition {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             AR
                         </a>
                     </div>
@@ -531,6 +801,76 @@
                 notificationDropdown.classList.add('hidden');
             }
         });
+
+        // ── License inactive: intercept all mutating actions ──
+        if (window.licenseInactive) {
+            function showLicenseBlockModal() {
+                document.getElementById('licenseBlockModal').classList.remove('hidden');
+            }
+
+            // Block all non-GET form submissions
+            document.addEventListener('submit', function (e) {
+                var form = e.target;
+                var method = (form.getAttribute('method') || 'GET').toUpperCase();
+                var methodField = form.querySelector('input[name="_method"]');
+                var effective = methodField ? methodField.value.toUpperCase() : method;
+                if (effective === 'GET') return; // allow search / filter forms
+                var action = form.action || '';
+                if (action.includes('/logout') || action.includes('/lang/')) return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                showLicenseBlockModal();
+            }, true);
+
+            // Block clicks on add / edit / delete links
+            document.addEventListener('click', function (e) {
+                var link = e.target.closest('a[href]');
+                if (!link) return;
+                var href = link.getAttribute('href') || '';
+                if (!href || href === '#' || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('javascript:')) return;
+                if (href.includes('/logout') || href.includes('/upgrade') || href.includes('/lang/') || href.includes('/profile')) return;
+                if (link.target === '_blank') return;
+                // Block navigation to create / edit admin pages
+                if (/\/(create|edit)(\/|\?|$)/.test(href)) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    showLicenseBlockModal();
+                }
+            }, true);
+        }
+    </script>
+
+    {{-- Block Arabic input across all text fields --}}
+    <script>
+    (function () {
+        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g;
+
+        function stripArabic(el) {
+            const before = el.value;
+            const after  = before.replace(ARABIC, '');
+            if (before !== after) {
+                const pos = el.selectionStart - (before.length - after.length);
+                el.value = after;
+                el.setSelectionRange(pos, pos);
+            }
+        }
+
+        // Block keydown for Arabic characters (handles keyboard typing)
+        document.addEventListener('keydown', function (e) {
+            if (e.key && ARABIC.test(e.key)) {
+                e.preventDefault();
+            }
+            ARABIC.lastIndex = 0; // reset stateful regex
+        }, true);
+
+        // Strip Arabic on input event (handles paste, autocomplete, IME)
+        document.addEventListener('input', function (e) {
+            const el = e.target;
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                stripArabic(el);
+            }
+        }, true);
+    })();
     </script>
 </body>
 

@@ -15,7 +15,7 @@
             <p class="text-gray-600 mt-2"><?php echo e(__('app.create_manage_licenses')); ?></p>
         </div>
         <a href="<?php echo e(route('admin.super.licenses.create')); ?>"
-            class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
+            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
             + <?php echo e(__('app.create_license')); ?>
 
         </a>
@@ -30,6 +30,7 @@
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.business')); ?>
 
                         </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.plan')); ?></th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900"><?php echo e(__('app.license_key')); ?>
 
                         </th>
@@ -48,6 +49,27 @@
                                     <p class="font-semibold text-gray-900"><?php echo e($license->business->name); ?></p>
                                     <p class="text-sm text-gray-600"><?php echo e($license->business->slug); ?></p>
                                 </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <?php
+                                    $planBadge = match($license->plan ?? 'free') {
+                                        'pro'  => 'bg-blue-100 text-blue-800',
+                                        'plus' => 'bg-purple-100 text-purple-800',
+                                        default => 'bg-gray-100 text-gray-700',
+                                    };
+                                    $planEmoji = match($license->plan ?? 'free') {
+                                        'pro'  => '💼',
+                                        'plus' => '🚀',
+                                        default => '🆓',
+                                    };
+                                ?>
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold <?php echo e($planBadge); ?>">
+                                    <?php echo e($planEmoji); ?> <?php echo e(ucfirst($license->plan ?? 'free')); ?>
+
+                                </span>
+                                <?php if(($license->plan ?? 'free') !== 'free'): ?>
+                                    <p class="text-xs text-gray-400 mt-1 capitalize"><?php echo e($license->billing_cycle); ?></p>
+                                <?php endif; ?>
                             </td>
                             <td class="px-6 py-4">
                                 <code class="text-sm bg-gray-100 px-2 py-1 rounded"><?php echo e($license->license_key); ?></code>
@@ -103,7 +125,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm space-x-2">
                                 <a href="<?php echo e(route('admin.super.licenses.show', $license)); ?>"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     <?php echo e(__('app.view')); ?>
 
                                 </a>
@@ -122,10 +144,10 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                 <p class="text-lg mb-2"><?php echo e(__('app.no_licenses_yet')); ?></p>
                                 <a href="<?php echo e(route('admin.super.licenses.create')); ?>"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     <?php echo e(__('app.create_first_license')); ?>
 
                                 </a>

@@ -1,9 +1,13 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="font-bold text-3xl text-gray-800">{{ __('app.booking_details') }}</h2>
-                <p class="text-gray-500 text-sm mt-1">{{ __('app.reference') }}: {{ $booking->reference_code }}</p>
+                <p class="text-gray-500 text-sm mt-1">{{ __('app.reference') }}: {{ $booking->reference_code }}
+                    @if($booking->is_walk_in)
+                        <span class="ms-2 inline-flex items-center px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">🚶 Walk-in</span>
+                    @endif
+                </p>
             </div>
             <a href="{{ auth()->user()->role === 'staff' ? route('admin.staff.bookings.index') : route('admin.bookings.index') }}"
                 class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
@@ -31,8 +35,8 @@
                         action="{{ auth()->user()->role === 'staff' ? route('admin.staff.bookings.status', $booking) : route('admin.bookings.status', $booking) }}"
                         class="inline">
                         @csrf
-                        <select name="status"
-                            class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        <select lang="en" dir="ltr" name="status"
+                            class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500"
                             onchange="this.form.submit()">
                             @foreach (['pending' => __('app.pending'), 'confirmed' => __('app.confirmed'), 'cancelled' => __('app.cancelled'), 'completed' => __('app.completed')] as $st => $label)
                                 <option value="{{ $st }}" @selected($booking->status === $st)>{{ $label }}</option>
@@ -46,7 +50,7 @@
         <!-- Customer Information -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -73,7 +77,7 @@
         <!-- Appointment Details -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -82,7 +86,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Service</p>
-                    <p class="text-lg font-semibold text-purple-600">{{ $booking->service->name }}</p>
+                    <p class="text-lg font-semibold text-green-600">{{ $booking->service->name }}</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Duration</p>
@@ -114,6 +118,22 @@
                         <p class="text-sm text-gray-400 italic mt-1">Not assigned</p>
                     @endif
                 </div>
+                @if($booking->branch)
+                <div>
+                    <p class="text-sm text-gray-600 font-medium">Branch</p>
+                    <div class="mt-1">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            📍 {{ $booking->branch->name }}
+                        </span>
+                        @if($booking->branch->address)
+                            <p class="text-sm text-gray-500 mt-1">{{ $booking->branch->address }}</p>
+                        @endif
+                        @if($booking->branch->phone)
+                            <p class="text-xs text-gray-400 mt-0.5">📞 {{ $booking->branch->phone }}</p>
+                        @endif
+                    </div>
+                </div>
+                @endif
                 @if($booking->notes)
                     <div class="md:col-span-2">
                         <p class="text-sm text-gray-600 font-medium">Notes</p>
@@ -126,7 +146,7 @@
         <!-- Reminder Status -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -169,7 +189,12 @@
                         $message .= "Date: {$date}\n";
                         $message .= "Time: {$time}\n";
 
-                        if ($booking->business->address) {
+                        if ($booking->branch) {
+                            $message .= "Branch: " . $booking->branch->name . "\n";
+                            if ($booking->branch->address) {
+                                $message .= "Location: " . $booking->branch->address . "\n";
+                            }
+                        } elseif ($booking->business->address) {
                             $message .= "Location: " . $booking->business->address . "\n";
                         }
 
@@ -193,7 +218,7 @@
         <!-- Booking Timeline -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>

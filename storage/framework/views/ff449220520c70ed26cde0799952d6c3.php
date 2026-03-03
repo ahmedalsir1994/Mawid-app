@@ -1,4 +1,4 @@
-<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
+﻿<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal91fdd17964e43374ae18c674f95cdaa3 = $attributes; } ?>
 <?php $component = App\View\Components\AdminLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('admin-layout'); ?>
@@ -36,8 +36,8 @@
                             <tr class="border-b-2 border-gray-200 bg-gray-50">
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase"><?php echo e(__('app.day')); ?></th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase"><?php echo e(__('app.closed')); ?></th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase"><?php echo e(__('app.start_time')); ?></th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase"><?php echo e(__('app.end_time')); ?></th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">First Shift</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Second Shift</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,50 +50,92 @@
                                     <td class="px-6 py-4 font-semibold text-gray-800"><?php echo e($label); ?></td>
 
                                     <td class="px-6 py-4">
-                                        <input type="checkbox" name="hours[<?php echo e($dow); ?>][is_closed]"
+                                        <input lang="en" dir="ltr" type="checkbox" name="hours[<?php echo e($dow); ?>][is_closed]"
                                             <?php if($isClosed): echo 'checked'; endif; ?>
                                             onchange="toggleTimeInputs(this)"
-                                            class="w-4 h-4 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer" />
+                                            class="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500 cursor-pointer" />
                                     </td>
 
                                     <td class="px-6 py-4">
                                         <?php if($isClosed): ?>
                                             <span class="text-gray-400"><?php echo e(__('app.closed')); ?></span>
                                         <?php else: ?>
-                                            <input type="time" name="hours[<?php echo e($dow); ?>][start_time]"
-                                                value="<?php echo e(old("hours.$dow.start_time", $row->start_time ?? '')); ?>"
-                                                class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />
-                                        <?php endif; ?>
-                                        <?php $__errorArgs = ["hours.$dow.start_time"];
+                                            <div class="flex flex-col space-y-2">
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">Start</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[<?php echo e($dow); ?>][first_shift_start]"
+                                                        value="<?php echo e(old("hours.$dow.first_shift_start", $row->first_shift_start ?? '')); ?>"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    <?php $__errorArgs = ["hours.$dow.first_shift_start"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                            <p class="text-red-600 text-xs mt-1"><?php echo e($message); ?></p>
-                                        <?php unset($message);
+                                                        <p class="text-red-600 text-xs mt-1"><?php echo e($message); ?></p>
+                                                    <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">End</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[<?php echo e($dow); ?>][first_shift_end]"
+                                                        value="<?php echo e(old("hours.$dow.first_shift_end", $row->first_shift_end ?? '')); ?>"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    <?php $__errorArgs = ["hours.$dow.first_shift_end"];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                        <p class="text-red-600 text-xs mt-1"><?php echo e($message); ?></p>
+                                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
 
                                     <td class="px-6 py-4">
                                         <?php if($isClosed): ?>
                                             <span class="text-gray-400"><?php echo e(__('app.closed')); ?></span>
                                         <?php else: ?>
-                                            <input type="time" name="hours[<?php echo e($dow); ?>][end_time]"
-                                                value="<?php echo e(old("hours.$dow.end_time", $row->end_time ?? '')); ?>"
-                                                class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />
-                                        <?php endif; ?>
-                                        <?php $__errorArgs = ["hours.$dow.end_time"];
+                                            <div class="flex flex-col space-y-2">
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">Start</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[<?php echo e($dow); ?>][second_shift_start]"
+                                                        value="<?php echo e(old("hours.$dow.second_shift_start", $row->second_shift_start ?? '')); ?>"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    <?php $__errorArgs = ["hours.$dow.second_shift_start"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                            <p class="text-red-600 text-xs mt-1"><?php echo e($message); ?></p>
-                                        <?php unset($message);
+                                                        <p class="text-red-600 text-xs mt-1"><?php echo e($message); ?></p>
+                                                    <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">End</label>
+                                                    <input lang="en" dir="ltr" type="time" name="hours[<?php echo e($dow); ?>][second_shift_end]"
+                                                        value="<?php echo e(old("hours.$dow.second_shift_end", $row->second_shift_end ?? '')); ?>"
+                                                        class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                                    <?php $__errorArgs = ["hours.$dow.second_shift_end"];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                        <p class="text-red-600 text-xs mt-1"><?php echo e($message); ?></p>
+                                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -107,7 +149,7 @@ unset($__errorArgs, $__bag); ?>
                         <?php echo e(__('app.cancel')); ?>
 
                     </a>
-                    <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
+                    <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                         </svg>
@@ -131,8 +173,8 @@ unset($__errorArgs, $__bag); ?>
                 const dow = checkbox.name.match(/hours\[(\d+)\]/)[1];
                 const startValue = checkbox.dataset.startTime || '';
                 const endValue = checkbox.dataset.endTime || '';
-                startCell.innerHTML = `<input type="time" name="hours[${dow}][start_time]" value="${startValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
-                endCell.innerHTML = `<input type="time" name="hours[${dow}][end_time]" value="${endValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
+                startCell.innerHTML = `<input lang="en" dir="ltr" type="time" name="hours[${dow}][start_time]" value="${startValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
+                endCell.innerHTML = `<input lang="en" dir="ltr" type="time" name="hours[${dow}][end_time]" value="${endValue}" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" />`;
             }
         }
     </script>

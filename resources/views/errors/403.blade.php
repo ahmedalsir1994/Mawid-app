@@ -25,7 +25,7 @@
                 </p>
 
                 <a href="{{ route('landing') }}"
-                    class="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg transition">
+                    class="inline-block px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg transition">
                     Return Home
                 </a>
             </div>

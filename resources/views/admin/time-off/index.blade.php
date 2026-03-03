@@ -1,4 +1,4 @@
-<x-admin-layout>
+﻿<x-admin-layout>
     <x-slot name="header">
         <div>
             <h2 class="font-bold text-3xl text-gray-800">{{ __('app.time_off_holidays') }}</h2>
@@ -31,31 +31,31 @@
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.start_date') }}</label>
-                            <input type="date" name="start_date" value="{{ old('start_date') }}"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                            <input lang="en" dir="ltr" type="date" name="start_date" value="{{ old('start_date') }}"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             @error('start_date') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.end_date') }}</label>
-                            <input type="date" name="end_date" value="{{ old('end_date') }}"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                            <input lang="en" dir="ltr" type="date" name="end_date" value="{{ old('end_date') }}"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             @error('end_date') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.note_optional') }}</label>
-                            <input type="text" name="note" value="{{ old('note') }}"
+                            <input lang="en" dir="ltr" type="text" name="note" value="{{ old('note') }}"
                                 placeholder="e.g., Eid, Vacation..."
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                             @error('note') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <button type="submit"
-                        class="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
+                        class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"

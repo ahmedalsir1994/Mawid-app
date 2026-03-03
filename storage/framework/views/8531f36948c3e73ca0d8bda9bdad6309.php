@@ -16,17 +16,33 @@
                 <p class="text-gray-600 mt-2"><?php echo e(__('app.dashboard_for')); ?> <?php echo e($business->address); ?></p>
             </div>
             <div class="text-right">
-                <?php if($license && $license->isActive()): ?>
-                    <span class="inline-block px-4 py-2 bg-green-100 text-green-800 font-bold rounded-lg mb-2">
-                        ✓ <?php echo e(__('app.license_active')); ?>
+                <?php
+                    $dashPlan      = $license->plan ?? 'free';
+                    $dashPlanBadge = match($dashPlan) {
+                        'pro'  => 'bg-blue-100 text-blue-800',
+                        'plus' => 'bg-purple-100 text-purple-800',
+                        default => 'bg-gray-100 text-gray-700',
+                    };
+                    $dashPlanEmoji = match($dashPlan) { 'pro' => '💼', 'plus' => '🚀', default => '🆓' };
+                ?>
+                <div class="flex items-center justify-end gap-2 mb-2">
+                    <?php if($license && $license->isActive()): ?>
+                        <span class="inline-block px-4 py-2 bg-green-100 text-green-800 font-bold rounded-lg">
+                            ✓ <?php echo e(__('app.license_active')); ?>
 
-                    </span>
-                <?php else: ?>
-                    <span class="inline-block px-4 py-2 bg-red-100 text-red-800 font-bold rounded-lg mb-2">
-                        ⚠ <?php echo e(__('app.license_inactive')); ?>
+                        </span>
+                    <?php else: ?>
+                        <span class="inline-block px-4 py-2 bg-red-100 text-red-800 font-bold rounded-lg">
+                            ⚠ <?php echo e(__('app.license_inactive')); ?>
 
-                    </span>
-                <?php endif; ?>
+                        </span>
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('admin.upgrade.index')); ?>"
+                       class="inline-block px-4 py-2 <?php echo e($dashPlanBadge); ?> font-bold rounded-lg hover:opacity-80 transition">
+                        <?php echo e($dashPlanEmoji); ?> <?php echo e(ucfirst($dashPlan)); ?> <?php echo e(__('app.plan')); ?>
+
+                    </a>
+                </div>
                 <?php if($license && $license->isExpiring()): ?>
                     <p class="text-sm text-orange-600 font-semibold">
                         <?php echo e(__('app.expires_in_days', ['days' => $license->daysUntilExpiry()])); ?>
@@ -49,7 +65,7 @@
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.total_bookings')); ?></h3>
             <p class="text-3xl font-bold text-gray-900"><?php echo e($totalBookings); ?></p>
             <a href="<?php echo e(route('admin.bookings.index')); ?>"
-                class="text-sm text-purple-600 hover:text-purple-700 font-medium mt-3 inline-block">
+                class="text-sm text-green-600 hover:text-green-700 font-medium mt-3 inline-block">
                 <?php echo e(__('app.view_all')); ?> →
             </a>
         </div>
@@ -69,7 +85,7 @@
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.services')); ?></h3>
             <p class="text-3xl font-bold text-gray-900"><?php echo e($totalServices); ?></p>
             <a href="<?php echo e(route('admin.services.index')); ?>"
-                class="text-sm text-purple-600 hover:text-purple-700 font-medium mt-3 inline-block">
+                class="text-sm text-green-600 hover:text-green-700 font-medium mt-3 inline-block">
                 <?php echo e(__('app.manage_services')); ?> →
             </a>
         </div>
@@ -86,19 +102,40 @@
             class="bg-white rounded-xl shadow-md border <?php if($license && $license->isActive()): ?> border-green-100 <?php else: ?> border-red-100 <?php endif; ?> p-6">
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.license')); ?></h3>
             <?php if($license): ?>
-                <p class="text-2xl font-bold <?php if($license->isActive()): ?> text-green-600 <?php else: ?> text-red-600 <?php endif; ?>">
-                    <?php if($license->isActive()): ?>
-                        <?php echo e(__('app.active')); ?>
+                <?php
+                    $cardPlan      = $license->plan ?? 'free';
+                    $cardPlanBadge = match($cardPlan) {
+                        'pro'  => 'bg-blue-100 text-blue-800',
+                        'plus' => 'bg-purple-100 text-purple-800',
+                        default => 'bg-gray-100 text-gray-700',
+                    };
+                    $cardPlanEmoji = match($cardPlan) { 'pro' => '💼', 'plus' => '🚀', default => '🆓' };
+                ?>
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-2xl font-bold <?php if($license->isActive()): ?> text-green-600 <?php else: ?> text-red-600 <?php endif; ?>">
+                        <?php if($license->isActive()): ?>
+                            <?php echo e(__('app.active')); ?>
 
-                    <?php else: ?>
-                        <?php echo e(ucfirst($license->status)); ?>
+                        <?php else: ?>
+                            <?php echo e(ucfirst($license->status)); ?>
 
-                    <?php endif; ?>
-                </p>
+                        <?php endif; ?>
+                    </p>
+                    <span class="inline-block px-2 py-1 text-xs font-bold rounded-full <?php echo e($cardPlanBadge); ?>">
+                        <?php echo e($cardPlanEmoji); ?> <?php echo e(ucfirst($cardPlan)); ?>
+
+                    </span>
+                </div>
                 <p class="text-sm text-gray-600 mt-2">
                     <?php echo e(__('app.expires')); ?>: <?php echo e($license->expires_at?->format('M d, Y') ?? __('app.no_expiry')); ?>
 
                 </p>
+                <?php if($cardPlan === 'free'): ?>
+                    <a href="<?php echo e(route('admin.upgrade.index')); ?>" class="text-xs text-blue-600 hover:text-blue-700 font-medium mt-2 inline-block">
+                        ↑ <?php echo e(__('app.upgrade_plan')); ?>
+
+                    </a>
+                <?php endif; ?>
             <?php else: ?>
                 <p class="text-red-600 font-bold"><?php echo e(__('app.no_active_license')); ?></p>
             <?php endif; ?>
@@ -114,17 +151,17 @@
             <!-- View Switcher -->
             <div class="flex items-center gap-2">
                 <a href="<?php echo e(route('admin.company.dashboard', ['view' => 'week', 'date' => $currentDate->format('Y-m-d')])); ?>"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($view === 'week' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($view === 'week' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e(__('app.week')); ?>
 
                 </a>
                 <a href="<?php echo e(route('admin.company.dashboard', ['view' => 'month', 'date' => $currentDate->format('Y-m-d')])); ?>"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($view === 'month' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($view === 'month' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e(__('app.month')); ?>
 
                 </a>
                 <a href="<?php echo e(route('admin.company.dashboard', ['view' => 'year', 'date' => $currentDate->format('Y-m-d')])); ?>"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($view === 'year' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($view === 'year' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e(__('app.year')); ?>
 
                 </a>
@@ -165,7 +202,7 @@
                     </svg>
                 </a>
                 <a href="<?php echo e(route('admin.company.dashboard', ['view' => $view, 'date' => now()->format('Y-m-d')])); ?>"
-                    class="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition">
+                    class="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition">
                     <?php echo e(__('app.today')); ?>
 
                 </a>
@@ -192,7 +229,7 @@
                             class="p-4 border rounded-lg hover:shadow-md transition <?php echo e($monthDate->month === now()->month && $monthDate->year === now()->year ? 'ring-2 ring-purple-500' : ''); ?>">
                             <div class="text-center">
                                 <div class="font-bold text-gray-900 mb-2"><?php echo e($monthDate->format('F')); ?></div>
-                                <div class="text-2xl font-bold text-purple-600"><?php echo e($monthBookings); ?></div>
+                                <div class="text-2xl font-bold text-green-600"><?php echo e($monthBookings); ?></div>
                                 <div class="text-xs text-gray-600"><?php echo e(__('app.bookings')); ?></div>
                             </div>
                         </a>
@@ -228,7 +265,7 @@
 
                                 </span>
                                 <?php if($bookingCount > 0): ?>
-                                    <span class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                                    <span class="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                                         <?php echo e($bookingCount); ?>
 
                                     </span>
@@ -289,7 +326,7 @@
                 <span class="text-gray-600"><?php echo e(__('app.completed')); ?></span>
             </div>
             <div class="flex items-center gap-2">
-                <div class="w-4 h-4 ring-2 ring-purple-500 rounded"></div>
+                <div class="w-4 h-4 ring-2 ring-green-500 rounded"></div>
                 <span class="text-gray-600"><?php echo e(__('app.today')); ?></span>
             </div>
         </div>
@@ -302,7 +339,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900"><?php echo e(__('app.upcoming_bookings')); ?></h2>
                 <a href="<?php echo e(route('admin.bookings.index')); ?>"
-                    class="text-purple-600 hover:text-purple-700 text-sm font-medium"><?php echo e(__('app.view_all')); ?></a>
+                    class="text-green-600 hover:text-green-700 text-sm font-medium"><?php echo e(__('app.view_all')); ?></a>
             </div>
 
             <div class="space-y-4">
@@ -339,7 +376,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900"><?php echo e(__('app.top_services')); ?></h2>
                 <a href="<?php echo e(route('admin.services.index')); ?>"
-                    class="text-purple-600 hover:text-purple-700 text-sm font-medium"><?php echo e(__('app.view_all')); ?></a>
+                    class="text-green-600 hover:text-green-700 text-sm font-medium"><?php echo e(__('app.view_all')); ?></a>
             </div>
 
             <div class="space-y-4">
@@ -350,7 +387,7 @@
                             <p class="text-sm text-gray-600"><?php echo e($service->duration_minutes); ?> <?php echo e(__('app.minutes')); ?></p>
                         </div>
                         <div class="text-right">
-                            <p class="text-lg font-bold text-purple-600"><?php echo e($service->bookings_count); ?></p>
+                            <p class="text-lg font-bold text-green-600"><?php echo e($service->bookings_count); ?></p>
                             <p class="text-xs text-gray-600"><?php echo e(__('app.bookings')); ?></p>
                         </div>
                     </div>
@@ -364,7 +401,7 @@
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900">
-                    <svg class="w-6 h-6 inline mr-2 text-purple-600" fill="none" stroke="currentColor"
+                    <svg class="w-6 h-6 inline mr-2 text-green-600" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -373,13 +410,13 @@
 
                 </h2>
                 <a href="<?php echo e(route('admin.staff.index')); ?>"
-                    class="text-purple-600 hover:text-purple-700 text-sm font-medium"><?php echo e(__('app.manage_staff')); ?></a>
+                    class="text-green-600 hover:text-green-700 text-sm font-medium"><?php echo e(__('app.manage_staff')); ?></a>
             </div>
 
             <div class="space-y-3">
                 <?php $__empty_1 = true; $__currentLoopData = $staffWorkload; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $staff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div
-                        class="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100 hover:shadow-md transition">
+                        class="p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-100 hover:shadow-md transition">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center space-x-3">
                                 <div
@@ -395,7 +432,7 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-2xl font-bold text-purple-600"><?php echo e($staff['total_bookings']); ?></p>
+                                <p class="text-2xl font-bold text-green-600"><?php echo e($staff['total_bookings']); ?></p>
                                 <p class="text-xs text-gray-600"><?php echo e(__('app.total_bookings')); ?></p>
                             </div>
                         </div>
@@ -414,7 +451,7 @@
                                 <p class="text-xs text-gray-600"><?php echo e(__('app.completed')); ?></p>
                             </div>
                             <div class="text-center">
-                                <p class="text-lg font-semibold text-purple-600"><?php echo e($staff['bookings_this_month']); ?></p>
+                                <p class="text-lg font-semibold text-green-600"><?php echo e($staff['bookings_this_month']); ?></p>
                                 <p class="text-xs text-gray-600"><?php echo e(__('app.this_month')); ?></p>
                             </div>
                         </div>
@@ -429,8 +466,8 @@
     <!-- Quick Actions -->
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <a href="<?php echo e(route('admin.bookings.index')); ?>"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
-            <svg class="w-8 h-8 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center">
+            <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -438,16 +475,16 @@
         </a>
 
         <a href="<?php echo e(route('admin.services.create')); ?>"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
-            <svg class="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center">
+            <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <p class="font-semibold text-gray-900"><?php echo e(__('app.add_service')); ?></p>
         </a>
 
         <a href="<?php echo e(route('admin.business.edit')); ?>"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
-            <svg class="w-8 h-8 text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center">
+            <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -457,7 +494,7 @@
         </a>
 
         <a href="<?php echo e(route('admin.working_hours.edit')); ?>"
-            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-purple-300 transition text-center">
+            class="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-green-300 transition text-center">
             <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -521,7 +558,7 @@
 
                 <div class="pt-4 flex gap-3">
                     <a id="modal-view-booking" href="#"
-                        class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-center font-medium">
+                        class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center font-medium">
                         <?php echo e(__('app.view_details')); ?>
 
                     </a>

@@ -19,7 +19,7 @@ class BookingController extends Controller
 
         $filter = $request->get('filter', 'upcoming'); // today|upcoming|all
 
-        $q = Booking::where('business_id', $businessId)->with(['service', 'staff']);
+        $q = Booking::where('business_id', $businessId)->with(['service', 'staff', 'branch']);
 
         // Staff members can only see bookings assigned to them
         if ($request->user()->role === 'staff') {
@@ -68,7 +68,7 @@ class BookingController extends Controller
             abort_if($booking->staff_user_id !== $request->user()->id, 403, 'You can only view bookings assigned to you.');
         }
 
-        $booking->load('service', 'business', 'staff');
+        $booking->load('service', 'business', 'staff', 'branch');
 
         // Mark notification as read if coming from notification
         if ($request->has('notification')) {

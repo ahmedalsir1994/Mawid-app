@@ -6,7 +6,7 @@
             <p class="text-gray-600 mt-2">{{ __('app.view_manage_all_businesses') }}</p>
         </div>
         <a href="{{ route('admin.super.businesses.create') }}"
-            class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
+            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
             + {{ __('app.add_business') }}
         </a>
     </div>
@@ -39,7 +39,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $business->address }}</td>
                             <td class="px-6 py-4 text-sm">
-                                <span class="font-bold text-purple-600">{{ $business->users->count() }}</span>
+                                <span class="font-bold text-green-600">{{ $business->users->count() }}</span>
                                 <span class="text-gray-600">{{ __('app.users') }}</span>
                             </td>
                             <td class="px-6 py-4 text-sm">
@@ -71,7 +71,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm space-x-2">
                                 <a href="{{ route('admin.super.businesses.show', $business) }}"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     {{ __('app.view') }}
                                 </a>
                                 <a href="{{ route('admin.super.businesses.edit', $business) }}"
@@ -91,7 +91,7 @@
                             <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                                 <p class="text-lg mb-2">{{ __('app.no_businesses_yet') }}</p>
                                 <a href="{{ route('admin.super.businesses.create') }}"
-                                    class="text-purple-600 hover:text-purple-700 font-medium">
+                                    class="text-green-600 hover:text-green-700 font-medium">
                                     {{ __('app.create_first_business') }}
                                 </a>
                             </td>
