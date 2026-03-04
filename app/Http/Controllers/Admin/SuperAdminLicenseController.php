@@ -16,31 +16,31 @@ class SuperAdminLicenseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = License::with('business')
-            ->join('businesses', 'licenses.business_id', '=', 'businesses.id')
-            ->select('licenses.*');
+        $query = License::with('business');
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('businesses.name', 'like', "%{$search}%")
-                  ->orWhere('businesses.email', 'like', "%{$search}%")
-                  ->orWhere('licenses.license_key', 'like', "%{$search}%");
+                $q->where('license_key', 'like', "%{$search}%")
+                  ->orWhereHas('business', fn ($b) => $b
+                      ->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                  );
             });
         }
 
         if ($plan = $request->input('plan')) {
-            $query->where('licenses.plan', $plan);
+            $query->where('plan', $plan);
         }
 
         if ($status = $request->input('status')) {
-            $query->where('licenses.status', $status);
+            $query->where('status', $status);
         }
 
         if ($payment = $request->input('payment')) {
-            $query->where('licenses.payment_status', $payment);
+            $query->where('payment_status', $payment);
         }
 
-        $licenses = $query->latest('licenses.created_at')->paginate(15)->withQueryString();
+        $licenses = $query->latest()->paginate(15)->withQueryString();
         return view('admin.super.licenses.index', compact('licenses'));
     }
 
