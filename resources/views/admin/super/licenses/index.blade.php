@@ -12,35 +12,73 @@
     </div>
 
     <!-- Search & Filter -->
-    <form method="GET" action="{{ route('admin.super.licenses.index') }}" class="mb-6 flex flex-wrap gap-3">
-        <input
-            type="text"
-            name="search"
-            value="{{ request('search') }}"
-            placeholder="Search by business name, email or license key..."
-            class="flex-1 min-w-[220px] px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-        />
-        <select name="plan" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
-            <option value="">All Plans</option>
-            <option value="free"  @selected(request('plan') === 'free')>🆓 Free</option>
-            <option value="pro"   @selected(request('plan') === 'pro')>💼 Pro</option>
-            <option value="plus"  @selected(request('plan') === 'plus')>🚀 Plus</option>
-        </select>
-        <select name="status" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
-            <option value="">All Statuses</option>
-            <option value="active"    @selected(request('status') === 'active')>Active</option>
-            <option value="expired"   @selected(request('status') === 'expired')>Expired</option>
-            <option value="suspended" @selected(request('status') === 'suspended')>Suspended</option>
-            <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
-        </select>
-        <select name="payment" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
-            <option value="">All Payments</option>
-            <option value="paid"   @selected(request('payment') === 'paid')>Paid</option>
-            <option value="unpaid" @selected(request('payment') === 'unpaid')>Unpaid</option>
-        </select>
-        <button type="submit" class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition">Search</button>
+    <form method="GET" action="{{ route('admin.super.licenses.index') }}" class="mb-6 flex flex-wrap gap-3 items-center">
+        {{-- Search input --}}
+        <div class="relative flex-1 min-w-[220px]">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search by business name or license key..."
+                class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+            />
+        </div>
+
+        {{-- Plan filter --}}
+        <div class="relative">
+            <select name="plan" class="appearance-none pl-3 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white text-gray-700 cursor-pointer">
+                <option value="">All Plans</option>
+                <option value="free"  @selected(request('plan') === 'free')>🆓 Free</option>
+                <option value="pro"   @selected(request('plan') === 'pro')>💼 Pro</option>
+                <option value="plus"  @selected(request('plan') === 'plus')>🚀 Plus</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+
+        {{-- Status filter --}}
+        <div class="relative">
+            <select name="status" class="appearance-none pl-3 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white text-gray-700 cursor-pointer">
+                <option value="">All Statuses</option>
+                <option value="active"    @selected(request('status') === 'active')>Active</option>
+                <option value="expired"   @selected(request('status') === 'expired')>Expired</option>
+                <option value="suspended" @selected(request('status') === 'suspended')>Suspended</option>
+                <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+
+        {{-- Payment filter --}}
+        <div class="relative">
+            <select name="payment" class="appearance-none pl-3 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white text-gray-700 cursor-pointer">
+                <option value="">All Payments</option>
+                <option value="paid"   @selected(request('payment') === 'paid')>Paid</option>
+                <option value="unpaid" @selected(request('payment') === 'unpaid')>Unpaid</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+
+        <button type="submit" class="inline-flex items-center gap-1.5 px-5 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+            Search
+        </button>
         @if(request('search') || request('plan') || request('status') || request('payment'))
-            <a href="{{ route('admin.super.licenses.index') }}" class="px-5 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition">Clear</a>
+            <a href="{{ route('admin.super.licenses.index') }}" class="inline-flex items-center gap-1 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Clear
+            </a>
         @endif
     </form>
 
