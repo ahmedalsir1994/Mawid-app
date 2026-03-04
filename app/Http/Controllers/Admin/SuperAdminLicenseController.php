@@ -23,7 +23,6 @@ class SuperAdminLicenseController extends Controller
                 $q->where('license_key', 'like', "%{$search}%")
                   ->orWhereHas('business', fn ($b) => $b
                       ->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
                   );
             });
         }
