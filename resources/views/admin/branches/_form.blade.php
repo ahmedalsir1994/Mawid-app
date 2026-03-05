@@ -23,7 +23,7 @@
     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('app.phone') }}</label>
     <input type="text" name="phone" value="{{ old('phone', $branch->phone ?? '') }}"
            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-500 outline-none transition"
-           placeholder="+1 555 000 0000">
+           placeholder="+968 99999999">
     @error('phone') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
 </div>
 
