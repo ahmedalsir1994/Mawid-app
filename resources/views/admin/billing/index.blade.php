@@ -157,8 +157,8 @@
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl">
                         <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">Auto-Renewal</p>
-                        <p class="font-semibold text-xs {{ $license->auto_renew ? 'text-green-700' : 'text-gray-400' }}">
-                            {{ $license->auto_renew ? '✓ On' : 'Off' }}
+                        <p class="font-semibold text-xs text-green-700">
+                            ✓ On
                         </p>
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl overflow-hidden">
@@ -262,12 +262,12 @@
                     <p class="text-sm font-medium text-gray-700 mb-1">No card saved</p>
                     <p class="text-xs text-gray-400 mb-4">Add a card to enable automatic renewal.</p>
 
-                    @if($license && !$license->auto_renew && $license->plan !== 'free')
-                        <div class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 flex items-start gap-2 mb-4 text-left">
+                    @if($license && $license->plan !== 'free' && $license->expires_at)
+                        <div class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 flex items-start gap-2 mb-4 text-left">
                             <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            Auto-renewal is off. Your subscription will expire on {{ $license->expires_at?->format('d M Y') ?? 'the next billing date' }}.
+                            Add a card to enable automatic renewal before {{ $license->expires_at->format('d M Y') }}.
                         </div>
                     @endif
                 </div>
@@ -449,9 +449,9 @@
                     <p class="text-xs text-gray-500">This cannot be undone.</p>
                 </div>
             </div>
-            @if($license && $license->auto_renew)
+            @if($license && $license->plan !== 'free')
                 <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 mb-4">
-                    ⚠ Auto-renewal is currently <strong>enabled</strong>. Removing your card will disable it and your subscription will not renew automatically.
+                    ⚠ Your subscription auto-renews automatically. Without a saved card, it will <strong>not renew</strong> on {{ $license->next_billing_date?->format('d M Y') ?? 'the next billing date' }}.
                 </div>
             @endif
             <p class="text-sm text-gray-600 mb-5">Your saved card will be permanently removed from this account.</p>
