@@ -29,15 +29,26 @@
             <div class="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">
                 {{ __('landing.pricing_badge') }}
             </div>
+            @if($licenseExpired ?? false)
+            <h2 class="text-4xl font-bold mb-3">Reactivate Your Subscription</h2>
+            <p class="text-gray-500 max-w-xl mx-auto">Your account is on the Free plan. Reactivate your previous plan or upgrade to restore full access instantly.</p>
+            @else
             <h2 class="text-4xl font-bold mb-3">{{ __('landing.pricing_title') }}</h2>
             <p class="text-gray-500 max-w-xl mx-auto">{{ __('landing.pricing_subtitle') }}</p>
+            @endif
 
             {{-- Current plan badge --}}
-            @php $currentPlan = $license?->plan ?? 'free'; @endphp
-            <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-600">
+            @php
+                $currentPlan   = $license?->plan ?? 'free';
+                $licenseExpired = $license && ($license->isExpired() || ($license->isPastDue() && !$license->isInGracePeriod()));
+            @endphp
+            <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 {{ $licenseExpired ? 'bg-red-50 border border-red-200' : 'bg-gray-100' }} rounded-full text-sm text-gray-600">
                 <span>{{ __('app.current_plan') }}:</span>
-                <span class="font-bold text-gray-900">{{ ucfirst($currentPlan) }}</span>
-                @if($license?->expires_at)
+                <span class="font-bold {{ $licenseExpired ? 'text-red-700' : 'text-gray-900' }}">{{ ucfirst($currentPlan) }}</span>
+                @if($licenseExpired)
+                    <span class="text-red-400">·</span>
+                    <span class="text-red-600 font-semibold">Expired — reactivate below</span>
+                @elseif($license?->expires_at)
                     <span class="text-gray-400">·</span>
                     <span class="text-gray-500">{{ __('app.renews') }} {{ $license->expires_at->format('M d, Y') }}</span>
                 @endif
@@ -97,8 +108,12 @@
 
             {{-- Pro Plan --}}
             @php $isCurrent = $currentPlan === 'pro'; @endphp
-            <div id="plan-card-pro" class="relative bg-white rounded-2xl border-2 {{ $isCurrent ? 'border-green-400 shadow-lg' : 'border-blue-500 shadow-xl' }} p-8 transition">
-                @if($isCurrent)
+            <div id="plan-card-pro" class="relative bg-white rounded-2xl border-2 {{ $isCurrent && $licenseExpired ? 'border-red-400 shadow-lg' : ($isCurrent ? 'border-green-400 shadow-lg' : 'border-blue-500 shadow-xl') }} p-8 transition">
+                @if($isCurrent && $licenseExpired)
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+                        Expired — Reactivate
+                    </div>
+                @elseif($isCurrent)
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
                         {{ __('app.current_plan') }}
                     </div>
@@ -142,7 +157,7 @@
                         </li>
                     @endforeach
                 </ul>
-                @if($isCurrent)
+                @if($isCurrent && !$licenseExpired)
                     <button disabled class="w-full py-3 rounded-xl bg-gray-100 text-gray-500 font-semibold cursor-default">
                         {{ __('app.current_plan') }}
                     </button>
@@ -153,7 +168,7 @@
                         <input type="hidden" name="billing_cycle" class="cycle-input" value="monthly">
                         <button type="submit"
                             class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:shadow-lg transition">
-                            {{ __('landing.plan_pro_cta') }}
+                            {{ $isCurrent && $licenseExpired ? '🔄 Reactivate Pro' : __('landing.plan_pro_cta') }}
                         </button>
                     </form>
                 @endif
@@ -161,8 +176,12 @@
 
             {{-- Plus Plan --}}
             @php $isCurrent = $currentPlan === 'plus'; @endphp
-            <div id="plan-card-plus" class="relative bg-white rounded-2xl border {{ $isCurrent ? 'border-2 border-green-400 shadow-lg' : 'border-gray-200' }} p-8 hover:shadow-lg transition">
-                @if($isCurrent)
+            <div id="plan-card-plus" class="relative bg-white rounded-2xl border {{ $isCurrent && $licenseExpired ? 'border-2 border-red-400 shadow-lg' : ($isCurrent ? 'border-2 border-green-400 shadow-lg' : 'border-gray-200') }} p-8 hover:shadow-lg transition">
+                @if($isCurrent && $licenseExpired)
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+                        Expired — Reactivate
+                    </div>
+                @elseif($isCurrent)
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
                         {{ __('app.current_plan') }}
                     </div>
@@ -202,7 +221,7 @@
                         </li>
                     @endforeach
                 </ul>
-                @if($isCurrent)
+                @if($isCurrent && !$licenseExpired)
                     <button disabled class="w-full py-3 rounded-xl bg-gray-100 text-gray-500 font-semibold cursor-default">
                         {{ __('app.current_plan') }}
                     </button>
@@ -213,7 +232,7 @@
                         <input type="hidden" name="billing_cycle" class="cycle-input" value="monthly">
                         <button type="submit"
                             class="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold hover:shadow-lg transition">
-                            {{ __('landing.plan_plus_cta') }}
+                            {{ $isCurrent && $licenseExpired ? '🔄 Reactivate Plus' : __('landing.plan_plus_cta') }}
                         </button>
                     </form>
                 @endif
