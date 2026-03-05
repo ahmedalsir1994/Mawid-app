@@ -30,13 +30,17 @@
                     @enderror
                 </div>
 
-                <!-- Email (Read-only) -->
+                <!-- Email -->
                 <div>
                     <label for="email"
-                        class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.email') }}</label>
-                    <input lang="en" dir="ltr" type="email" name="email" id="email" value="{{ $user->email }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600" readonly>
-                    <p class="text-gray-600 text-sm mt-1">{{ __('app.email_cannot_change') }}</p>
+                        class="block text-sm font-semibold text-gray-900 mb-2">{{ __('app.email') }} *</label>
+                    <input lang="en" dir="ltr" type="email" name="email" id="email" value="{{ old('email', $user->email) }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                        required>
+                    <p class="text-gray-400 text-xs mt-1">Changing the email will update the login address for this user.</p>
+                    @error('email')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Role -->

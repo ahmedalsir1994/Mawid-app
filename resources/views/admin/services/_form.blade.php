@@ -191,11 +191,11 @@
         <div>
             <label class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.price_optional') }}</label>
             <div class="relative">
-                <span class="absolute left-4 top-3 text-gray-500">$</span>
-                <input lang="en" dir="ltr" type="number" step="0.01" name="price" 
+                <span class="absolute left-3 top-3 text-gray-500 text-sm font-medium">OMR</span>
+                <input lang="en" dir="ltr" type="number" step="0.001" name="price" 
                     value="{{ old('price', $service->price ?? '') }}"
-                    placeholder="0.00"
-                    class="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                    placeholder="0.000"
+                    class="w-full pl-14 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
             </div>
             @error('price') 
                 <p class="text-red-600 text-sm mt-2">{{ $message }}</p>

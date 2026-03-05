@@ -581,7 +581,7 @@ return [
     'payment' => 'Payment',
     'price' => 'Price',
     'no_expiry' => 'No expiry',
-    'days_left' => 'd left',
+    'days_left' => 'day left',
     'expired_days_ago' => 'Expired',
     'days_ago' => 'd ago',
     'delete_license_confirm' => 'Delete this license?',
@@ -707,7 +707,7 @@ return [
     'edit_branch'                 => 'Edit Branch',
     'edit_branch_desc'            => 'Update this branch information',
     'branch_name'                 => 'Branch Name',
-    'branch_name_placeholder'     => 'e.g. Downtown Branch',
+    'branch_name_placeholder'     => 'Seeb Branch',
     'branch_details'              => 'Branch Details',
     'branch_is_active'            => 'Branch is active',
     'create_branch'               => 'Create Branch',
@@ -735,7 +735,7 @@ return [
     'assigned_staff'              => 'Assigned Staff',
     'no_staff_assigned'           => 'No staff assigned to this branch yet.',
     'selected'                    => 'selected',
-    'address_placeholder'         => 'e.g. 123 Main St, City',
+    'address_placeholder'         => 'Al Seeb. 2111 way, Muscat',
 
     // Public booking — branch & email
     'select_branch'               => 'Select Branch',
