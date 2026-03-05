@@ -510,25 +510,99 @@
             <?php
                 $__license = auth()->user()->business?->license;
             ?>
-            <?php if(auth()->user()->role !== 'super_admin' && (!$__license || (!$__license->isFree() && !$__license->isActive()))): ?>
+            <?php if(auth()->user()->role !== 'super_admin' && $__license): ?>
+
+                
+                <?php if($__license->isExpired()): ?>
+                <div class="bg-red-50 border-b border-red-200 px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+                    <div class="flex items-center gap-3 text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <span class="font-semibold">Your subscription has expired.</span>
+                            <span class="text-sm ms-2 text-red-700">
+                                Your data is safe — you're now on the Free plan (1 branch, 1 staff, 3 services, 25 bookings/month).
+                                Upgrade to restore full access.
+                            </span>
+                        </div>
+                    </div>
+                    <?php if(auth()->user()->role === 'company_admin'): ?>
+                    <a href="<?php echo e(route('admin.upgrade.index')); ?>"
+                       class="inline-flex items-center gap-1 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition shrink-0">
+                        Upgrade to Restore
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                    <?php endif; ?>
+                </div>
+
+                
+                <?php elseif($__license->isPastDue() && $__license->isInGracePeriod()): ?>
+                <div class="bg-amber-50 border-b border-amber-300 px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+                    <div class="flex items-center gap-3 text-amber-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <span class="font-semibold">Payment failed — grace period active.</span>
+                            <span class="text-sm ms-2 text-amber-800">
+                                <?php $graceDays = $__license->graceDaysRemaining(); ?>
+                                Your account remains fully active for
+                                <strong><?php echo e($graceDays); ?> <?php echo e(Str::plural('day', $graceDays)); ?></strong>.
+                                Please update your payment method to avoid a service interruption.
+                            </span>
+                        </div>
+                    </div>
+                    <?php if(auth()->user()->role === 'company_admin'): ?>
+                    <a href="<?php echo e(route('admin.billing.index')); ?>"
+                       class="inline-flex items-center gap-1 px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition shrink-0">
+                        Update Payment
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                    <?php endif; ?>
+                </div>
+
+                
+                <?php elseif(in_array($__license->status, ['suspended', 'cancelled'])): ?>
+                <div class="bg-red-50 border-b border-red-200 px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+                    <div class="flex items-center gap-3 text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <span class="font-semibold"><?php echo e(__('app.license_inactive_title')); ?></span>
+                            <span class="text-sm ms-2 text-red-700"><?php echo e(__('app.license_inactive_desc')); ?></span>
+                        </div>
+                    </div>
+                    <?php if(auth()->user()->role === 'company_admin'): ?>
+                    <a href="<?php echo e(route('admin.upgrade.index')); ?>"
+                       class="inline-flex items-center gap-1 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition shrink-0">
+                        <?php echo e(__('app.reactivate_now')); ?>
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
+            <?php elseif(auth()->user()->role !== 'super_admin' && !$__license): ?>
+            
             <div class="bg-red-50 border-b border-red-200 px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
                 <div class="flex items-center gap-3 text-red-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                    </svg>
-                    <div>
-                        <span class="font-semibold"><?php echo e(__('app.license_inactive_title')); ?></span>
-                        <span class="text-sm ms-2 text-red-700"><?php echo e(__('app.license_inactive_desc')); ?></span>
-                    </div>
+                    <span class="font-semibold"><?php echo e(__('app.license_inactive_title')); ?></span>
+                    <span class="text-sm ms-2 text-red-700"><?php echo e(__('app.license_inactive_desc')); ?></span>
                 </div>
                 <?php if(auth()->user()->role === 'company_admin'): ?>
                 <a href="<?php echo e(route('admin.upgrade.index')); ?>"
                    class="inline-flex items-center gap-1 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition shrink-0">
                     <?php echo e(__('app.reactivate_now')); ?>
 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
                 </a>
                 <?php endif; ?>
             </div>
@@ -546,28 +620,33 @@
                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                     </div>
+                    <?php if($__license && $__license->isExpired()): ?>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Subscription Expired</h2>
+                    <p class="text-gray-600 text-sm mb-2 leading-relaxed">
+                        Your subscription has expired. Your data is <strong class="text-green-700">completely safe</strong> — you're now on the Free plan.
+                    </p>
+                    <p class="text-gray-500 text-xs mb-6">Limits: 1 branch · 1 staff · 3 services · 25 bookings/month</p>
+                    <?php else: ?>
                     <h2 class="text-xl font-bold text-gray-900 mb-2">Action Not Allowed</h2>
                     <p class="text-gray-600 text-sm mb-6 leading-relaxed">
                         Your license is
                         <strong class="text-red-600">
-                            <?php if(!$__license): ?>
-                                missing
-                            <?php elseif($__license->status !== 'active'): ?>
-                                <?php echo e($__license->status); ?>
+                            <?php if(!$__license): ?> missing
+                            <?php elseif($__license->status !== 'active'): ?> <?php echo e($__license->status); ?>
 
-                            <?php else: ?>
-                                expired
+                            <?php else: ?> expired
                             <?php endif; ?>
                         </strong>.
                         Adding or editing content has been disabled until you reactivate your plan.
                     </p>
+                    <?php endif; ?>
                     <?php if(auth()->user()->role === 'company_admin'): ?>
                     <a href="<?php echo e(route('admin.upgrade.index')); ?>"
                        class="flex items-center justify-center gap-2 w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition text-sm mb-3">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
-                        Reactivate Now
+                        Upgrade to Restore Full Access
                     </a>
                     <?php else: ?>
                     <p class="text-xs text-gray-500 mb-3">Please ask your account owner to reactivate the plan.</p>

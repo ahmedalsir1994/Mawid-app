@@ -806,7 +806,7 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
                 <?php if(auth()->guard()->check()): ?>
                     <a href="<?php echo e(route('admin.dashboard')); ?>"
-                        class="cta-button px-10 py-5 text-black font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
+                        class="cta-button px-10 py-5 text-white font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
                         <?php echo e(__('landing.cta_btn_dashboard')); ?>
 
                     </a>

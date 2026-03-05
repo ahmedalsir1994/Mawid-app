@@ -268,6 +268,7 @@ return [
     'within_days' => 'Within :days days',
     'pending_revenue' => 'Pending Revenue',
     'awaiting_payment' => 'Awaiting payment',
+    'payment_status' => 'Payment Status',
     'total_users' => 'Total Users',
     'across_all_businesses' => 'Across all businesses',
     'top_performing_businesses' => 'Top Performing Businesses',
