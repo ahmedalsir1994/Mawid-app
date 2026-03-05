@@ -776,7 +776,7 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
                 @auth
                     <a href="{{ route('admin.dashboard') }}"
-                        class="cta-button px-10 py-5 text-black font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
+                        class="cta-button px-10 py-5 text-white font-semibold rounded-xl inline-block text-lg shadow-2xl relative z-10">
                         {{ __('landing.cta_btn_dashboard') }}
                     </a>
                 @else
