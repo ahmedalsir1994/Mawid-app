@@ -938,7 +938,7 @@
                 var effective = methodField ? methodField.value.toUpperCase() : method;
                 if (effective === 'GET') return; // allow search / filter forms
                 var action = form.action || '';
-                if (action.includes('/logout') || action.includes('/lang/')) return;
+                if (action.includes('/logout') || action.includes('/lang/') || action.includes('/upgrade') || action.includes('/billing')) return;
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 showLicenseBlockModal();
