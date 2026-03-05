@@ -89,6 +89,13 @@
             <p class="text-3xl font-bold text-gray-900"><?php echo e($totalUsers); ?></p>
             <p class="text-sm text-gray-600 mt-2"><?php echo e(__('app.across_all_businesses')); ?></p>
         </div>
+
+        <!-- Bookings This Month -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h3 class="text-gray-600 font-medium mb-2">Bookings This Month</h3>
+            <p class="text-3xl font-bold text-gray-900"><?php echo e($bookingsThisMonth); ?></p>
+            <p class="text-sm text-gray-600 mt-2"><?php echo e(now()->format('F Y')); ?></p>
+        </div>
     </div>
 
     <!-- Revenue Breakdown by Plan -->
@@ -135,7 +142,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-blue-600"><?php echo e($revenueByPlan['pro_monthly']->count ?? 0); ?></p>
-                        <p class="text-xs text-gray-500"><?php echo e(__('app.subscribers')); ?></p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
                 <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
@@ -145,7 +152,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-blue-600"><?php echo e($revenueByPlan['pro_yearly']->count ?? 0); ?></p>
-                        <p class="text-xs text-gray-500"><?php echo e(__('app.subscribers')); ?></p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
             </div>
@@ -169,7 +176,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-purple-600"><?php echo e($revenueByPlan['plus_monthly']->count ?? 0); ?></p>
-                        <p class="text-xs text-gray-500"><?php echo e(__('app.subscribers')); ?></p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
                 <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
@@ -179,7 +186,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-purple-600"><?php echo e($revenueByPlan['plus_yearly']->count ?? 0); ?></p>
-                        <p class="text-xs text-gray-500"><?php echo e(__('app.subscribers')); ?></p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
             </div>
@@ -254,24 +261,32 @@
 
             <div class="space-y-4">
                 <?php $__empty_1 = true; $__currentLoopData = $expiringLicensesList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $license): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <div
-                        class="p-4 <?php echo e($license->isActive() ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'); ?> rounded-lg border hover:shadow-md transition">
+                    <?php
+                        $isPastDue = $license->status === 'past_due';
+                        $cardBg    = $isPastDue ? 'bg-red-50 border-red-300' : 'bg-yellow-50 border-yellow-200';
+                        $badgeBg   = $isPastDue ? 'bg-red-600' : 'bg-yellow-600';
+                        if ($isPastDue) {
+                            $badgeText = $license->graceDaysRemaining() . 'd grace left';
+                        } else {
+                            $badgeText = __('app.days_left', ['days' => $license->daysUntilExpiry()]);
+                        }
+                    ?>
+                    <div class="p-4 <?php echo e($cardBg); ?> rounded-lg border hover:shadow-md transition">
                         <div class="flex items-center justify-between mb-2">
-                            <p class="font-semibold text-gray-900"><?php echo e($license->business->name); ?></p>
-                            <span
-                                class="text-xs font-bold text-white <?php echo e($license->isActive() ? 'bg-yellow-600' : 'bg-red-600'); ?> px-2 py-1 rounded">
-                                <?php if($license->isActive()): ?>
-                                    <?php echo e(__('app.days_left', ['days' => $license->daysUntilExpiry()])); ?>
+                            <p class="font-semibold text-gray-900"><?php echo e($license->business->name ?? '—'); ?></p>
+                            <span class="text-xs font-bold text-white <?php echo e($badgeBg); ?> px-2 py-1 rounded">
+                                <?php echo e($badgeText); ?>
 
-                                <?php else: ?>
-                                    <?php echo e(__('app.expired_days_ago', ['days' => abs($license->daysUntilExpiry())])); ?>
-
-                                <?php endif; ?>
                             </span>
                         </div>
                         <p class="text-sm text-gray-600">
-                            <?php echo e(__('app.expires')); ?>: <?php echo e($license->expires_at?->format('M d, Y')); ?>
+                            <?php if($isPastDue): ?>
+                                Grace ends: <?php echo e($license->grace_period_ends_at?->format('M d, Y')); ?>
 
+                            <?php else: ?>
+                                <?php echo e(__('app.expires')); ?>: <?php echo e($license->expires_at?->format('M d, Y')); ?>
+
+                            <?php endif; ?>
                         </p>
                     </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -332,19 +347,20 @@
             <div class="space-y-3">
                 <?php $__empty_1 = true; $__currentLoopData = $recentPayments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $payment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <?php
-                        $planBadge = $payment->plan === 'plus' ? 'bg-purple-600' : 'bg-blue-600';
+                        $planBadge = ($payment->plan ?? '') === 'plus' ? 'bg-purple-600' : 'bg-blue-600';
+                        $borderColor = ($payment->plan ?? '') === 'plus' ? 'border-purple-500' : 'border-blue-500';
                     ?>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border-l-4 <?php echo e($payment->plan === 'plus' ? 'border-purple-500' : 'border-blue-500'); ?>">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border-l-4 <?php echo e($borderColor); ?>">
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-gray-900 truncate"><?php echo e($payment->business->name ?? '—'); ?></p>
-                            <p class="text-xs text-gray-500 mt-0.5"><?php echo e(__('app.activated_on')); ?>: <?php echo e($payment->activated_at?->format('M d, Y')); ?></p>
+                            <p class="text-xs text-gray-500 mt-0.5">Paid: <?php echo e($payment->paid_at?->format('M d, Y')); ?></p>
                         </div>
                         <div class="text-right ml-3 shrink-0">
                             <div class="flex items-center gap-2 justify-end mb-1">
-                                <span class="text-xs font-bold text-white <?php echo e($planBadge); ?> px-2 py-0.5 rounded capitalize"><?php echo e(ucfirst($payment->plan)); ?></span>
+                                <span class="text-xs font-bold text-white <?php echo e($planBadge); ?> px-2 py-0.5 rounded capitalize"><?php echo e(ucfirst($payment->plan ?? '—')); ?></span>
                                 <span class="text-xs text-gray-500 capitalize"><?php echo e($payment->billing_cycle); ?></span>
                             </div>
-                            <p class="text-sm font-bold text-green-600"><?php echo e(number_format($payment->price, 3)); ?> OMR</p>
+                            <p class="text-sm font-bold text-green-600"><?php echo e(number_format($payment->amount, 3)); ?> OMR</p>
                         </div>
                     </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

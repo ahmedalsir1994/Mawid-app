@@ -596,16 +596,8 @@
                         class="px-6 py-2 rounded-lg font-medium text-sm transition text-gray-500">
                         <?php echo e(__('landing.billing_yearly')); ?>
 
-                        <span class="ml-1 text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
-                            <?php echo e(__('landing.billing_save')); ?>
-
-                        </span>
                     </button>
                 </div>
-                
-                <p class="lp-yearly-caption text-sm font-medium text-green-700 bg-green-50 border border-green-200 px-4 py-1.5 rounded-full" style="display:none">
-                    🎉 Best value – save 5% with annual billing
-                </p>
             </div>
 
             <!-- Plan Cards -->
@@ -656,19 +648,26 @@
                     <div class="mb-6">
                         
                         <div class="lp-cycle-monthly">
-                            <span class="text-4xl font-bold text-gray-900">5</span>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm line-through text-gray-400">10 OMR</span>
+                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
+                            </div>
+                            <span class="text-4xl font-bold text-gray-900">6.5</span>
                             <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
                             <span class="text-sm text-gray-500"> / <?php echo e(__('landing.per_month')); ?></span>
                         </div>
                         
                         <div class="lp-cycle-yearly" style="display:none">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm line-through text-gray-400">10 OMR/mo</span>
+                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 45%</span>
+                            </div>
                             <div class="flex items-end gap-2">
-                                <span class="text-4xl font-bold text-gray-900">4.75</span>
+                                <span class="text-4xl font-bold text-gray-900">5.5</span>
                                 <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / <?php echo e(__('landing.per_month')); ?></span>
                             </div>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm text-gray-500">57 OMR <?php echo e(__('landing.per_year')); ?></span>
-                                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Save 5%</span>
+                                <span class="text-sm text-gray-500">66 OMR <?php echo e(__('landing.per_year')); ?></span>
                             </div>
                         </div>
                     </div>
@@ -705,19 +704,26 @@
                     <div class="mb-6">
                         
                         <div class="lp-cycle-monthly">
-                            <span class="text-4xl font-bold text-gray-900">9</span>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm line-through text-gray-400">14 OMR</span>
+                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 30%</span>
+                            </div>
+                            <span class="text-4xl font-bold text-gray-900">9.8</span>
                             <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
                             <span class="text-sm text-gray-500"> / <?php echo e(__('landing.per_month')); ?></span>
                         </div>
                         
                         <div class="lp-cycle-yearly" style="display:none">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm line-through text-gray-400">14 OMR/mo</span>
+                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
+                            </div>
                             <div class="flex items-end gap-2">
-                                <span class="text-4xl font-bold text-gray-900">8.50</span>
+                                <span class="text-4xl font-bold text-gray-900">9.1</span>
                                 <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / <?php echo e(__('landing.per_month')); ?></span>
                             </div>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm text-gray-500">102 OMR <?php echo e(__('landing.per_year')); ?></span>
-                                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Save 5%</span>
+                                <span class="text-sm text-gray-500">109.2 OMR <?php echo e(__('landing.per_year')); ?></span>
                             </div>
                         </div>
                     </div>

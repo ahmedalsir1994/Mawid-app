@@ -80,6 +80,13 @@
             <p class="text-3xl font-bold text-gray-900">{{ $totalUsers }}</p>
             <p class="text-sm text-gray-600 mt-2">{{ __('app.across_all_businesses') }}</p>
         </div>
+
+        <!-- Bookings This Month -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h3 class="text-gray-600 font-medium mb-2">Bookings This Month</h3>
+            <p class="text-3xl font-bold text-gray-900">{{ $bookingsThisMonth }}</p>
+            <p class="text-sm text-gray-600 mt-2">{{ now()->format('F Y') }}</p>
+        </div>
     </div>
 
     <!-- Revenue Breakdown by Plan -->
@@ -126,7 +133,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-blue-600">{{ $revenueByPlan['pro_monthly']->count ?? 0 }}</p>
-                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
                 <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
@@ -136,7 +143,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-blue-600">{{ $revenueByPlan['pro_yearly']->count ?? 0 }}</p>
-                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
             </div>
@@ -160,7 +167,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-purple-600">{{ $revenueByPlan['plus_monthly']->count ?? 0 }}</p>
-                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
                 <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
@@ -170,7 +177,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-purple-600">{{ $revenueByPlan['plus_yearly']->count ?? 0 }}</p>
-                        <p class="text-xs text-gray-500">{{ __('app.subscribers') }}</p>
+                        <p class="text-xs text-gray-500">payments</p>
                     </div>
                 </div>
             </div>
@@ -245,21 +252,29 @@
 
             <div class="space-y-4">
                 @forelse($expiringLicensesList as $license)
-                    <div
-                        class="p-4 {{ $license->isActive() ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200' }} rounded-lg border hover:shadow-md transition">
+                    @php
+                        $isPastDue = $license->status === 'past_due';
+                        $cardBg    = $isPastDue ? 'bg-red-50 border-red-300' : 'bg-yellow-50 border-yellow-200';
+                        $badgeBg   = $isPastDue ? 'bg-red-600' : 'bg-yellow-600';
+                        if ($isPastDue) {
+                            $badgeText = $license->graceDaysRemaining() . 'd grace left';
+                        } else {
+                            $badgeText = __('app.days_left', ['days' => $license->daysUntilExpiry()]);
+                        }
+                    @endphp
+                    <div class="p-4 {{ $cardBg }} rounded-lg border hover:shadow-md transition">
                         <div class="flex items-center justify-between mb-2">
-                            <p class="font-semibold text-gray-900">{{ $license->business->name }}</p>
-                            <span
-                                class="text-xs font-bold text-white {{ $license->isActive() ? 'bg-yellow-600' : 'bg-red-600' }} px-2 py-1 rounded">
-                                @if($license->isActive())
-                                    {{ __('app.days_left', ['days' => $license->daysUntilExpiry()]) }}
-                                @else
-                                    {{ __('app.expired_days_ago', ['days' => abs($license->daysUntilExpiry())]) }}
-                                @endif
+                            <p class="font-semibold text-gray-900">{{ $license->business->name ?? '—' }}</p>
+                            <span class="text-xs font-bold text-white {{ $badgeBg }} px-2 py-1 rounded">
+                                {{ $badgeText }}
                             </span>
                         </div>
                         <p class="text-sm text-gray-600">
-                            {{ __('app.expires') }}: {{ $license->expires_at?->format('M d, Y') }}
+                            @if($isPastDue)
+                                Grace ends: {{ $license->grace_period_ends_at?->format('M d, Y') }}
+                            @else
+                                {{ __('app.expires') }}: {{ $license->expires_at?->format('M d, Y') }}
+                            @endif
                         </p>
                     </div>
                 @empty
@@ -318,19 +333,20 @@
             <div class="space-y-3">
                 @forelse($recentPayments as $payment)
                     @php
-                        $planBadge = $payment->plan === 'plus' ? 'bg-purple-600' : 'bg-blue-600';
+                        $planBadge = ($payment->plan ?? '') === 'plus' ? 'bg-purple-600' : 'bg-blue-600';
+                        $borderColor = ($payment->plan ?? '') === 'plus' ? 'border-purple-500' : 'border-blue-500';
                     @endphp
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border-l-4 {{ $payment->plan === 'plus' ? 'border-purple-500' : 'border-blue-500' }}">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border-l-4 {{ $borderColor }}">
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-gray-900 truncate">{{ $payment->business->name ?? '—' }}</p>
-                            <p class="text-xs text-gray-500 mt-0.5">{{ __('app.activated_on') }}: {{ $payment->activated_at?->format('M d, Y') }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Paid: {{ $payment->paid_at?->format('M d, Y') }}</p>
                         </div>
                         <div class="text-right ml-3 shrink-0">
                             <div class="flex items-center gap-2 justify-end mb-1">
-                                <span class="text-xs font-bold text-white {{ $planBadge }} px-2 py-0.5 rounded capitalize">{{ ucfirst($payment->plan) }}</span>
+                                <span class="text-xs font-bold text-white {{ $planBadge }} px-2 py-0.5 rounded capitalize">{{ ucfirst($payment->plan ?? '—') }}</span>
                                 <span class="text-xs text-gray-500 capitalize">{{ $payment->billing_cycle }}</span>
                             </div>
-                            <p class="text-sm font-bold text-green-600">{{ number_format($payment->price, 3) }} OMR</p>
+                            <p class="text-sm font-bold text-green-600">{{ number_format($payment->amount, 3) }} OMR</p>
                         </div>
                     </div>
                 @empty

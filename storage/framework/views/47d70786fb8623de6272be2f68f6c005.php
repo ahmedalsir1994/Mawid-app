@@ -129,6 +129,16 @@
                             <span class="min-w-[20px] h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold px-1"><?php echo e($_unreadContacts); ?></span>
                         <?php endif; ?>
                     </a>
+
+                    <!-- Super Admin Only: Billing History -->
+                    <a href="<?php echo e(route('admin.super.billing.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.billing.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                        <span class="font-medium">Billing History</span>
+                    </a>
                 <?php elseif(auth()->user()->role === 'company_admin'): ?>
                     <!-- Company Admin Only: Business Settings -->
                     <a href="<?php echo e(route('admin.business.edit')); ?>"
@@ -183,6 +193,16 @@
                                 clip-rule="evenodd" />
                         </svg>
                         <span class="font-medium"><?php echo e(__('app.bookings')); ?></span>
+                    </a>
+
+                    <!-- Company Admin: Billing -->
+                    <a href="<?php echo e(route('admin.billing.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.billing.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                        <span class="font-medium">Billing</span>
                     </a>
                 <?php elseif(auth()->user()->role === 'staff'): ?>
                     <!-- Staff Only: Bookings -->
@@ -399,6 +419,12 @@
                                             $notifIconBg = 'bg-purple-100';
                                             $notifIconColor = 'text-purple-600';
                                             $notifSub = ucfirst($notification->data['plan'] ?? '') . ' · ' . ($notification->data['business_name'] ?? '');
+                                        } elseif ($notifType === 'auto_renew_failed') {
+                                            $notifUrl = $notification->data['url'] ?? route('admin.billing.index');
+                                            $notifIcon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z';
+                                            $notifIconBg = 'bg-red-100';
+                                            $notifIconColor = 'text-red-600';
+                                            $notifSub = ($notification->data['reason'] ?? '') . ' · Attempt ' . ($notification->data['attempt'] ?? 1);
                                         } else {
                                             $notifUrl = (auth()->user()->role === 'staff'
                                                 ? route('admin.staff.bookings.show', $notification->data['booking_id'] ?? 0)

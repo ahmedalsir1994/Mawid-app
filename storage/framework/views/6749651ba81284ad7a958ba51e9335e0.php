@@ -8,6 +8,11 @@
 <?php $attributes = $attributes->except(\App\View\Components\GuestLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
+    
+    <div class="absolute -top-6 -right-6 w-32 h-32 bg-green-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 pointer-events-none"></div>
+    <div class="absolute -bottom-6 -left-6 w-28 h-28 bg-emerald-300 rounded-full mix-blend-multiply filter blur-2xl opacity-25 pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-4 w-20 h-20 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 pointer-events-none"></div>
+
     <!-- Session Status -->
     <?php if (isset($component)) { $__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7c1bf3a9346f208f66ee83b06b607fb5 = $attributes; } ?>

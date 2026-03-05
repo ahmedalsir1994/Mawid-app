@@ -115,6 +115,9 @@ class UpgradeController extends Controller
                     'phone_number' => $user->phone ?? '+96800000000',
                     'country'      => 'OM',
                 ],
+                'extras' => [
+                    'save_card' => true,
+                ],
             ]);
         } catch (ConnectionException $e) {
             Log::error('Paymob: Connection error', ['message' => $e->getMessage(), 'userId' => $user->id]);

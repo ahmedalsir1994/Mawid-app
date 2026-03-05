@@ -1,4 +1,9 @@
 ﻿<x-guest-layout>
+    {{-- Faint green blobs inside the card --}}
+    <div class="absolute -top-6 -right-6 w-32 h-32 bg-green-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 pointer-events-none"></div>
+    <div class="absolute -bottom-6 -left-6 w-28 h-28 bg-emerald-300 rounded-full mix-blend-multiply filter blur-2xl opacity-25 pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-4 w-20 h-20 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 pointer-events-none"></div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

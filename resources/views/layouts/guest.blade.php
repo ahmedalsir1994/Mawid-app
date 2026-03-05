@@ -34,9 +34,9 @@
    
     
     <div
-        class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-gray-50 via-white to-gray-100">
+        class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-green-50 via-white to-emerald-50 relative overflow-hidden">
         <!-- Logo Section -->
-        <div class="w-full sm:max-w-md px-6 py-4 bg-white rounded-lg shadow-lg">
+        <div class="relative overflow-hidden w-full sm:max-w-md px-6 py-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100">
             <div class="flex justify-center mb-6">
                 <img src="/images/Mawid.png" alt="Mawid App" class="h-10 w-auto">
             </div>
@@ -46,10 +46,13 @@
 
         <!-- Decorative Elements -->
         <div
-            class="absolute top-0 right-0 -z-10 w-96 h-96 bg-gradient-to-bl from-green-200 to-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+            class="absolute top-0 right-0 -z-10 w-[32rem] h-[32rem] bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
         </div>
         <div
-            class="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-gradient-to-tr from-green-200 to-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+            class="absolute bottom-0 left-0 -z-10 w-[32rem] h-[32rem] bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute top-1/2 left-1/4 -z-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-2xl opacity-25 animate-blob animation-delay-4000">
         </div>
     </div>
 
@@ -76,6 +79,10 @@
 
         .animation-delay-2000 {
             animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
         }
     </style>
 

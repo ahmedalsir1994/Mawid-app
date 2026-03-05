@@ -80,7 +80,7 @@ return [
     // Billing toggle
     'billing_monthly'   => 'Monthly',
     'billing_yearly'    => 'Yearly',
-    'billing_save'      => '-5%',
+    'billing_save'      => 'Save 15%',
     'per_month'         => 'month',
     'per_year'          => 'year',
 

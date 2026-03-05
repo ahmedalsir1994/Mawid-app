@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\PaymobController;
 use App\Http\Controllers\Admin\ManualBookingController;
+use App\Http\Controllers\Admin\BillingController;
+use App\Http\Controllers\Admin\SuperAdminBillingController;
 
 use App\Http\Controllers\ContactController;
 
@@ -86,6 +88,10 @@ Route::middleware(['auth', 'check_role:super_admin'])->prefix('admin')->name('ad
     Route::patch('/contact-submissions/{contactSubmission}/mark-unread', [ContactSubmissionController::class, 'markUnread'])->name('contact-submissions.mark-unread');
     Route::delete('/contact-submissions/{contactSubmission}', [ContactSubmissionController::class, 'destroy'])->name('contact-submissions.destroy');
 
+    // Billing History (super admin)
+    Route::get('/super/billing', [SuperAdminBillingController::class, 'index'])->name('super.billing.index');
+    Route::get('/super/billing/{invoice}', [SuperAdminBillingController::class, 'show'])->name('super.billing.show');
+
 });
 
 // Staff Routes
@@ -119,6 +125,17 @@ Route::middleware(['auth', 'check_role:company_admin'])->prefix('admin')->name('
     Route::get('/upgrade',          [UpgradeController::class, 'index'])->name('upgrade.index');
     Route::post('/upgrade',         [UpgradeController::class, 'initiate'])->name('upgrade.initiate');
     Route::get('/upgrade/autopay',  [UpgradeController::class, 'autoPay'])->name('upgrade.autopay');
+
+    // Billing
+    Route::get('/billing',                              [BillingController::class, 'index'])->name('billing.index');
+    Route::get('/billing/invoices/{invoice}',           [BillingController::class, 'invoice'])->name('billing.invoice');
+    Route::get('/billing/invoices/{invoice}/download',  [BillingController::class, 'downloadInvoice'])->name('billing.invoice.download');
+    Route::middleware('throttle:10,1')->group(function () {
+        Route::post('/billing/update-card',                 [BillingController::class, 'initiateCardUpdate'])->name('billing.update-card');
+        Route::post('/billing/retry-payment',               [BillingController::class, 'retryPayment'])->name('billing.retry-payment');
+        Route::delete('/billing/cancel',                    [BillingController::class, 'cancelSubscription'])->name('billing.cancel');
+        Route::delete('/billing/payment-method',            [BillingController::class, 'removePaymentMethod'])->name('billing.remove-payment-method');
+    });
 
     Route::get('/business', [BusinessSettingsController::class, 'edit'])->name('business.edit');
     Route::post('/business', [BusinessSettingsController::class, 'update'])->name('business.update');

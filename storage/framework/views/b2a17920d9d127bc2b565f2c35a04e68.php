@@ -1,0 +1,969 @@
+﻿<!doctype html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>"
+    dir="<?php echo e(in_array(app()->getLocale(), ['ar', 'he', 'fa', 'ur']) ? 'rtl' : 'ltr'); ?>">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?php echo e($business->name); ?></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [dir="rtl"] body { font-family: 'Cairo', sans-serif; }
+        .slot-btn { transition: all .15s ease; }
+        .slot-btn.selected { background: #16a34a; color: #fff; border-color: #16a34a; }
+        .slot-btn:not(.selected):hover { border-color: #16a34a; background:#f0fdf4; }
+        .service-row { transition: background .15s ease; }
+        .service-row:hover { background: #f9fafb; }
+        #bookingModal { transition: opacity .25s ease; }
+        #bookingModal.hidden { display:none; }
+        #bookingDrawer { transition: transform .3s cubic-bezier(.4,0,.2,1); }
+        @media (min-width: 1024px) { .sidebar-sticky { position: sticky; top: 1.5rem; } }
+        .cover-gradient { background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%); }
+
+        /* Gallery */
+        .gallery-img { transition: transform .3s ease, filter .3s ease; }
+        .gallery-img:hover { transform: scale(1.03); filter: brightness(.9); }
+
+        /* Lightbox */
+        #lightbox { transition: opacity .2s ease; }
+        #lightbox.hidden { display:none; }
+        #lightboxImg { transition: opacity .2s ease; }
+    </style>
+</head>
+
+<body class="bg-gray-100 antialiased">
+
+    
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4 relative">
+            
+            <div class="flex items-center gap-3 shrink-0">
+                <?php if($business->logo): ?>
+                    <img src="<?php echo e(asset($business->logo)); ?>" alt="<?php echo e($business->name); ?>" class="h-8 w-auto rounded">
+                <?php else: ?>
+                    <div class="h-8 w-8 rounded bg-green-700 flex items-center justify-center">
+                        <span class="text-white text-xs font-bold"><?php echo e(strtoupper(substr($business->name,0,1))); ?></span>
+                    </div>
+                <?php endif; ?>
+                <span class="font-semibold text-gray-900 text-sm hidden sm:block"><?php echo e($business->name); ?></span>
+            </div>
+
+            
+            <a href="<?php echo e(route('landing')); ?>"
+               class="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity"
+               title="Powered by Mawid">
+                <img src="/images/Mawid.png" alt="Mawid" class="h-7 w-auto">
+            </a>
+
+            
+            <div class="flex items-center gap-2">
+                
+                <a href="<?php echo e(route('landing')); ?>"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-600 bg-white text-xs font-semibold text-green-700 hover:bg-green-600 hover:text-white transition-colors shadow-sm">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="hidden sm:inline"><?php echo e(__('app.home')); ?></span>
+                </a>
+
+                
+                <div class="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold shadow-sm">
+                    <a href="<?php echo e(route('lang.switch', 'en')); ?>"
+                       class="px-3 py-1.5 transition-colors <?php echo e(app()->getLocale() === 'en' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-800'); ?>">EN</a>
+                    <span class="w-px bg-gray-200 self-stretch"></span>
+                    <a href="<?php echo e(route('lang.switch', 'ar')); ?>"
+                       class="px-3 py-1.5 transition-colors <?php echo e(app()->getLocale() === 'ar' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-800'); ?>">AR</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4">
+            
+            <?php
+                // Collect all ServiceImage records across every service (already eager-loaded)
+                $galleryImages = $services->flatMap(fn($s) => $s->images)->values();
+                // Fallback: if no new-style images, use legacy single `image` fields
+                if ($galleryImages->isEmpty()) {
+                    $galleryImages = $services
+                        ->filter(fn($s) => $s->image)
+                        ->map(fn($s) => (object)['path' => $s->image, 'alt' => $s->name])
+                        ->values();
+                }
+                $hasGallery = $galleryImages->count() > 0;
+            ?>
+
+            <?php if($hasGallery): ?>
+                <div class="relative w-full h-56 sm:h-72 rounded-b-xl overflow-hidden bg-gray-100">
+                    <div class="h-full grid <?php echo e($galleryImages->count() >= 3 ? 'grid-cols-3' : ($galleryImages->count() === 2 ? 'grid-cols-2' : 'grid-cols-1')); ?> gap-1">
+
+                        
+                        <div class="<?php echo e($galleryImages->count() >= 2 ? 'col-span-2' : 'col-span-1'); ?> relative overflow-hidden cursor-pointer"
+                            onclick="openLightbox(0)">
+                            <img src="<?php echo e(asset($galleryImages[0]->path)); ?>"
+                                alt=""
+                                class="gallery-img w-full h-full object-cover">
+                        </div>
+
+                        
+                        <?php if($galleryImages->count() >= 2): ?>
+                            <div class="col-span-1 flex flex-col gap-1">
+                                <div class="flex-1 relative overflow-hidden cursor-pointer" onclick="openLightbox(1)">
+                                    <img src="<?php echo e(asset($galleryImages[1]->path)); ?>"
+                                        alt=""
+                                        class="gallery-img w-full h-full object-cover">
+                                </div>
+                                <?php if($galleryImages->count() >= 3): ?>
+                                    <div class="flex-1 relative overflow-hidden cursor-pointer" onclick="openLightbox(2)">
+                                        <img src="<?php echo e(asset($galleryImages[2]->path)); ?>"
+                                            alt=""
+                                            class="gallery-img w-full h-full object-cover">
+                                        <?php if($galleryImages->count() > 3): ?>
+                                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center"
+                                                onclick="event.stopPropagation(); openLightbox(2)">
+                                                <span class="text-white text-sm font-semibold">+<?php echo e($galleryImages->count() - 3); ?> more</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    
+                    <?php if($galleryImages->count() > 1): ?>
+                        <button type="button" onclick="openLightbox(0)"
+                            class="absolute bottom-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-white/60 shadow-md px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-800 hover:bg-white transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            See all images
+                        </button>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                
+                <div class="relative h-52 sm:h-64 w-full rounded-b-xl overflow-hidden cover-gradient">
+                    <?php if($business->logo): ?>
+                        <img src="<?php echo e(asset($business->logo)); ?>" alt="<?php echo e($business->name); ?>"
+                            class="absolute inset-0 h-full w-full object-cover opacity-20">
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <div class="py-5">
+                <h1 class="text-2xl font-bold text-gray-900"><?php echo e($business->name); ?></h1>
+                <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                    <?php if($business->address): ?>
+                        <a href="https://www.google.com/maps/search/?api=1&query=<?php echo e(urlencode($business->address)); ?>"
+                           target="_blank" rel="noopener noreferrer"
+                           class="flex items-center gap-1 text-green-700 underline underline-offset-2 hover:text-green-900 transition">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <?php echo e($business->address); ?>
+
+                        </a>
+                    <?php endif; ?>
+                    <?php if($business->phone): ?>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            <?php echo e($business->phone); ?>
+
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+            
+            <div class="flex-1 min-w-0 space-y-8">
+
+                <?php if($errors->any()): ?>
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                        <p class="text-sm font-semibold text-red-800 mb-1"><?php echo e(__("app.error")); ?></p>
+                        <ul class="text-sm text-red-700 list-disc list-inside space-y-0.5">
+                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><li><?php echo e($error); ?></li><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+
+                <?php if(!empty($bookingLimitReached)): ?>
+                    <div class="bg-amber-50 border border-amber-300 rounded-xl p-5 flex items-start gap-4">
+                        <div class="shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-amber-900 text-sm">Online booking is temporarily unavailable</p>
+                            <p class="text-amber-800 text-sm mt-0.5">This business has reached its online booking limit for this month. Please contact them directly to schedule your appointment.</p>
+                            <?php if($business->phone): ?>
+                                <a href="tel:<?php echo e($business->phone); ?>" class="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    </svg>
+                                    Call <?php echo e($business->phone); ?>
+
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-lg font-bold text-gray-900"><?php echo e(__("app.select_service")); ?></h2>
+                    </div>
+                    <?php if($services->isEmpty()): ?>
+                        <div class="px-6 py-12 text-center text-gray-500">
+                            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="font-medium"><?php echo e(__("app.no_services_available") ?? "No services available yet."); ?></p>
+                            <p class="text-sm mt-1"><?php echo e(__("app.please_check_back_later") ?? "Please check back later."); ?></p>
+                        </div>
+                    <?php else: ?>
+                        <ul class="divide-y divide-gray-100">
+                            <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li class="service-row px-6 py-4 flex items-start gap-4">
+                                    <div class="shrink-0">
+                                        <?php if($s->primaryImage): ?>
+                                            <img src="<?php echo e(asset($s->primaryImage)); ?>" alt="<?php echo e($s->name); ?>"
+                                                class="w-14 h-14 rounded-lg object-cover border border-gray-100">
+                                        <?php else: ?>
+                                            <div class="w-14 h-14 rounded-lg bg-green-50 border border-green-100 flex items-center justify-center">
+                                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                                </svg>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-semibold text-gray-900"><?php echo e($s->name); ?></p>
+                                        <p class="text-sm text-gray-500 mt-0.5">
+                                            <?php echo e($s->duration_minutes); ?> <?php echo e(__("app.minutes") ?? "min"); ?>
+
+                                            <?php if($s->price): ?>
+                                                &nbsp;&middot;&nbsp;
+                                                <span class="font-medium text-gray-700"><?php echo e(number_format($s->price, 2)); ?> <?php echo e($business->currency); ?></span>
+                                            <?php endif; ?>
+                                        </p>
+                                        <?php if($s->description): ?>
+                                            <p class="text-xs text-gray-400 mt-1 line-clamp-2"><?php echo e($s->description); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if(!empty($bookingLimitReached)): ?>
+                                        <span class="shrink-0 px-5 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-400 bg-gray-50 cursor-not-allowed select-none">
+                                            Unavailable
+                                        </span>
+                                    <?php else: ?>
+                                        <button type="button"
+                                            class="shrink-0 book-btn px-5 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-800 hover:border-gray-900 hover:bg-gray-50 transition"
+                                            data-service-id="<?php echo e($s->id); ?>"
+                                            data-service-name="<?php echo e($s->name); ?>"
+                                            onclick="openBookingModal(this)"> <?php echo e(__("app.book")); ?></button>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+
+              
+
+                
+                <?php if(isset($teamMembers) && $teamMembers->isNotEmpty()): ?>
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-lg font-bold text-gray-900"><?php echo e(__('app.team') ?? 'Team'); ?></h2>
+                    </div>
+                    <div class="px-6 py-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-5">
+                        <?php $__currentLoopData = $teamMembers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $member): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="flex flex-col items-center text-center">
+                            <?php if($member->photo): ?>
+                                <img src="<?php echo e(asset($member->photo)); ?>" alt="<?php echo e($member->name); ?>"
+                                    class="w-16 h-16 rounded-full object-cover border-2 border-gray-100 shadow-sm">
+                            <?php else: ?>
+                                <div class="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center shadow-sm">
+                                    <span class="text-emerald-700 font-bold text-xl leading-none"><?php echo e(mb_strtoupper(mb_substr($member->name, 0, 1))); ?></span>
+                                </div>
+                            <?php endif; ?>
+                            <p class="mt-2 text-sm font-semibold text-gray-900 leading-tight line-clamp-2"><?php echo e($member->name); ?></p>
+                            <?php if($member->title): ?>
+                                <p class="text-xs text-gray-500 mt-0.5"><?php echo e($member->title); ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+            </div>
+
+
+            
+
+            
+            <div class="w-full lg:w-80 shrink-0 sidebar-sticky">
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-5">
+                        <h3 class="text-lg font-bold text-gray-900"><?php echo e($business->name); ?></h3>
+                        <?php if($business->address): ?>
+                            <a href="https://www.google.com/maps/search/?api=1&query=<?php echo e(urlencode($business->address)); ?>"
+                               target="_blank" rel="noopener noreferrer"
+                               class="mt-3 flex items-start gap-2 text-sm text-green-700 underline underline-offset-2 hover:text-green-900 transition">
+                                <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <?php echo e($business->address); ?>
+
+                            </a>
+                        <?php endif; ?>
+                        <?php if($business->phone): ?>
+                            <p class="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                                <svg class="w-4 h-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                <?php echo e($business->phone); ?>
+
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                    <?php if(!$services->isEmpty()): ?>
+                        <div class="px-6 pb-5">
+                            <?php if(!empty($bookingLimitReached)): ?>
+                                <div class="w-full py-3 rounded-xl bg-gray-100 text-gray-400 text-center font-semibold text-sm cursor-not-allowed select-none">
+                                    <?php echo e(__("app.bookings_unavailable")); ?>
+
+                                </div>
+                            <?php else: ?>
+                                <button type="button" onclick="openBookingModal(null)"
+                                    class="w-full py-3 rounded-xl bg-gray-900 text-white font-semibold text-sm hover:bg-gray-800 active:scale-95 transition">
+                                    <?php echo e(__("app.book_now") ?? "Book now"); ?>
+
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
+
+        </div>
+        
+        <div class="flex py-4 items-center justify-center">
+                    <p class="text-center text-xs text-gray-400">
+                    &check; <?php echo e(__("app.secure_booking") ?? "Secure booking"); ?> &nbsp;&middot;&nbsp;
+                    &check; <?php echo e(__("app.instant_confirmation") ?? "Instant confirmation"); ?> &nbsp;&middot;&nbsp;
+                    &check; <?php echo e(__("app.whatsapp_reminder") ?? "WhatsApp reminder"); ?>
+
+                </p>
+        </div>
+    </div>
+
+    
+    <div id="bookingModal" class="hidden fixed inset-0 z-50 flex justify-end" aria-modal="true">
+        <div id="modalBackdrop" class="absolute inset-0 bg-black/50" onclick="closeBookingModal()"></div>
+        <div id="bookingDrawer"
+            class="relative w-full max-w-lg h-full bg-white shadow-2xl flex flex-col overflow-hidden translate-x-full">
+
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+                <h2 class="text-lg font-bold text-gray-900"><?php echo e(__("app.book_appointment")); ?></h2>
+                <button type="button" onclick="closeBookingModal()"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+
+                
+                <?php if(isset($branches) && $branches->count() > 1): ?>
+                <div id="branchSection">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3"><?php echo e(__("app.select_branch") ?? "Select Branch"); ?></p>
+                    <div class="space-y-2" id="modalBranchList">
+                        <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $br): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <label class="flex items-start gap-3 p-3 rounded-lg border-2 border-gray-200 cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50 transition">
+                                <input type="radio" name="modal_branch" class="modal-branch-radio mt-1"
+                                    value="<?php echo e($br->id); ?>"
+                                    data-services='<?php echo json_encode($br->services->pluck("id"), 15, 512) ?>'>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-sm text-gray-900"><?php echo e($br->name); ?></p>
+                                    <?php if($br->address): ?>
+                                        <p class="text-xs text-gray-500 mt-0.5">📍 <?php echo e($br->address); ?></p>
+                                    <?php endif; ?>
+                                    <?php if($br->phone): ?>
+                                        <p class="text-xs text-gray-400 mt-0.5">📞 <?php echo e($br->phone); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                                <svg class="branch-check w-5 h-5 text-green-600 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" style="opacity:0">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </label>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3"><?php echo e(__("app.select_service")); ?></p>
+                    <div id="modalServiceList" class="space-y-2">
+                        <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50 transition">
+                                <input type="radio" name="modal_service" class="modal-service-radio sr-only"
+                                    value="<?php echo e($s->id); ?>" data-name="<?php echo e($s->name); ?>" data-duration="<?php echo e($s->duration_minutes); ?>">
+                                <?php if($s->primaryImage): ?>
+                                    <img src="<?php echo e(asset($s->primaryImage)); ?>" class="w-10 h-10 rounded-md object-cover shrink-0">
+                                <?php else: ?>
+                                    <div class="w-10 h-10 rounded-md bg-green-50 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-sm text-gray-900"><?php echo e($s->name); ?></p>
+                                    <p class="text-xs text-gray-500"><?php echo e($s->duration_minutes); ?> <?php echo e(__("app.minutes") ?? "min"); ?>
+
+                                        <?php if($s->price): ?> &middot; <?php echo e(number_format($s->price,2)); ?> <?php echo e($business->currency); ?> <?php endif; ?>
+                                    </p>
+                                </div>
+                                <svg class="w-5 h-5 text-green-600 shrink-0 opacity-0 service-check" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </label>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+
+                
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3"><?php echo e(__("app.select_date")); ?></p>
+                    <input type="date" id="modalDate"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"/>
+                </div>
+
+                
+                <div id="modalStaffSection" class="hidden">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3"><?php echo e(__("app.select_staff_optional") ?? "Staff (optional)"); ?></p>
+                    <div id="modalStaffFilter" class="flex flex-wrap gap-3"></div>
+                </div>
+
+                
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3"><?php echo e(__("app.available_times")); ?></p>
+                    <div id="modalSlotsLoading" class="hidden text-center py-4">
+                        <svg class="w-5 h-5 text-green-600 mx-auto animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                    </div>
+                    <div id="modalSlots" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+                    <p id="modalNoSlots" class="text-sm text-center text-gray-500 py-4 hidden">
+                        <?php echo e(__("app.no_available_slots") ?? "No available slots for this date."); ?>
+
+                    </p>
+                </div>
+
+                
+                <div id="modalSummary" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-900">
+                    <p class="font-semibold" id="sumService"></p>
+                    <p class="text-green-700 text-xs mt-0.5 flex items-center gap-1" id="sumStaff"></p>
+                    <p class="font-medium mt-1" id="sumDateTime"></p>
+                    <p class="text-xs text-green-700 mt-0.5" id="sumBranch" style="display:none"></p>
+                </div>
+
+                
+                <form id="bookingForm" method="POST" action="<?php echo e(route('public.book', $business->slug)); ?>"
+                    class="hidden space-y-4">
+                    <?php echo csrf_field(); ?>
+                    <input type="hidden" name="branch_id" id="hidden_branch_id">
+                    <input type="hidden" name="service_id" id="hidden_service_id">
+                    <input type="hidden" name="staff_user_id" id="hidden_staff_user_id">
+                    <input type="hidden" name="date" id="hidden_date">
+                    <input type="hidden" name="start_time" id="hidden_start_time">
+
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide"><?php echo e(__("app.your_details") ?? "Your details"); ?></p>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?php echo e(__("app.full_name")); ?> *</label>
+                        <input type="text" name="customer_name" value="<?php echo e(old("customer_name")); ?>"
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="<?php echo e(__("app.full_name")); ?>" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?php echo e(__("app.country")); ?> *</label>
+                        <select name="customer_country"
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white" required>
+                            <option value=""><?php echo e(__("app.select_a_country")); ?></option>
+                            <option value="OM" <?php echo e(old("customer_country") == "OM" ? "selected" : ""); ?>>Oman</option>
+                            <option value="SA" <?php echo e(old("customer_country") == "SA" ? "selected" : ""); ?>>Saudi Arabia</option>
+                            <option value="AE" <?php echo e(old("customer_country") == "AE" ? "selected" : ""); ?>>UAE</option>
+                            <option value="KW" <?php echo e(old("customer_country") == "KW" ? "selected" : ""); ?>>Kuwait</option>
+                            <option value="QA" <?php echo e(old("customer_country") == "QA" ? "selected" : ""); ?>>Qatar</option>
+                            <option value="BH" <?php echo e(old("customer_country") == "BH" ? "selected" : ""); ?>>Bahrain</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?php echo e(__("app.phone_whatsapp")); ?> *</label>
+                        <div class="flex gap-2">
+                            <select name="customer_country_code"
+                                class="px-3 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white shrink-0">
+                                <option value="+968" <?php echo e(old("customer_country_code","+968") == "+968" ? "selected":""); ?>>🇴🇲 +968</option>
+                                <option value="+966" <?php echo e(old("customer_country_code") == "+966" ? "selected":""); ?>>🇸🇦 +966</option>
+                                <option value="+971" <?php echo e(old("customer_country_code") == "+971" ? "selected":""); ?>>🇦🇪 +971</option>
+                                <option value="+965" <?php echo e(old("customer_country_code") == "+965" ? "selected":""); ?>>🇰🇼 +965</option>
+                                <option value="+974" <?php echo e(old("customer_country_code") == "+974" ? "selected":""); ?>>🇶🇦 +974</option>
+                                <option value="+973" <?php echo e(old("customer_country_code") == "+973" ? "selected":""); ?>>🇧🇭 +973</option>
+                            </select>
+                            <input type="tel" name="customer_phone" value="<?php echo e(old("customer_phone")); ?>"
+                                class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="9xxxxxxxx" required />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?php echo e(__("app.notes_optional")); ?></label>
+                        <textarea name="customer_notes" rows="2"
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                            placeholder="<?php echo e(__("app.special_requests") ?? "Any special requests..."); ?>"><?php echo e(old("customer_notes")); ?></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?php echo e(__("app.email_address")); ?> *</label>
+                        <input type="email" name="customer_email" value="<?php echo e(old("customer_email")); ?>"
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="<?php echo e(__("app.enter_email_confirmation") ?? "email@example.com"); ?>" required />
+                        <p class="text-xs text-gray-400 mt-1"><?php echo e(__("app.email_confirmation_hint") ?? "We'll send a booking confirmation to this address."); ?></p>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="shrink-0 px-6 py-4 border-t border-gray-100 bg-white">
+                <button type="button" id="confirmBtn" onclick="submitBooking()"
+                    class="hidden w-full py-3 rounded-xl bg-gray-900 text-white font-semibold text-sm hover:bg-gray-800 active:scale-95 transition">
+                    <?php echo e(__("app.confirm_booking")); ?>
+
+                </button>
+                <p id="drawerHint" class="text-center text-sm text-gray-400">
+                    <?php echo e(__("app.select_service_hint")); ?>
+
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <select id="service" class="sr-only" aria-hidden="true">
+        <option value=""></option>
+        <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($s->id); ?>" data-duration="<?php echo e($s->duration_minutes); ?>"><?php echo e($s->name); ?></option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
+
+    <script>
+    (() => {
+        const businessSlug  = <?php echo json_encode($business->slug, 15, 512) ?>;
+        const allBranches   = <?php echo json_encode(isset($branches) ? $branches->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'service_ids' => $b->services->pluck('id')]) : collect()) ?>;
+        const singleBranchId = allBranches.length === 1 ? allBranches[0].id : null;
+        const serviceSelect = document.getElementById("service");
+        const modalDate     = document.getElementById("modalDate");
+        const modalSlotsDiv = document.getElementById("modalSlots");
+        const modalNoSlots  = document.getElementById("modalNoSlots");
+        const modalLoading  = document.getElementById("modalSlotsLoading");
+        const staffSection  = document.getElementById("modalStaffSection");
+        const staffFilter   = document.getElementById("modalStaffFilter");
+        const bookingForm   = document.getElementById("bookingForm");
+        const confirmBtn    = document.getElementById("confirmBtn");
+        const drawerHint    = document.getElementById("drawerHint");
+        const modalSummary  = document.getElementById("modalSummary");
+
+        let allStaff = [], currentSlots = [], selectedStaffFilter = "all";
+        let selectedBranchId = singleBranchId;
+
+        // Set single branch silently
+        if (singleBranchId) {
+            const hiddenBranch = document.getElementById("hidden_branch_id");
+            if (hiddenBranch) hiddenBranch.value = singleBranchId;
+        }
+
+        modalDate.min = new Date().toISOString().split("T")[0];
+
+        // Branch radio change handler
+        document.querySelectorAll(".modal-branch-radio").forEach(r => {
+            r.addEventListener("change", function () {
+                document.querySelectorAll(".branch-check").forEach(i => i.style.opacity = "0");
+                this.closest("label").querySelector(".branch-check").style.opacity = "1";
+                selectedBranchId = parseInt(this.value);
+                document.getElementById("hidden_branch_id").value = selectedBranchId;
+                // Filter visible services by branch
+                filterServicesByBranch(JSON.parse(this.dataset.services || "[]"));
+                clearSlots();
+                if (serviceSelect.value && modalDate.value) loadSlots();
+            });
+        });
+
+        function filterServicesByBranch(serviceIds) {
+            if (!serviceIds || serviceIds.length === 0) {
+                // Show all services if branch has no specific service restrictions
+                document.querySelectorAll(".modal-service-radio").forEach(r => {
+                    r.closest("label").style.display = "";
+                });
+                return;
+            }
+            const ids = serviceIds.map(id => parseInt(id));
+            let firstVisible = null;
+            document.querySelectorAll(".modal-service-radio").forEach(r => {
+                const sId = parseInt(r.value);
+                const label = r.closest("label");
+                if (ids.includes(sId)) {
+                    label.style.display = "";
+                    if (!firstVisible) firstVisible = r;
+                } else {
+                    label.style.display = "none";
+                    if (r.checked) {
+                        r.checked = false;
+                        label.querySelector(".service-check").style.opacity = "0";
+                        serviceSelect.value = "";
+                    }
+                }
+            });
+        }
+
+        window.openBookingModal = function (btn) {
+            const modal  = document.getElementById("bookingModal");
+            const drawer = document.getElementById("bookingDrawer");
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+            requestAnimationFrame(() => drawer.classList.remove("translate-x-full"));
+            if (btn) {
+                const sid   = btn.dataset.serviceId;
+                const radio = document.querySelector(`.modal-service-radio[value="${sid}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    radio.closest("label").querySelector(".service-check").style.opacity = "1";
+                    serviceSelect.value = sid;
+                    if (modalDate.value) loadSlots();
+                }
+            }
+        };
+
+        window.closeBookingModal = function () {
+            const drawer = document.getElementById("bookingDrawer");
+            drawer.classList.add("translate-x-full");
+            setTimeout(() => {
+                document.getElementById("bookingModal").classList.add("hidden");
+                document.body.style.overflow = "";
+            }, 300);
+        };
+
+        document.querySelectorAll(".modal-service-radio").forEach(r => {
+            r.addEventListener("change", function () {
+                document.querySelectorAll(".service-check").forEach(i => i.style.opacity = "0");
+                this.closest("label").querySelector(".service-check").style.opacity = "1";
+                serviceSelect.value = this.value;
+                if (modalDate.value) loadSlots();
+            });
+        });
+
+        modalDate.addEventListener("change", () => { if (serviceSelect.value) loadSlots(); });
+
+        function clearSlots() {
+            modalSlotsDiv.innerHTML = "";
+            modalNoSlots.classList.add("hidden");
+            modalNoSlots.textContent = '<?php echo e(__("app.no_available_slots") ?? "No available slots for this date."); ?>';
+            bookingForm.classList.add("hidden");
+            confirmBtn.classList.add("hidden");
+            drawerHint.classList.remove("hidden");
+            modalSummary.classList.add("hidden");
+        }
+
+        async function loadSlots() {
+            clearSlots();
+            staffSection.classList.add("hidden");
+            const serviceId = serviceSelect.value, date = modalDate.value;
+            if (!serviceId || !date) return;
+            modalLoading.classList.remove("hidden");
+            try {
+                let url = `/${businessSlug}/services/${serviceId}/slots?date=${encodeURIComponent(date)}`;
+                if (selectedBranchId) url += `&branch_id=${selectedBranchId}`;
+                const res  = await fetch(url);
+                const data = await res.json();
+                modalLoading.classList.add("hidden");
+                if (!data.slots || data.slots.length === 0) {
+                    if (data.reason === 'limit_reached') {
+                        modalNoSlots.textContent = 'This business has reached its monthly booking limit. Please contact them directly.';
+                    } else {
+                        modalNoSlots.textContent = '<?php echo e(__("app.no_available_slots") ?? "No available slots for this date."); ?>';
+                    }
+                    modalNoSlots.classList.remove("hidden");
+                    return;
+                }
+                allStaff = data.staff || [];
+                currentSlots = data.slots;
+                selectedStaffFilter = "all";
+                if (allStaff.length > 1) { staffSection.classList.remove("hidden"); renderStaffFilter(); }
+                renderSlots();
+            } catch (e) {
+                modalLoading.classList.add("hidden");
+                modalNoSlots.classList.remove("hidden");
+            }
+        }
+
+        function renderStaffFilter() {
+            staffFilter.innerHTML = "";
+            const makeCard = (id, name, photo) => {
+                const a = selectedStaffFilter == id;
+                const btn = document.createElement("button");
+                btn.type = "button"; btn.dataset.staffId = id;
+                btn.className = "flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition text-center flex-shrink-0 " +
+                    (a ? "border-green-600 bg-green-50" : "border-gray-200 bg-white hover:border-green-400");
+                btn.style.width = "72px";
+
+                // Avatar
+                let avatarHtml;
+                if (photo) {
+                    avatarHtml = `<img src="${photo}" alt="${name}" class="w-12 h-12 rounded-full object-cover mx-auto">`;
+                } else if (id === "all") {
+                    avatarHtml = `<div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>`;
+                } else {
+                    const initial = name.charAt(0).toUpperCase();
+                    avatarHtml = `<div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto"><span class="text-emerald-700 font-bold text-lg">${initial}</span></div>`;
+                }
+
+                const nameEl = document.createElement("span");
+                nameEl.className = "text-xs font-medium leading-tight " + (a ? "text-green-700" : "text-gray-700");
+                nameEl.style.cssText = "display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden";
+                nameEl.textContent = id === "all" ? "<?php echo e(__('app.any') ?? 'Any'); ?>" : name;
+
+                btn.innerHTML = avatarHtml;
+                btn.appendChild(nameEl);
+                btn.onclick = () => { selectedStaffFilter = id; renderStaffFilter(); renderSlots(); };
+                staffFilter.appendChild(btn);
+            };
+            makeCard("all", "", null);
+            allStaff.forEach(s => makeCard(s.id, s.name, s.photo));
+        }
+
+        function renderSlots() {
+            modalSlotsDiv.innerHTML = "";
+            let slots = currentSlots;
+            if (selectedStaffFilter !== "all")
+                slots = currentSlots.filter(s => s.available_staff && s.available_staff.some(x => x.id === parseInt(selectedStaffFilter)));
+            if (slots.length === 0) { modalNoSlots.classList.remove("hidden"); return; }
+            slots.forEach(s => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = "slot-btn px-2 py-2 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-gray-800 text-center transition";
+                b.textContent = s.label;
+                b.onclick = () => selectSlot(s, b);
+                modalSlotsDiv.appendChild(b);
+            });
+        }
+
+        function selectSlot(slot, btnEl) {
+            document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
+            btnEl.classList.add("selected");
+            if (!slot.available_staff || slot.available_staff.length === 0) { alert("No staff available for this slot."); return; }
+            const staff = selectedStaffFilter !== "all"
+                ? slot.available_staff.find(s => s.id === parseInt(selectedStaffFilter))
+                : slot.available_staff[0];
+            if (!staff) { alert("Selected staff is not available for this slot."); return; }
+            document.getElementById("hidden_service_id").value    = serviceSelect.value;
+            document.getElementById("hidden_staff_user_id").value = staff.id;
+            document.getElementById("hidden_date").value          = modalDate.value;
+            document.getElementById("hidden_start_time").value    = slot.start;
+            document.getElementById("hidden_branch_id").value     = selectedBranchId || '';
+            const svcText = serviceSelect.options[serviceSelect.selectedIndex].text;
+            const dateStr = new Date(modalDate.value).toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+            document.getElementById("sumService").textContent  = svcText;
+            const photoHtml = staff.photo
+                ? `<img src="${staff.photo}" class="w-5 h-5 rounded-full object-cover flex-shrink-0" alt="${staff.name}">`
+                : `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px] flex-shrink-0">${staff.name.charAt(0).toUpperCase()}</span>`;
+            document.getElementById("sumStaff").innerHTML    = photoHtml + `<span>With ${staff.name}</span>`;
+            document.getElementById("sumDateTime").textContent = `${dateStr} at ${slot.label}`;
+            // Show branch in summary
+            const sumBranchEl = document.getElementById("sumBranch");
+            if (selectedBranchId && allBranches.length > 1) {
+                const br = allBranches.find(b => b.id === selectedBranchId);
+                if (br) { sumBranchEl.textContent = `📍 ${br.name}`; sumBranchEl.style.display = ""; }
+            } else {
+                sumBranchEl.style.display = "none";
+            }
+            modalSummary.classList.remove("hidden");
+            bookingForm.classList.remove("hidden");
+            confirmBtn.classList.remove("hidden");
+            drawerHint.classList.add("hidden");
+            bookingForm.scrollIntoView({ behavior:"smooth", block:"nearest" });
+        }
+
+        window.submitBooking = function () { bookingForm.submit(); };
+
+        <?php if(old("service_id") && old("date")): ?>
+        window.addEventListener("DOMContentLoaded", () => {
+            openBookingModal(null);
+            const radio = document.querySelector(`.modal-service-radio[value="<?php echo e(old("service_id")); ?>"]`);
+            if (radio) { radio.checked = true; radio.closest("label").querySelector(".service-check").style.opacity = "1"; serviceSelect.value = radio.value; }
+            modalDate.value = "<?php echo e(old("date")); ?>";
+            loadSlots();
+        });
+        <?php endif; ?>
+
+        document.addEventListener("keydown", e => {
+            if (e.key === "Escape") {
+                closeBookingModal();
+                closeLightbox();
+            }
+        });
+    })();
+    </script>
+
+    
+    <?php
+        $galleryImages = $services->flatMap(fn($s) => $s->images)->values();
+        if ($galleryImages->isEmpty()) {
+            $galleryImages = $services->filter(fn($s) => $s->image)
+                ->map(fn($s) => (object)['path' => $s->image, 'alt' => $s->name])->values();
+        }
+    ?>
+    <?php if($galleryImages->count() > 0): ?>
+    <div id="lightbox" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+        
+        <button onclick="closeLightbox()"
+            class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        
+        <button onclick="lightboxPrev()"
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+
+        
+        <img id="lightboxImg" src="" alt=""
+            class="max-h-[85vh] max-w-full rounded-xl shadow-2xl object-contain">
+
+        
+        <button onclick="lightboxNext()"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium" id="lightboxCounter"></div>
+
+        
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2 max-w-full overflow-x-auto px-4">
+            <?php $__currentLoopData = $galleryImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $gs): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <img src="<?php echo e(asset($gs->path)); ?>" alt=""
+                    class="lightbox-thumb w-12 h-12 rounded-lg object-cover cursor-pointer border-2 border-transparent hover:border-white transition opacity-60 hover:opacity-100 shrink-0"
+                    onclick="lightboxGo(<?php echo e($i); ?>)">
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const images = <?php echo json_encode($galleryImages->map(fn($img) => ['src' => asset($img->path), 'alt' => ''])->values(), 512) ?>;
+        let current = 0;
+
+        window.openLightbox = function (idx) {
+            current = idx;
+            render();
+            document.getElementById('lightbox').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closeLightbox = function () {
+            document.getElementById('lightbox').classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+        window.lightboxPrev = function () { current = (current - 1 + images.length) % images.length; render(); };
+        window.lightboxNext = function () { current = (current + 1) % images.length; render(); };
+        window.lightboxGo   = function (i) { current = i; render(); };
+
+        function render() {
+            const img = document.getElementById('lightboxImg');
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = images[current].src;
+                img.alt = images[current].alt;
+                img.style.opacity = '1';
+            }, 100);
+            document.getElementById('lightboxCounter').textContent = `${current + 1} / ${images.length}`;
+            document.querySelectorAll('.lightbox-thumb').forEach((t, i) => {
+                t.classList.toggle('border-white', i === current);
+                t.classList.toggle('opacity-100', i === current);
+                t.classList.toggle('opacity-60', i !== current);
+            });
+        }
+    })();
+    </script>
+    <?php endif; ?>
+    
+    <script>
+    (function () {
+        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g;
+
+        function stripArabic(el) {
+            const before = el.value;
+            const after  = before.replace(ARABIC, '');
+            if (before !== after) {
+                const pos = el.selectionStart - (before.length - after.length);
+                el.value = after;
+                el.setSelectionRange(pos, pos);
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key && ARABIC.test(e.key)) {
+                e.preventDefault();
+            }
+            ARABIC.lastIndex = 0;
+        }, true);
+
+        document.addEventListener('input', function (e) {
+            const el = e.target;
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                stripArabic(el);
+            }
+        }, true);
+    })();
+    </script>
+</body>
+</html>
+<?php /**PATH C:\laragon\www\booking-app\resources\views\public\business.blade.php ENDPATH**/ ?>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Business;
+use App\Models\Invoice;
 use App\Models\License;
 use App\Models\User;
 use App\Models\Booking;
@@ -16,21 +17,32 @@ class SuperAdminDashboardController extends Controller
     {
         // Total statistics
         $totalBusinesses = Business::count();
-        $activeLicenses = License::where('status', 'active')->count();
+
+        // Active = status 'active' OR past_due still within grace period
+        $activeLicenses = License::where(function ($q) {
+            $q->where('status', 'active')
+              ->orWhere(function ($q2) {
+                  $q2->where('status', 'past_due')
+                     ->whereDate('grace_period_ends_at', '>=', now()->toDateString());
+              });
+        })->count();
+
         $totalUsers = User::count();
+
+        // Expiring soon: active licenses expiring within 7 days
         $expiringLicenses = License::where('status', 'active')
             ->whereDate('expires_at', '<=', now()->addDays(7))
             ->whereDate('expires_at', '>', now())
             ->count();
 
-        // Revenue statistics
-        $totalRevenue = License::where('payment_status', 'paid')->sum('price');
-        $pendingRevenue = License::where('payment_status', 'unpaid')->sum('price');
+        // Revenue statistics — sourced from invoices for accuracy (captures renewals)
+        $totalRevenue   = Invoice::where('status', 'paid')->sum('amount');
+        $pendingRevenue = Invoice::where('status', 'pending')->sum('amount');
 
-        // Revenue breakdown by plan & cycle
-        $revenueByPlan = License::where('payment_status', 'paid')
+        // Revenue breakdown by plan & cycle (all paid invoices)
+        $revenueByPlan = Invoice::where('status', 'paid')
             ->whereIn('plan', ['pro', 'plus'])
-            ->selectRaw('plan, billing_cycle, COUNT(*) as count, SUM(price) as total')
+            ->selectRaw('plan, billing_cycle, COUNT(*) as count, SUM(amount) as total')
             ->groupBy('plan', 'billing_cycle')
             ->get()
             ->keyBy(fn ($r) => $r->plan . '_' . $r->billing_cycle);
@@ -40,20 +52,19 @@ class SuperAdminDashboardController extends Controller
             ->groupBy('plan')
             ->pluck('count', 'plan');
 
-        // Recent paid subscriptions
-        $recentPayments = License::with('business')
-            ->where('payment_status', 'paid')
-            ->whereIn('plan', ['pro', 'plus'])
-            ->orderByDesc('activated_at')
+        // Recent paid subscriptions — from invoices for accurate amounts
+        $recentPayments = Invoice::with('business')
+            ->where('status', 'paid')
+            ->latest('paid_at')
             ->take(10)
             ->get();
 
-        // Monthly revenue trend – last 12 months
-        $monthlyRevenue = License::where('payment_status', 'paid')
+        // Monthly revenue trend – last 12 months (from paid invoices)
+        $monthlyRevenue = Invoice::where('status', 'paid')
             ->whereIn('plan', ['pro', 'plus'])
-            ->whereNotNull('activated_at')
-            ->where('activated_at', '>=', now()->subMonths(11)->startOfMonth())
-            ->selectRaw('DATE_FORMAT(activated_at, "%Y-%m") as month, SUM(price) as total, COUNT(*) as count')
+            ->whereNotNull('paid_at')
+            ->where('paid_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->selectRaw('DATE_FORMAT(paid_at, "%Y-%m") as month, SUM(amount) as total, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->get()
@@ -71,11 +82,21 @@ class SuperAdminDashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Licenses needing attention
+        // Licenses needing attention: active expiring within 30 days + past_due in grace period
         $expiringLicensesList = License::with('business')
-            ->where('status', 'active')
-            ->whereDate('expires_at', '<=', now()->addDays(30))
-            ->whereDate('expires_at', '>', now())
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    // Active licenses expiring within 30 days
+                    $q2->where('status', 'active')
+                       ->whereDate('expires_at', '<=', now()->addDays(30))
+                       ->whereDate('expires_at', '>', now());
+                })->orWhere(function ($q2) {
+                    // Past-due licenses still in grace period
+                    $q2->where('status', 'past_due')
+                       ->whereDate('grace_period_ends_at', '>=', now()->toDateString());
+                });
+            })
+            ->orderByRaw("FIELD(status,'past_due','active')")
             ->orderBy('expires_at')
             ->take(8)
             ->get();

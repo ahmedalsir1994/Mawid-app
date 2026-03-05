@@ -80,7 +80,7 @@ return [
     // Billing toggle
     'billing_monthly'   => 'شهري',
     'billing_yearly'    => 'سنوي',
-    'billing_save'      => '-5%',
+    'billing_save'      => 'وفّر 15%',
     'per_month'         => 'شهر',
     'per_year'          => 'سنة',
 

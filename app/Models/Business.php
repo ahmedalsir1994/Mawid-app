@@ -75,4 +75,19 @@ class Business extends Model
     {
         return $this->users()->where('role', 'staff');
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(\App\Models\Invoice::class)->latest();
+    }
+
+    public function paymentMethods()
+    {
+        return $this->hasMany(\App\Models\PaymentMethod::class);
+    }
+
+    public function defaultPaymentMethod(): ?\App\Models\PaymentMethod
+    {
+        return $this->paymentMethods()->where('is_default', true)->first();
+    }
 }

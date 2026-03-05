@@ -1,19 +1,40 @@
 <x-guest-layout>
+    {{-- Faint green blobs inside the card --}}
+    <div class="absolute -top-6 -right-6 w-32 h-32 bg-green-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 pointer-events-none"></div>
+    <div class="absolute -bottom-6 -left-6 w-28 h-28 bg-emerald-300 rounded-full mix-blend-multiply filter blur-2xl opacity-25 pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-4 w-20 h-20 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 pointer-events-none"></div>
+
     @php
         $selectedPlan  = old('plan',          request('plan',  'free'));
         $selectedCycle = old('billing_cycle',  request('cycle', 'monthly'));
         $planLabels    = ['pro' => 'Pro', 'plus' => 'Plus'];
         $planColors    = ['pro' => 'bg-blue-600', 'plus' => 'bg-green-600'];
-        $planPrices    = ['pro' => ['monthly' => '5 OMR/mo', 'yearly' => '57 OMR/yr'],
-                          'plus' => ['monthly' => '9 OMR/mo', 'yearly' => '102.60 OMR/yr']];
         $isPaid        = in_array($selectedPlan, ['pro', 'plus']);
+
+        if ($isPaid) {
+            $planData    = \App\Services\PlanService::get($selectedPlan);
+            $discountPct = $selectedCycle === 'yearly'
+                ? $planData['discount_yearly']
+                : $planData['discount_monthly'];
+            $oldPrice = $selectedCycle === 'yearly'
+                ? $planData['old_price_yearly'] . ' OMR/yr'
+                : $planData['old_price_monthly'] . ' OMR/mo';
+            $newPrice = $selectedCycle === 'yearly'
+                ? number_format($planData['price_yearly_display'], 1) . ' OMR/mo · ' . number_format($planData['price_yearly'], 2) . ' OMR/yr'
+                : number_format($planData['price_monthly'], 1) . ' OMR/mo';
+        }
     @endphp
 
     {{-- Plan banner shown when registering from a paid plan CTA --}}
     @if($isPaid)
         <div class="mb-6 p-4 rounded-xl {{ $planColors[$selectedPlan] }} text-white text-center">
-            <p class="font-bold text-lg">{{ $planLabels[$selectedPlan] }} Plan — {{ $planPrices[$selectedPlan][$selectedCycle] }}</p>
-            <p class="text-sm opacity-90 mt-1">Create your account, then complete payment to activate.</p>
+            <p class="font-bold text-lg">{{ $planLabels[$selectedPlan] }} Plan</p>
+            <div class="flex items-center justify-center gap-2 mt-1">
+                <span class="text-sm line-through opacity-70">{{ $oldPrice }}</span>
+                <span class="text-lg font-bold">{{ $newPrice }}</span>
+                <span class="text-xs font-bold bg-white text-green-700 px-2 py-0.5 rounded-full">Save {{ $discountPct }}%</span>
+            </div>
+            <p class="text-sm opacity-90 mt-2">Create your account, then complete payment to activate.</p>
         </div>
     @endif
 

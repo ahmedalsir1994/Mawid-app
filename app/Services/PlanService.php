@@ -34,8 +34,14 @@ class PlanService
             'name'                  => 'Pro',
             'emoji'                 => '💼',
             'tagline'               => 'For a real working shop',
-            'price_monthly'         => 5,
-            'price_yearly'          => 57.00,
+            'price_monthly'         => 6.5,
+            'price_yearly'          => 66.00,   // 5.5 OMR × 12
+            'price_monthly_display' => 6.5,     // shown on pricing card
+            'price_yearly_display'  => 5.5,     // per-month equivalent shown yearly
+            'old_price_monthly'     => 10,
+            'old_price_yearly'      => 120,
+            'discount_monthly'      => 35,      // %
+            'discount_yearly'       => 45,      // %
             'max_branches'          => 1,
             'max_staff'             => 3,
             'max_services'          => 15,
@@ -59,8 +65,14 @@ class PlanService
             'name'                  => 'Plus',
             'emoji'                 => '🚀',
             'tagline'               => 'For growing businesses & multi-chair shops',
-            'price_monthly'         => 9,
-            'price_yearly'          => 102.60,
+            'price_monthly'         => 9.8,
+            'price_yearly'          => 109.20,  // 9.1 OMR × 12
+            'price_monthly_display' => 9.8,
+            'price_yearly_display'  => 9.1,     // per-month equivalent
+            'old_price_monthly'     => 14,
+            'old_price_yearly'      => 168,
+            'discount_monthly'      => 30,      // %
+            'discount_yearly'       => 35,      // %
             'max_branches'          => 3,
             'max_staff'             => 15,
             'max_services'          => 999,
@@ -99,9 +111,17 @@ class PlanService
         return $cycle === 'yearly' ? $planData['price_yearly'] : $planData['price_monthly'];
     }
 
-    public static function discountPercent(): int
+    public static function discountPercent(string $plan = 'pro', string $cycle = 'monthly'): int
     {
-        return 5; // 5% yearly discount
+        $data = self::get($plan);
+        if ($cycle === 'yearly') return $data['discount_yearly'] ?? 0;
+        return $data['discount_monthly'] ?? 0;
+    }
+
+    public static function oldPrice(string $plan, string $cycle = 'monthly'): float
+    {
+        $data = self::get($plan);
+        return $cycle === 'yearly' ? ($data['old_price_yearly'] ?? 0) : ($data['old_price_monthly'] ?? 0);
     }
 
     /**
