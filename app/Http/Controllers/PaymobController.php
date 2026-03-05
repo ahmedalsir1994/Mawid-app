@@ -123,8 +123,10 @@ class PaymobController extends Controller
             }
 
             $license = License::where('business_id', $pending['business_id'])->first();
-            // Apply plan if it differs, OR if this is a renewal/retry of the same plan
-            if ($license && ($license->plan !== $pending['plan'] || !empty($pending['is_retry']))) {
+            // Determine if this is a reactivation (expired/past-due same plan) before applying
+            $isReactivation = $license && ($license->isExpired() || $license->isPastDue());
+            // Apply plan if it differs, OR if this is a renewal/retry, OR if the license is expired/past-due (reactivation)
+            if ($license && ($license->plan !== $pending['plan'] || !empty($pending['is_retry']) || $isReactivation)) {
                 $license->applyPlan($pending['plan'], $pending['cycle'], $paymobOrderId ?: $merchantRef);
                 Cache::forget("paymob_order_{$paymobOrderId}");
                 if ($merchantRef) Cache::forget("paymob_ref_{$merchantRef}");
@@ -136,14 +138,15 @@ class PaymobController extends Controller
         if (!$planName) {
             $planName = auth()->user()?->business?->license?->plan ?? 'pro';
         }
+        $isRetryOrReactivation = !empty($pending['is_retry']) || ($isReactivation ?? false);
         if ($pdAuthUser = auth()->user()) {
-            // Only send welcome mail for upgrades, not retries/renewals
-            if (empty($pending['is_retry'])) {
+            // Only send welcome mail for upgrades, not retries/renewals/reactivations
+            if (!$isRetryOrReactivation) {
                 Mail::to($pdAuthUser->email)->send(new WelcomeMail($pdAuthUser, $planName, pendingPayment: false));
             }
         }
 
-        $successMsg = !empty($pending['is_retry'])
+        $successMsg = $isRetryOrReactivation
             ? '✓ Payment successful! Your subscription has been restored.'
             : '🎉 Payment successful! Your plan has been upgraded.';
 
