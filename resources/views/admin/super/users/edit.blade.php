@@ -13,7 +13,7 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">
-        <form action="{{ route('admin.super.users.update', $user) }}" method="POST" class="space-y-6">
+        <form id="update-user-form" action="{{ route('admin.super.users.update', $user) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -158,29 +158,30 @@
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
-                <form action="{{ route('admin.super.users.destroy', $user) }}" method="POST" class="inline"
-                    onsubmit="return confirm('{{ __('app.delete_user_undone_confirm') }}')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
-                        {{ __('app.delete_user') }}
-                    </button>
-                </form>
+        </form>{{-- END update form — must close before the delete form below --}}
 
-                <div class="flex gap-3">
-                    <a href="{{ route('admin.super.users.index') }}"
-                        class="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium">
-                        {{ __('app.cancel') }}
-                    </a>
-                    <button type="submit"
-                        class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-600 text-white rounded-lg hover:shadow-lg transition font-medium">
-                        {{ __('app.update_user') }}
-                    </button>
-                </div>
+        <!-- Actions (outside the update form to prevent nesting) -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
+            <form action="{{ route('admin.super.users.destroy', $user) }}" method="POST" class="inline"
+                onsubmit="return confirm('{{ __('app.delete_user_undone_confirm') }}')">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+                    {{ __('app.delete_user') }}
+                </button>
+            </form>
+
+            <div class="flex gap-3">
+                <a href="{{ route('admin.super.users.index') }}"
+                    class="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium">
+                    {{ __('app.cancel') }}
+                </a>
+                <button type="submit" form="update-user-form"
+                    class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+                    {{ __('app.update_user') }}
+                </button>
             </div>
-        </form>
+        </div>
     </div>
 </x-admin-layout>
