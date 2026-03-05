@@ -117,7 +117,7 @@ Route::post('/paymob/callback', [PaymobController::class, 'callback'])->name('pa
 Route::get('/paymob/return',    [PaymobController::class, 'return'])->name('paymob.return');
 
 // Company Admin Routes
-Route::middleware(['auth', 'check_role:company_admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'check_role:company_admin', 'check_license'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/company/dashboard', [CompanyAdminDashboardController::class, 'index'])
         ->name('company.dashboard');
 

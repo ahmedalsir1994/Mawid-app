@@ -28,9 +28,17 @@ class AutoRenewSubscriptionsJob implements ShouldQueue
     {
         $licenses = License::with(['business.paymentMethods', 'business.users'])
             ->where('auto_renew', true)
-            ->where('status', 'active')
+            ->whereIn('status', ['active', 'past_due'])
             ->whereNotNull('next_billing_date')
             ->whereDate('next_billing_date', '<=', today())
+            ->where(function ($q) {
+                // Retry past_due up to 3 attempts; always process active
+                $q->where('status', 'active')
+                  ->orWhere(function ($q2) {
+                      $q2->where('status', 'past_due')
+                         ->where('auto_renew_attempts', '<', 3);
+                  });
+            })
             ->get();
 
         Log::info("AutoRenew: Found {$licenses->count()} license(s) due for renewal.");
@@ -169,7 +177,13 @@ class AutoRenewSubscriptionsJob implements ShouldQueue
             'past_due_at'         => $license->past_due_at ?? now(),
         ]);
 
-        // Notify primary company admin
+        // On the first failure, start the 5-day grace period and send PaymentFailedMail.
+        // On subsequent failures we keep the original grace window — don't reset it.
+        if ($license->status !== 'past_due') {
+            $license->markPastDue($reason);
+        }
+
+        // Also dispatch the admin in-app notification
         $admin = $license->business?->users()->where('role', 'company_admin')->first();
         if ($admin) {
             $admin->notify(new AutoRenewFailedNotification($license, $reason));

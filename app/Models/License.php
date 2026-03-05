@@ -34,6 +34,7 @@ class License extends Model
         'past_due_at',
         'auto_renew_attempts',
         'grace_period_ends_at',
+        'downgraded_at',
     ];
 
     protected $casts = [
@@ -42,6 +43,7 @@ class License extends Model
         'next_billing_date'    => 'date',
         'past_due_at'          => 'datetime',
         'grace_period_ends_at' => 'date',
+        'downgraded_at'        => 'datetime',
         'whatsapp_reminders'   => 'boolean',
         'auto_renew'           => 'boolean',
     ];
@@ -115,6 +117,55 @@ class License extends Model
     public function isPastDue(): bool
     {
         return $this->status === 'past_due';
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->status === 'expired';
+    }
+
+    public function isDowngraded(): bool
+    {
+        return $this->downgraded_at !== null;
+    }
+
+    /**
+     * Mark license as expired and trigger soft-downgrade to free plan limits.
+     * All data (services, branches, staff) is kept — only limits are enforced.
+     */
+    public function markExpired(): void
+    {
+        $this->update(['status' => 'expired']);
+        $this->softDowngrade();
+    }
+
+    /**
+     * Enforce free-plan limits in-database so controllers/canAdd* methods
+     * automatically block new resources beyond the free tier.
+     * Never deletes any existing data rows.
+     */
+    public function softDowngrade(): void
+    {
+        $freePlan = \App\Services\PlanService::get('free');
+
+        $this->update([
+            'downgraded_at'      => now(),
+            'max_branches'       => $freePlan['max_branches'],
+            'max_staff'          => $freePlan['max_staff'],
+            'max_services'       => $freePlan['max_services'],
+            'max_daily_bookings' => $freePlan['max_daily_bookings'],
+            'whatsapp_reminders' => false,
+        ]);
+
+        // Notify the business admin
+        $admin = $this->business?->users()
+            ->where('role', 'company_admin')
+            ->first();
+
+        if ($admin) {
+            \Illuminate\Support\Facades\Mail::to($admin->email)
+                ->send(new \App\Mail\SubscriptionExpiredMail($admin, $this));
+        }
     }
 
     public function isInGracePeriod(): bool
@@ -236,10 +287,11 @@ class License extends Model
             'price'              => $price,
             'paymob_order_id'    => $paymobOrderId ?? $this->paymob_order_id,
             'activated_at'       => $this->activated_at ?? now()->toDateString(),
-            'auto_renew'         => $this->auto_renew ?? true,
+            'auto_renew'         => true,  // always ON unless user explicitly cancels
             'auto_renew_attempts' => 0,
             'past_due_at'        => null,
             'grace_period_ends_at' => null,   // clear grace period on successful payment
+            'downgraded_at'      => null,     // clear downgrade flag when plan is restored
         ]);
 
         // Generate invoice

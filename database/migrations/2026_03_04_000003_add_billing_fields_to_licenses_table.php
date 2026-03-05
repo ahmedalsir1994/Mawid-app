@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('licenses', function (Blueprint $table) {
             if (!Schema::hasColumn('licenses', 'auto_renew')) {
-                $table->boolean('auto_renew')->default(false)->after('payment_status');
+                $table->boolean('auto_renew')->default(true)->after('payment_status');
             }
             if (!Schema::hasColumn('licenses', 'next_billing_date')) {
                 $table->date('next_billing_date')->nullable()->after('expires_at');
