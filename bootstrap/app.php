@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies (needed when behind nginx/load balancer on HTTPS hosting)
+        $middleware->trustProxies(at: '*');
+
         // CSRF exceptions
         $middleware->validateCsrfTokens(except: [
             '/paymob/callback',
