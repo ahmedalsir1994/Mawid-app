@@ -64,6 +64,7 @@ class OtpVerificationController extends Controller
         $request->session()->forget('otp_user_id');
 
         Auth::login($user);
+        $request->session()->regenerate();
 
         // If a paid plan was selected before registration, auto-initiate payment
         if ($request->session()->has('pending_plan_upgrade')) {
