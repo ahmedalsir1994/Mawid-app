@@ -40,15 +40,26 @@
                 <?php echo e(__('landing.pricing_badge')); ?>
 
             </div>
+            <?php if($licenseExpired ?? false): ?>
+            <h2 class="text-4xl font-bold mb-3">Reactivate Your Subscription</h2>
+            <p class="text-gray-500 max-w-xl mx-auto">Your account is on the Free plan. Reactivate your previous plan or upgrade to restore full access instantly.</p>
+            <?php else: ?>
             <h2 class="text-4xl font-bold mb-3"><?php echo e(__('landing.pricing_title')); ?></h2>
             <p class="text-gray-500 max-w-xl mx-auto"><?php echo e(__('landing.pricing_subtitle')); ?></p>
+            <?php endif; ?>
 
             
-            <?php $currentPlan = $license?->plan ?? 'free'; ?>
-            <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-600">
+            <?php
+                $currentPlan   = $license?->plan ?? 'free';
+                $licenseExpired = $license && ($license->isExpired() || ($license->isPastDue() && !$license->isInGracePeriod()));
+            ?>
+            <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 <?php echo e($licenseExpired ? 'bg-red-50 border border-red-200' : 'bg-gray-100'); ?> rounded-full text-sm text-gray-600">
                 <span><?php echo e(__('app.current_plan')); ?>:</span>
-                <span class="font-bold text-gray-900"><?php echo e(ucfirst($currentPlan)); ?></span>
-                <?php if($license?->expires_at): ?>
+                <span class="font-bold <?php echo e($licenseExpired ? 'text-red-700' : 'text-gray-900'); ?>"><?php echo e(ucfirst($currentPlan)); ?></span>
+                <?php if($licenseExpired): ?>
+                    <span class="text-red-400">·</span>
+                    <span class="text-red-600 font-semibold">Expired — reactivate below</span>
+                <?php elseif($license?->expires_at): ?>
                     <span class="text-gray-400">·</span>
                     <span class="text-gray-500"><?php echo e(__('app.renews')); ?> <?php echo e($license->expires_at->format('M d, Y')); ?></span>
                 <?php endif; ?>
@@ -113,8 +124,12 @@
 
             
             <?php $isCurrent = $currentPlan === 'pro'; ?>
-            <div id="plan-card-pro" class="relative bg-white rounded-2xl border-2 <?php echo e($isCurrent ? 'border-green-400 shadow-lg' : 'border-blue-500 shadow-xl'); ?> p-8 transition">
-                <?php if($isCurrent): ?>
+            <div id="plan-card-pro" class="relative bg-white rounded-2xl border-2 <?php echo e($isCurrent && $licenseExpired ? 'border-red-400 shadow-lg' : ($isCurrent ? 'border-green-400 shadow-lg' : 'border-blue-500 shadow-xl')); ?> p-8 transition">
+                <?php if($isCurrent && $licenseExpired): ?>
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+                        Expired — Reactivate
+                    </div>
+                <?php elseif($isCurrent): ?>
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
                         <?php echo e(__('app.current_plan')); ?>
 
@@ -161,7 +176,7 @@
                         </li>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
-                <?php if($isCurrent): ?>
+                <?php if($isCurrent && !$licenseExpired): ?>
                     <button disabled class="w-full py-3 rounded-xl bg-gray-100 text-gray-500 font-semibold cursor-default">
                         <?php echo e(__('app.current_plan')); ?>
 
@@ -173,7 +188,7 @@
                         <input type="hidden" name="billing_cycle" class="cycle-input" value="monthly">
                         <button type="submit"
                             class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:shadow-lg transition">
-                            <?php echo e(__('landing.plan_pro_cta')); ?>
+                            <?php echo e($isCurrent && $licenseExpired ? '🔄 Reactivate Pro' : __('landing.plan_pro_cta')); ?>
 
                         </button>
                     </form>
@@ -182,8 +197,12 @@
 
             
             <?php $isCurrent = $currentPlan === 'plus'; ?>
-            <div id="plan-card-plus" class="relative bg-white rounded-2xl border <?php echo e($isCurrent ? 'border-2 border-green-400 shadow-lg' : 'border-gray-200'); ?> p-8 hover:shadow-lg transition">
-                <?php if($isCurrent): ?>
+            <div id="plan-card-plus" class="relative bg-white rounded-2xl border <?php echo e($isCurrent && $licenseExpired ? 'border-2 border-red-400 shadow-lg' : ($isCurrent ? 'border-2 border-green-400 shadow-lg' : 'border-gray-200')); ?> p-8 hover:shadow-lg transition">
+                <?php if($isCurrent && $licenseExpired): ?>
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+                        Expired — Reactivate
+                    </div>
+                <?php elseif($isCurrent): ?>
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
                         <?php echo e(__('app.current_plan')); ?>
 
@@ -225,7 +244,7 @@
                         </li>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
-                <?php if($isCurrent): ?>
+                <?php if($isCurrent && !$licenseExpired): ?>
                     <button disabled class="w-full py-3 rounded-xl bg-gray-100 text-gray-500 font-semibold cursor-default">
                         <?php echo e(__('app.current_plan')); ?>
 
@@ -237,7 +256,7 @@
                         <input type="hidden" name="billing_cycle" class="cycle-input" value="monthly">
                         <button type="submit"
                             class="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold hover:shadow-lg transition">
-                            <?php echo e(__('landing.plan_plus_cta')); ?>
+                            <?php echo e($isCurrent && $licenseExpired ? '🔄 Reactivate Plus' : __('landing.plan_plus_cta')); ?>
 
                         </button>
                     </form>
@@ -265,7 +284,8 @@
 
             document.querySelectorAll('.cycle-monthly').forEach(el => el.style.display = isYearly ? 'none' : 'block');
             document.querySelectorAll('.cycle-yearly').forEach(el => el.style.display = isYearly ? 'block' : 'none');
-            document.getElementById('yearly-caption').style.display = isYearly ? 'block' : 'none';
+            const yearlyCaption = document.getElementById('yearly-caption');
+            if (yearlyCaption) yearlyCaption.style.display = isYearly ? 'block' : 'none';
             document.querySelectorAll('.cycle-input').forEach(el => el.value = cycle);
         }
 

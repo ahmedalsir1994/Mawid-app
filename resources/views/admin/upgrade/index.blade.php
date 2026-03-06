@@ -259,7 +259,8 @@
 
             document.querySelectorAll('.cycle-monthly').forEach(el => el.style.display = isYearly ? 'none' : 'block');
             document.querySelectorAll('.cycle-yearly').forEach(el => el.style.display = isYearly ? 'block' : 'none');
-            document.getElementById('yearly-caption').style.display = isYearly ? 'block' : 'none';
+            const yearlyCaption = document.getElementById('yearly-caption');
+            if (yearlyCaption) yearlyCaption.style.display = isYearly ? 'block' : 'none';
             document.querySelectorAll('.cycle-input').forEach(el => el.value = cycle);
         }
 
