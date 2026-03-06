@@ -749,6 +749,16 @@
                             <span class="min-w-[20px] h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold px-1">{{ $_unreadContacts }}</span>
                         @endif
                     </a>
+
+                    <!-- Super Admin Only: Billing History -->
+                    <a href="{{ route('admin.super.billing.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.super.billing.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                        <span class="font-medium">Billing History</span>
+                    </a>
                 @elseif (auth()->user()->role === 'company_admin')
                     <a href="{{ route('admin.business.edit') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.business.*') ? 'sidebar-active' : '' }}">
@@ -813,6 +823,16 @@
                                 clip-rule="evenodd" />
                         </svg>
                         <span class="font-medium">{{ __('app.time_off') }}</span>
+                    </a>
+
+                    <!-- Company Admin: Billing -->
+                    <a href="{{ route('admin.billing.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.billing.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                        <span class="font-medium">Billing</span>
                     </a>
                 @elseif (auth()->user()->role === 'staff')
                     <!-- Staff Only: Bookings -->
