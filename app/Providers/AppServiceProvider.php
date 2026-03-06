@@ -16,10 +16,17 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // On production, force HTTPS for all generated URLs so the session cookie
-        // domain and the form action always match, preventing CSRF 419 errors.
-        if (config('app.env') === 'production') {
-            URL::forceScheme('https');
+        // Force HTTPS for all generated URLs when behind a reverse proxy (e.g. Cloudways/Nginx).
+        // This prevents CSRF 419 errors caused by http:// session cookies on an https:// site.
+        // Works regardless of APP_ENV value by checking actual proxy headers and APP_URL.
+        if (!$this->app->runningInConsole()) {
+            $isHttps = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'
+                || isset($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on'
+                || isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' && $_SERVER['HTTPS'] !== ''
+                || str_starts_with(config('app.url', ''), 'https://');
+            if ($isHttps) {
+                URL::forceScheme('https');
+            }
         }
 
         // Fix SSL certificate verification on Windows by providing the CA bundle
