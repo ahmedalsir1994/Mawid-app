@@ -15,7 +15,7 @@ return [
     'stat_founded'          => 'تأسست',
     'stat_founded_val'      => '٢٠٢٦',
     'stat_country'          => 'صُنعت في',
-    'stat_country_val'      => 'عُمان 🇴🇲',
+    'stat_country_val'      => 'عُمان',
     'stat_focus'            => 'تركيزنا',
     'stat_focus_val'        => 'الأعمال الخدمية',
     'stat_trial'            => 'تجربة مجانية',

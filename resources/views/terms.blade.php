@@ -358,7 +358,7 @@
                 <h2 class="text-xl font-semibold mb-3">{{ __('terms.c_s12_title') }}</h2>
                 <p>{{ __('terms.c_s12_p1') }}</p>
                 <p class="mt-3">{{ __('terms.c_s12_p2') }}</p>
-                <p class="mt-2 font-medium">📧 Mawid.om@gmail.com</p>
+                <p class="mt-2 font-medium">📧 mawidoman@gmail.com</p>
                 <p class="mt-3">{{ __('terms.c_s12_p3') }}</p>
             </section>
 

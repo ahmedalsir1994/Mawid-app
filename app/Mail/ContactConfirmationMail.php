@@ -20,7 +20,7 @@ class ContactConfirmationMail extends Mailable
         return new Envelope(
             subject: 'We received your message — Mawid',
             replyTo: [
-                new \Illuminate\Mail\Mailables\Address('mawid.om@gmail.com', 'Mawid Support'),
+                new \Illuminate\Mail\Mailables\Address('mawidoman@gmail.com', 'Mawid Support'),
             ],
         );
     }

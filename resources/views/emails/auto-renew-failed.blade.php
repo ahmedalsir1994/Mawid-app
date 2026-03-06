@@ -19,7 +19,7 @@ Please update your payment method to ensure uninterrupted access:
 Go to Billing
 @endcomponent
 
-If you believe this is an error, please contact us at [support@mawid.app](mailto:support@mawid.app).
+If you believe this is an error, please contact us at [mawidoman@gmail.com](mailto:mawidoman@gmail.com).
 
 Thanks,
 **Mawid Team**

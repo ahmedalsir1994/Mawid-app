@@ -21,7 +21,7 @@ A PDF copy of your invoice is attached to this email.
 View Billing & Invoices
 @endcomponent
 
-If you have any questions or did not expect this charge, please contact us at [support@mawid.app](mailto:support@mawid.app).
+If you have any questions or did not expect this charge, please contact us at [mawidoman@gmail.com](mailto:mawidoman@gmail.com).
 
 Thanks,
 **Mawid Team**

@@ -145,7 +145,7 @@
                     <li>{{ __('privacy.s7_li4') }}</li>
                 </ul>
                 <p class="mt-4">{{ __('privacy.s7_p1') }}</p>
-                <p class="mt-2 font-medium">📧 mawid.om@gmail.com</p>
+                <p class="mt-2 font-medium">📧 mawidoman@gmail.com</p>
                 <p class="mt-2">{{ __('privacy.s7_p2') }}</p>
             </section>
 
@@ -187,7 +187,7 @@
                 <h2 class="text-xl font-semibold mb-3">{{ __('privacy.s12_title') }}</h2>
                 <p>{{ __('privacy.s12_p1') }}</p>
                 <p class="mt-3 font-medium">
-                    Mawid.om@gmail.com<br>
+                    mawidoman@gmail.com<br>
                     {{ __('privacy.s12_address') }}
                 </p>
             </section>

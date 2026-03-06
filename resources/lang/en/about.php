@@ -15,7 +15,7 @@ return [
     'stat_founded'          => 'Founded',
     'stat_founded_val'      => '2026',
     'stat_country'          => 'Built In',
-    'stat_country_val'      => 'Oman 🇴🇲',
+    'stat_country_val'      => 'Oman',
     'stat_focus'            => 'Our Focus',
     'stat_focus_val'        => 'Service Businesses',
     'stat_trial'            => 'Free Trial',
