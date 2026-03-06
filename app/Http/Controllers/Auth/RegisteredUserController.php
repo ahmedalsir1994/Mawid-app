@@ -89,13 +89,13 @@ class RegisteredUserController extends Controller
         $superAdmins = User::where('role', 'super_admin')->get();
         Notification::send($superAdmins, new NewUserRegisteredNotification($user, $business));
 
-        // If a paid plan was selected, remember it so we can initiate payment after OTP
+        // If a paid plan was selected, store it on the user record so it survives session loss
         $plan  = $request->input('plan');
         $cycle = $request->input('billing_cycle', 'monthly');
         if ($plan && in_array($plan, ['pro', 'plus'])) {
-            $request->session()->put('pending_plan_upgrade', [
-                'plan'  => $plan,
-                'cycle' => $cycle,
+            $user->update([
+                'pending_plan'  => $plan,
+                'pending_cycle' => $cycle,
             ]);
         }
 

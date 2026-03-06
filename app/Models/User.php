@@ -30,6 +30,8 @@ class User extends Authenticatable
         'title',
         'otp_code',
         'otp_expires_at',
+        'pending_plan',
+        'pending_cycle',
     ];
 
     /**

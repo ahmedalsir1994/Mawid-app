@@ -61,18 +61,28 @@ class OtpVerificationController extends Controller
             'otp_expires_at'    => null,
         ]);
 
+        // Read pending plan from DB (reliable — survives session loss)
+        $pendingPlan  = $user->pending_plan;
+        $pendingCycle = $user->pending_cycle ?? 'monthly';
+
+        // Clear OTP fields and pending plan now that we're done with them
+        $user->update([
+            'pending_plan'  => null,
+            'pending_cycle' => null,
+        ]);
+
         $request->session()->forget('otp_user_id');
+        $request->session()->forget('pending_plan_upgrade');
 
         Auth::login($user);
         $request->session()->regenerate();
 
         // If a paid plan was selected before registration, auto-initiate payment
-        if ($request->session()->has('pending_plan_upgrade')) {
-            $pending = $request->session()->get('pending_plan_upgrade');
-            Mail::to($user->email)->send(new WelcomeMail($user, $pending['plan'], pendingPayment: true));
+        if ($pendingPlan && in_array($pendingPlan, ['pro', 'plus'])) {
+            Mail::to($user->email)->send(new WelcomeMail($user, $pendingPlan, pendingPayment: true));
             return redirect()->route('admin.upgrade.autopay', [
-                'plan'  => $pending['plan'],
-                'cycle' => $pending['cycle'] ?? 'monthly',
+                'plan'  => $pendingPlan,
+                'cycle' => $pendingCycle,
             ])->with('success', 'Email verified! Redirecting you to payment...');
         }
 
