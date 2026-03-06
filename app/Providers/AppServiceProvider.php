@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 
@@ -15,6 +16,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // On production, force HTTPS for all generated URLs so the session cookie
+        // domain and the form action always match, preventing CSRF 419 errors.
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
         // Fix SSL certificate verification on Windows by providing the CA bundle
         // or by using a custom SMTP transport with relaxed SSL options.
         Mail::extend('smtp-ssl-fix', function (array $config) {
