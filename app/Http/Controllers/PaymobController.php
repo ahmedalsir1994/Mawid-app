@@ -74,6 +74,12 @@ class PaymobController extends Controller
         // Save card token for auto-renewal
         $this->saveCardToken($license, $obj);
 
+        // Clear pending_plan from the business admin so the dashboard banner disappears
+        $adminUser = $license->business?->users()->where('role', 'company_admin')->first();
+        if ($adminUser && $adminUser->pending_plan) {
+            $adminUser->update(['pending_plan' => null, 'pending_cycle' => null]);
+        }
+
         Cache::forget("paymob_order_{$paymobOrderId}");
         if ($merchantRef) {
             Cache::forget("paymob_ref_{$merchantRef}");
@@ -140,6 +146,10 @@ class PaymobController extends Controller
         }
         $isRetryOrReactivation = !empty($pending['is_retry']) || ($isReactivation ?? false);
         if ($pdAuthUser = auth()->user()) {
+            // Clear pending_plan flag now that payment is complete
+            if ($pdAuthUser->pending_plan) {
+                $pdAuthUser->update(['pending_plan' => null, 'pending_cycle' => null]);
+            }
             // Only send welcome mail for upgrades, not retries/renewals/reactivations
             if (!$isRetryOrReactivation) {
                 Mail::to($pdAuthUser->email)->send(new WelcomeMail($pdAuthUser, $planName, pendingPayment: false));

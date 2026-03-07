@@ -1,4 +1,37 @@
 <x-admin-layout>
+    {{-- ── Pending Payment Banner ─────────────────────────────────────────── --}}
+    @php $pendingPaymentPlan = auth()->user()->pending_plan; @endphp
+    @if($pendingPaymentPlan && ($license && $license->isFree()))
+        @php $pendingPaymentCycle = auth()->user()->pending_cycle ?? 'monthly'; @endphp
+        <div class="mb-6 rounded-2xl border border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-sm">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-amber-900 text-sm">
+                            Complete your {{ ucfirst($pendingPaymentPlan) }} subscription to unlock all features.
+                        </p>
+                        <p class="text-amber-700 text-xs mt-0.5">
+                            You selected the <strong>{{ ucfirst($pendingPaymentPlan) }}</strong> plan but haven't completed your payment yet.
+                            Your account is currently on the Free plan.
+                        </p>
+                    </div>
+                </div>
+                <a href="{{ route('admin.upgrade.autopay', ['plan' => $pendingPaymentPlan, 'cycle' => $pendingPaymentCycle]) }}"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition shadow-sm whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Continue Payment
+                </a>
+            </div>
+        </div>
+    @endif
+
     <!-- Page Header -->
     <div class="mb-8">
         <div class="flex items-center justify-between">

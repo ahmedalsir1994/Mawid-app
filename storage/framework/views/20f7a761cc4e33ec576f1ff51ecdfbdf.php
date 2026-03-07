@@ -97,6 +97,40 @@
     <?php endif; ?>
 
     
+    <?php $pendingPaymentPlan = auth()->user()->pending_plan; ?>
+    <?php if($pendingPaymentPlan && $license && $license->isFree()): ?>
+        <?php $pendingPaymentCycle = auth()->user()->pending_cycle ?? 'monthly'; ?>
+        <div class="mb-6 rounded-2xl border border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-sm">
+            <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <p class="text-sm font-bold text-amber-900">Subscription: Pending</p>
+                        <span class="px-2 py-0.5 bg-amber-200 text-amber-800 text-xs font-bold rounded-full">
+                            <?php echo e(ucfirst($pendingPaymentPlan)); ?> Plan
+                        </span>
+                    </div>
+                    <p class="text-xs text-amber-700 mb-3">
+                        You selected the <strong><?php echo e(ucfirst($pendingPaymentPlan)); ?></strong> plan (<?php echo e(ucfirst($pendingPaymentCycle)); ?>) but haven't completed payment.
+                        Complete your subscription to unlock all features.
+                    </p>
+                    <a href="<?php echo e(route('admin.upgrade.autopay', ['plan' => $pendingPaymentPlan, 'cycle' => $pendingPaymentCycle])); ?>"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Retry Payment
+                    </a>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
         

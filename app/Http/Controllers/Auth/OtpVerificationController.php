@@ -65,11 +65,9 @@ class OtpVerificationController extends Controller
         $pendingPlan  = $user->pending_plan;
         $pendingCycle = $user->pending_cycle ?? 'monthly';
 
-        // Clear OTP fields and pending plan now that we're done with them
-        $user->update([
-            'pending_plan'  => null,
-            'pending_cycle' => null,
-        ]);
+        // Keep pending_plan / pending_cycle on the user record so the dashboard
+        // can show a "Complete your payment" banner if the user abandons checkout.
+        // They are cleared by PaymobController once payment succeeds.
 
         $request->session()->forget('otp_user_id');
         $request->session()->forget('pending_plan_upgrade');
