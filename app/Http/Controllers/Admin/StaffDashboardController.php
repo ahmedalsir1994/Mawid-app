@@ -25,13 +25,15 @@ class StaffDashboardController extends Controller
         $currentDate = Carbon::parse($date);
 
         // Staff's personal statistics
-        $totalBookings = $business->bookings()->count();
+        $totalBookings = $business->bookings()->where('staff_user_id', $user->id)->count();
         $todayBookings = $business->bookings()
+            ->where('staff_user_id', $user->id)
             ->whereDate('booking_date', today())
             ->count();
         
         $upcomingBookings = $business->bookings()
             ->with('staff')
+            ->where('staff_user_id', $user->id)
             ->where('status', 'confirmed')
             ->whereDate('booking_date', '>=', now())
             ->orderBy('booking_date')
@@ -41,6 +43,7 @@ class StaffDashboardController extends Controller
 
         $todayBookingsList = $business->bookings()
             ->with(['service', 'staff'])
+            ->where('staff_user_id', $user->id)
             ->whereDate('booking_date', today())
             ->orderBy('start_time')
             ->get();
@@ -63,6 +66,7 @@ class StaffDashboardController extends Controller
 
         $calendarBookings = $business->bookings()
             ->with(['service', 'business', 'staff'])
+            ->where('staff_id', $user->id)
             ->whereBetween('booking_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('booking_date')
             ->orderBy('start_time')
