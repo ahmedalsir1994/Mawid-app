@@ -174,6 +174,17 @@
                         <span class="font-medium">{{ __('app.services') }}</span>
                     </a>
 
+                    <!-- Company Admin: Working Hours -->
+                    <a href="{{ route('admin.working_hours.edit') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.working_hours') }}</span>
+                    </a>
+
                     <!-- Staff -->
                     <a href="{{ route('admin.staff.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.staff.*') ? 'sidebar-active' : '' }}">
@@ -195,6 +206,8 @@
                         <span class="font-medium">{{ __('app.bookings') }}</span>
                     </a>
 
+                  
+
                     <!-- Company Admin: Billing -->
                     <a href="{{ route('admin.billing.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.billing.*') ? 'sidebar-active' : '' }}">
@@ -214,19 +227,6 @@
                                 clip-rule="evenodd" />
                         </svg>
                         <span class="font-medium">{{ __('app.bookings') }}</span>
-                    </a>
-                @endif
-
-                <!-- Working Hours (Company Admin Only) -->
-                @if (auth()->user()->role === 'company_admin' && auth()->user()->business_id)
-                    <a href="{{ route('admin.working_hours.edit') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : '' }}">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-medium">{{ __('app.working_hours') }}</span>
                     </a>
                 @endif
 
@@ -787,6 +787,16 @@
                         <span class="font-medium">{{ __('app.services') }}</span>
                     </a>
 
+                    <a href="{{ route('admin.working_hours.edit') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : '' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">{{ __('app.working_hours') }}</span>
+                    </a>
+
                     <a href="{{ route('admin.staff.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.staff.*') ? 'sidebar-active' : '' }}">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -803,16 +813,6 @@
                                 clip-rule="evenodd" />
                         </svg>
                         <span class="font-medium">{{ __('app.bookings') }}</span>
-                    </a>
-
-                    <a href="{{ route('admin.working_hours.edit') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.working_hours.*') ? 'sidebar-active' : '' }}">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.828 2.829a1 1 0 101.414 1.414L8 13.414V6z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-medium">{{ __('app.working_hours') }}</span>
                     </a>
 
                     <a href="{{ route('admin.time_off.index') }}"
