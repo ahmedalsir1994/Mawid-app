@@ -69,7 +69,7 @@
             <div>
                 <img src="/images/Mawid.png" alt="Mawid" class="h-12 mb-2">
                 <p class="text-sm text-gray-500">mawid.app</p>
-                <p class="text-sm text-gray-500">support@mawid.app</p>
+                <p class="text-sm text-gray-500"><a href="mailto:mawidoman@gmail.com">mawidoman@gmail.com</a></p>
             </div>
             <div class="text-right">
                 <h1 class="text-3xl font-bold text-gray-900">INVOICE</h1>
@@ -176,7 +176,7 @@
 
         <!-- Footer -->
         <div class="border-t border-gray-100 pt-6 text-center text-xs text-gray-400">
-            <p>Thank you for your business! Questions? Contact us at <span class="text-gray-600">support@mawid.app</span></p>
+            <p>Thank you for your business! Questions? Contact us at <span class="text-gray-600"><a href="mailto:mawidoman@gmail.com">mawidoman@gmail.com</a></span></p>
         </div>
     </div>
 </body>

@@ -234,13 +234,32 @@
                         <h2 class="text-lg font-bold text-gray-900"><?php echo e(__("app.select_service")); ?></h2>
                     </div>
                     <?php if($services->isEmpty()): ?>
-                        <div class="px-6 py-12 text-center text-gray-500">
-                            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <p class="font-medium"><?php echo e(__("app.no_services_available") ?? "No services available yet."); ?></p>
-                            <p class="text-sm mt-1"><?php echo e(__("app.please_check_back_later") ?? "Please check back later."); ?></p>
+                        <div class="px-6 py-14 text-center">
+                            <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                            </div>
+                            <?php
+                                $isOwner = auth()->check()
+                                    && auth()->user()->business_id === $business->id
+                                    && in_array(auth()->user()->role, ['company_admin', 'super_admin']);
+                            ?>
+                            <?php if($isOwner): ?>
+                                <p class="font-semibold text-gray-800 text-base">No services added yet.</p>
+                                <p class="text-sm text-gray-500 mt-1 mb-5">Add your first service so customers can start booking.</p>
+                                <a href="<?php echo e(route('admin.services.create')); ?>"
+                                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Your First Service
+                                </a>
+                            <?php else: ?>
+                                <p class="font-medium text-gray-600"><?php echo e(__("app.no_services_available") ?? "No services available yet."); ?></p>
+                                <p class="text-sm text-gray-400 mt-1"><?php echo e(__("app.please_check_back_later") ?? "Please check back later."); ?></p>
+                            <?php endif; ?>
                         </div>
                     <?php else: ?>
                         <ul class="divide-y divide-gray-100">

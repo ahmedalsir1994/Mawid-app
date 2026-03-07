@@ -118,7 +118,14 @@
                             <td class="px-6 py-4">
                                 <div>
                                     <p class="font-semibold text-gray-900"><?php echo e($license->business->name); ?></p>
-                                    <p class="text-sm text-gray-600"><?php echo e($license->business->slug); ?></p>
+                                    <a href="<?php echo e(route('public.business', $license->business->slug)); ?>" target="_blank"
+                                       class="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:underline transition">
+                                        <?php echo e($license->business->slug); ?>
+
+                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                        </svg>
+                                    </a>
                                 </div>
                             </td>
                             <td class="px-6 py-4">

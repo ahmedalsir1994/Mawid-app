@@ -31,8 +31,6 @@ class PublicBookingController extends Controller
 
         $services = $business->services()->where('is_active', true)->orderBy('name')->with('images')->get();
 
-        abort_if($services->isEmpty(), 404);
-
         $branches = $business->branches()->where('is_active', true)->with('services')->get();
 
         $teamMembers = User::where('business_id', $business->id)
@@ -69,8 +67,6 @@ class PublicBookingController extends Controller
     public function businessPage(Business $business)
     {
         $services = $business->services()->where('is_active', true)->orderBy('name')->with('images')->get();
-
-        abort_if($services->isEmpty(), 404);
 
         $branches = $business->branches()->where('is_active', true)->with('services')->get();
 

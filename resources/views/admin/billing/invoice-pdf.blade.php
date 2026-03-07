@@ -47,7 +47,7 @@
         <div class="header-left">
             <h2>Mawid</h2>
             <div style="color:#6b7280; font-size:12px;">mawid.app</div>
-            <div style="color:#6b7280; font-size:12px;">support@mawid.app</div>
+            <div style="color:#6b7280; font-size:12px;"><a href="mailto:mawidoman@gmail.com">mawidoman@gmail.com</a></div>
         </div>
         <div class="header-right">
             <h1>INVOICE</h1>
@@ -137,7 +137,7 @@
 
     <!-- Footer -->
     <div class="footer">
-        Thank you for your business! Questions? Contact us at support@mawid.app
+        Thank you for your business! Questions? Contact us at <a href="mailto:mawidoman@gmail.com">mawidoman@gmail.com</a>
     </div>
 </div>
 </body>
