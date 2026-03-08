@@ -34,15 +34,15 @@ class AuthenticatedSessionController extends Controller
         $user = auth()->user();
         
         if ($user->role === 'super_admin') {
-            return redirect()->intended(route('admin.super.dashboard', absolute: false));
+            return redirect()->route('admin.super.dashboard');
         } elseif ($user->role === 'company_admin') {
-            return redirect()->intended(route('admin.company.dashboard', absolute: false));
+            return redirect()->route('admin.company.dashboard');
         } elseif ($user->role === 'staff') {
-            return redirect()->intended(route('admin.staff.dashboard', absolute: false));
+            return redirect()->route('admin.staff.dashboard');
         }
         
         // Default redirect for customer
-        return redirect()->intended(route('profile.edit', absolute: false));
+        return redirect()->route('profile.edit');
     }
 
     /**
