@@ -123,6 +123,7 @@ return [
     'action' => 'إجراء',
     'showing_of' => 'عرض :count من :total',
     'see_all_bookings' => 'عرض جميع الحجوزات',
+    'day_off' => 'يوم عطلة',
 
     // User & Business fields
     'name' => 'الاسم',

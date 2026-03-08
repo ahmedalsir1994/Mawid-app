@@ -80,6 +80,7 @@ return [
     'select_time' => 'Select Time',
     'available_slots' => 'Available Slots',
     'no_slots_available' => 'No slots available',
+    'day_off' => 'Day Off',
     
     // User & Business
     'booking_details' => 'Booking Details',

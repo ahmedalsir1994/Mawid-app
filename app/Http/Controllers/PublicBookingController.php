@@ -96,13 +96,17 @@ class PublicBookingController extends Controller
         }
 
         // 2) Reject if in time off range
-        $isTimeOff = $business->timeOff()
+        $timeOffRecord = $business->timeOff()
             ->whereDate('start_date', '<=', $date->toDateString())
             ->whereDate('end_date', '>=', $date->toDateString())
-            ->exists();
+            ->first();
 
-        if ($isTimeOff) {
-            return response()->json(['slots' => []]);
+        if ($timeOffRecord) {
+            return response()->json([
+                'slots'  => [],
+                'reason' => 'time_off',
+                'note'   => $timeOffRecord->note,
+            ]);
         }
 
         // 3) Get working hours for day of week
