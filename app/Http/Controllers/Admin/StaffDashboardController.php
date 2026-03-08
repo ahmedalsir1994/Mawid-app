@@ -65,8 +65,8 @@ class StaffDashboardController extends Controller
         }
 
         $calendarBookings = $business->bookings()
-            ->with(['service', 'business', 'staff'])
-            ->where('staff_id', $user->id)
+            ->with(['service', 'business'])
+            ->where('staff_user_id', $user->id)
             ->whereBetween('booking_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('booking_date')
             ->orderBy('start_time')
