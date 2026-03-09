@@ -391,8 +391,7 @@
                             </button>
 
                             <!-- Notification Dropdown -->
-                            <div id="notificationDropdown"
-                                class="hidden absolute <?php echo e(app()->getLocale() === 'ar' ? 'left-0' : 'right-0'); ?> mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-lg z-50 border border-gray-200 max-h-96 overflow-y-auto">
+                            <div id="notificationDropdown" class="hidden fixed top-[4.5rem] left-2 right-2 <?php echo e(app()->getLocale() === 'ar' ? 'sm:absolute sm:top-auto sm:right-auto sm:left-0 sm:mt-2' : 'sm:absolute sm:top-auto sm:left-auto sm:right-0 sm:mt-2'); ?> sm:w-96 bg-white rounded-lg shadow-lg z-50 border border-gray-200 max-h-[70vh] sm:max-h-96 overflow-y-auto">
                                 <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                                     <h3 class="text-sm font-bold text-gray-800"><?php echo e(__('app.notifications')); ?></h3>
                                     <?php if(auth()->user()->unreadNotifications->count() > 0): ?>
