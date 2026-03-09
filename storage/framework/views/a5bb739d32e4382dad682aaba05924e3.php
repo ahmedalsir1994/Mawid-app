@@ -329,18 +329,18 @@
                     </div>
                 </div>
 
-                <form method="POST" action="<?php echo e(route('logout')); ?>">
-                    <?php echo csrf_field(); ?>
-                    <button type="submit"
-                        class="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-medium"><?php echo e(__('app.logout')); ?></span>
-                    </button>
-                </form>
+                <div class="pt-3 mt-3 border-t border-gray-200">
+                    <form method="POST" action="<?php echo e(route('logout')); ?>">
+                        <?php echo csrf_field(); ?>
+                        <button type="submit"
+                            class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition font-semibold group">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span><?php echo e(__('app.logout')); ?></span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -392,7 +392,7 @@
 
                             <!-- Notification Dropdown -->
                             <div id="notificationDropdown"
-                                class="hidden absolute <?php echo e(app()->getLocale() === 'ar' ? 'left-0' : 'right-0'); ?> mt-2 w-96 bg-white rounded-lg shadow-lg z-50 border border-gray-200 max-h-96 overflow-y-auto">
+                                class="hidden absolute <?php echo e(app()->getLocale() === 'ar' ? 'left-0' : 'right-0'); ?> mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-lg z-50 border border-gray-200 max-h-96 overflow-y-auto">
                                 <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                                     <h3 class="text-sm font-bold text-gray-800"><?php echo e(__('app.notifications')); ?></h3>
                                     <?php if(auth()->user()->unreadNotifications->count() > 0): ?>
@@ -718,7 +718,7 @@
             </div>
 
             <!-- Navigation Links -->
-            <nav class="flex-1 px-4 py-3 space-y-1 overflow-y-auto">
+            <nav class="flex-1 overflow-y-auto px-4 py-3 space-y-1">
                 <a href="<?php echo e(auth()->user()->role === 'super_admin' ? route('admin.super.dashboard') : (auth()->user()->role === 'staff' ? route('admin.staff.dashboard') : route('admin.company.dashboard'))); ?>"
                     class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.dashboard', 'admin.company.dashboard', 'admin.staff.dashboard') ? 'sidebar-active' : ''); ?>">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -868,7 +868,7 @@
             </nav>
 
             <!-- Mobile User Profile & Language Switcher -->
-            <div class="flex-shrink-0 bg-white border-t border-gray-200 p-4 space-y-2">
+            <div class="flex-shrink-0 bg-white border-t border-gray-200 p-3 space-y-1">
                 <?php if(auth()->user()->role === 'company_admin' && auth()->user()->business_id): ?>
                     <?php
                         $mobileSidebarLicense   = auth()->user()->business?->license;
@@ -930,18 +930,18 @@
                 </div>
 
                 <!-- Logout -->
-                <form method="POST" action="<?php echo e(route('logout')); ?>">
-                    <?php echo csrf_field(); ?>
-                    <button type="submit"
-                        class="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-medium"><?php echo e(__('app.logout')); ?></span>
-                    </button>
-                </form>
+                <div class="pt-2 mt-1 border-t border-gray-200">
+                    <form method="POST" action="<?php echo e(route('logout')); ?>">
+                        <?php echo csrf_field(); ?>
+                        <button type="submit"
+                            class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition font-semibold">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span><?php echo e(__('app.logout')); ?></span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
