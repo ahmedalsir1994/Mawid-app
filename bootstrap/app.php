@@ -41,6 +41,11 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            if (auth()->check()) {
+                return redirect()->route('admin.dashboard')
+                    ->with('error', __('app.session_expired_retry'));
+            }
+
             return redirect()->route('login')
                 ->withInput($request->except('password', '_token'))
                 ->with('error', __('app.session_expired'));

@@ -657,6 +657,7 @@ return [
     'reactivate_now'              => 'أعد التفعيل الآن',
 
     'session_expired'             => 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.',
+    'session_expired_retry'       => 'انتهت جلستك. يرجى المحاولة مرة أخرى.',
 
     // صفحة الحجز العام
     'book_appointment'            => 'حجز موعد',

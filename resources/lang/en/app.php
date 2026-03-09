@@ -755,6 +755,7 @@ return [
     'reactivate_now'              => 'Reactivate Now',
 
     'session_expired'             => 'Your session expired. Please sign in again.',
+    'session_expired_retry'       => 'Your session expired. Please try again.',
 
     // Public booking page
     'book_appointment'            => 'Book appointment',
