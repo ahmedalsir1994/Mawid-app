@@ -1,25 +1,32 @@
-﻿@csrf
+﻿<?php echo csrf_field(); ?>
 
 <div class="space-y-6">
     <!-- Service Name -->
     <div>
-        <label class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.service_name') }}</label>
-        <input lang="en" dir="ltr" type="text" name="name" value="{{ old('name', $service->name ?? '') }}" 
-            placeholder="{{ __('app.service_placeholder') }}"
+        <label class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.service_name')); ?></label>
+        <input lang="en" dir="ltr" type="text" name="name" value="<?php echo e(old('name', $service->name ?? '')); ?>" 
+            placeholder="<?php echo e(__('app.service_placeholder')); ?>"
             class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
-        @error('name') 
+        <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> 
             <p class="text-red-600 text-sm mt-2 flex items-center space-x-1">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                 </svg>
-                <span>{{ $message }}</span>
+                <span><?php echo e($message); ?></span>
             </p>
-        @enderror
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
     </div>
 
     <!-- Service Images -->
     <div>
-        @php
+        <?php
             $existingImages = $service && $service->images && $service->images->count() > 0
                 ? $service->images
                 : collect();
@@ -29,12 +36,12 @@
                 'service_id',
                 \App\Models\Service::where('business_id', $__bizId)->pluck('id')
             )->count();
-        @endphp
+        ?>
 
         <div class="flex items-center justify-between mb-1">
-            <label class="block text-sm font-semibold text-gray-800">{{ __('app.service_image') }}</label>
-            <span id="imageCountBadge" class="text-xs font-semibold px-2 py-1 rounded-full {{ $existingImages->count() < 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
-                <span id="imageCountNum">{{ $existingImages->count() }}</span> photo(s) here
+            <label class="block text-sm font-semibold text-gray-800"><?php echo e(__('app.service_image')); ?></label>
+            <span id="imageCountBadge" class="text-xs font-semibold px-2 py-1 rounded-full <?php echo e($existingImages->count() < 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'); ?>">
+                <span id="imageCountNum"><?php echo e($existingImages->count()); ?></span> photo(s) here
             </span>
         </div>
         <div class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3 flex items-start gap-2">
@@ -44,20 +51,20 @@
             <span>
                 Each service needs <strong>at least 1 photo</strong>, and you need a minimum of
                 <strong>3 photos total</strong> across all your services.
-                You currently have <strong>{{ $__totalBizImages }}</strong> photo(s) saved across all services.
+                You currently have <strong><?php echo e($__totalBizImages); ?></strong> photo(s) saved across all services.
             </span>
         </div>
 
-        @if($existingImages->count())
+        <?php if($existingImages->count()): ?>
             <div class="mb-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3" id="existingImagesGrid">
-                @foreach($existingImages as $img)
-                    <div class="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square bg-gray-50" id="img-{{ $img->id }}">
-                        <img src="{{ asset($img->path) }}" alt="Service image"
+                <?php $__currentLoopData = $existingImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $img): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square bg-gray-50" id="img-<?php echo e($img->id); ?>">
+                        <img src="<?php echo e(asset($img->path)); ?>" alt="Service image"
                             class="w-full h-full object-cover">
-                        @if(isset($service) && $service->id)
+                        <?php if(isset($service) && $service->id): ?>
                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 rounded-lg">
                                 <button type="button"
-                                    onclick="deleteServiceImage(this, '{{ route('admin.services.images.destroy', [$service, $img]) }}', {{ $img->id }})"
+                                    onclick="deleteServiceImage(this, '<?php echo e(route('admin.services.images.destroy', [$service, $img])); ?>', <?php echo e($img->id); ?>)"
                                     class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition shadow">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -65,18 +72,18 @@
                                     </svg>
                                 </button>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-        @elseif($legacyImage)
+        <?php elseif($legacyImage): ?>
             <div class="mb-3">
-                <img src="{{ asset($legacyImage) }}" alt="" class="h-28 w-auto rounded-lg border border-gray-200 shadow-sm">
+                <img src="<?php echo e(asset($legacyImage)); ?>" alt="" class="h-28 w-auto rounded-lg border border-gray-200 shadow-sm">
                 <p class="text-xs text-gray-400 mt-1">Legacy image — upload new images below to replace.</p>
             </div>
-        @endif
+        <?php endif; ?>
 
-        {{-- Upload new images --}}
+        
         <div class="relative">
             <label for="imagesInput"
                 class="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 cursor-pointer transition">
@@ -91,63 +98,84 @@
                 class="sr-only" onchange="previewNewImages(this)">
         </div>
 
-        {{-- JS preview of newly selected images --}}
+        
         <div id="newImagesPreview" class="mt-3 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 hidden"></div>
 
-        @error('images.*')
-            <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
-        @enderror
-        @error('images')
-            <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
-        @enderror
+        <?php $__errorArgs = ['images.*'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+            <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        <?php $__errorArgs = ['images'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+            <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
     </div>
 
     <!-- Service Description -->
     <div>
-        <label class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.description_optional') }}</label>
+        <label class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.description_optional')); ?></label>
         <textarea lang="en" dir="ltr" name="description" rows="3" 
-            placeholder="{{ __('app.brief_description') }}"
-            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">{{ old('description', $service->description ?? '') }}</textarea>
-        @error('description') 
-            <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
-        @enderror
+            placeholder="<?php echo e(__('app.brief_description')); ?>"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"><?php echo e(old('description', $service->description ?? '')); ?></textarea>
+        <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> 
+            <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
     </div>
 
     <!-- Duration and Price Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Duration -->
         <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.duration_minutes') }}</label>
-            @php
+            <label class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.duration_minutes')); ?></label>
+            <?php
                 $presets     = [15, 30, 45, 60, 75, 90, 120];
                 $curDuration = (int) old('duration_minutes', $service->duration_minutes ?? 30);
                 $isCustom    = !in_array($curDuration, $presets);
-            @endphp
+            ?>
 
-            {{-- Preset pill buttons --}}
+            
             <div class="grid grid-cols-4 gap-2 mb-2">
-                @foreach($presets as $p)
-                <button type="button" data-duration="{{ $p }}"
+                <?php $__currentLoopData = $presets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <button type="button" data-duration="<?php echo e($p); ?>"
                     class="duration-btn px-2 py-2 rounded-lg border text-sm font-semibold transition
-                        {{ $curDuration === $p && !$isCustom
+                        <?php echo e($curDuration === $p && !$isCustom
                             ? 'bg-green-600 text-white border-green-600'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50' }}">
-                    {{ $p }}<span class="font-normal text-xs"> min</span>
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50'); ?>">
+                    <?php echo e($p); ?><span class="font-normal text-xs"> min</span>
                 </button>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <button type="button" id="customDurationBtn"
                     class="duration-btn px-2 py-2 rounded-lg border text-sm font-semibold transition
-                        {{ $isCustom
+                        <?php echo e($isCustom
                             ? 'bg-green-600 text-white border-green-600'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50' }}">
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50'); ?>">
                     Custom
                 </button>
             </div>
 
-            {{-- Custom input (only shown when Custom button is active) --}}
-            <div id="customDurationWrap" class="{{ $isCustom ? '' : 'hidden' }} relative">
+            
+            <div id="customDurationWrap" class="<?php echo e($isCustom ? '' : 'hidden'); ?> relative">
                 <input type="number" id="customDurationInput"
-                    value="{{ $isCustom ? $curDuration : '' }}"
+                    value="<?php echo e($isCustom ? $curDuration : ''); ?>"
                     min="15" step="15" max="480"
                     placeholder="e.g. 75"
                     oninvalid="return false;"
@@ -156,12 +184,19 @@
                 <p class="text-xs text-gray-400 mt-1">Must be a multiple of 15 (e.g. 75, 105, 135…)</p>
             </div>
 
-            {{-- Hidden field that is actually submitted --}}
-            <input type="hidden" name="duration_minutes" id="durationMinutesInput" value="{{ $curDuration }}">
+            
+            <input type="hidden" name="duration_minutes" id="durationMinutesInput" value="<?php echo e($curDuration); ?>">
 
-            @error('duration_minutes')
-                <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
-            @enderror
+            <?php $__errorArgs = ['duration_minutes'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
             <script>
             (function () {
@@ -207,17 +242,24 @@
 
         <!-- Price -->
         <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.price_optional') }}</label>
+            <label class="block text-sm font-semibold text-gray-800 mb-2"><?php echo e(__('app.price_optional')); ?></label>
             <div class="relative">
                 <span class="absolute left-3 top-3 text-gray-500 text-sm font-medium">OMR</span>
                 <input lang="en" dir="ltr" type="number" step="0.001" name="price" 
-                    value="{{ old('price', $service->price ?? '') }}"
+                    value="<?php echo e(old('price', $service->price ?? '')); ?>"
                     placeholder="0.000"
                     class="w-full pl-14 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
             </div>
-            @error('price') 
-                <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
-            @enderror
+            <?php $__errorArgs = ['price'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> 
+                <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 
@@ -225,58 +267,67 @@
     <div class="border-t border-gray-200 pt-6">
         <div class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
             <input lang="en" dir="ltr" type="checkbox" name="is_active" id="is_active" 
-                @checked(old('is_active', $service->is_active ?? true))
+                <?php if(old('is_active', $service->is_active ?? true)): echo 'checked'; endif; ?>
                 class="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500 cursor-pointer" />
             <label for="is_active" class="flex-1 cursor-pointer">
-                <p class="font-medium text-gray-800">{{ __('app.service_is_active') }}</p>
-                <p class="text-sm text-gray-600">{{ __('app.customers_can_book') }}</p>
+                <p class="font-medium text-gray-800"><?php echo e(__('app.service_is_active')); ?></p>
+                <p class="text-sm text-gray-600"><?php echo e(__('app.customers_can_book')); ?></p>
             </label>
         </div>
     </div>
 
     <!-- Branch Assignment -->
-    @php $allBranches = $branches ?? collect(); @endphp
-    @if($allBranches->isNotEmpty())
+    <?php $allBranches = $branches ?? collect(); ?>
+    <?php if($allBranches->isNotEmpty()): ?>
     <div class="border-t border-gray-200 pt-6">
-        <label class="block text-sm font-medium text-gray-700 mb-3">{{ __('app.branches') }}</label>
-        <p class="text-sm text-gray-500 mb-4">{{ __('app.select_branches_hint') }}</p>
+        <label class="block text-sm font-medium text-gray-700 mb-3"><?php echo e(__('app.branches')); ?></label>
+        <p class="text-sm text-gray-500 mb-4"><?php echo e(__('app.select_branches_hint')); ?></p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            @php
+            <?php
                 $selectedBranchIds = old('branch_ids', $service?->branches->pluck('id')->toArray() ?? []);
-            @endphp
-            @foreach($allBranches as $branch)
+            ?>
+            <?php $__currentLoopData = $allBranches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $branch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50 hover:bg-green-50 hover:border-green-300 cursor-pointer transition">
-                <input type="checkbox" name="branch_ids[]" value="{{ $branch->id }}"
-                    {{ in_array($branch->id, (array) $selectedBranchIds) ? 'checked' : '' }}
+                <input type="checkbox" name="branch_ids[]" value="<?php echo e($branch->id); ?>"
+                    <?php echo e(in_array($branch->id, (array) $selectedBranchIds) ? 'checked' : ''); ?>
+
                     class="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500 cursor-pointer">
-                <span class="text-sm font-medium text-gray-800">{{ $branch->name }}</span>
+                <span class="text-sm font-medium text-gray-800"><?php echo e($branch->name); ?></span>
             </label>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
-        <p class="text-xs text-gray-400 mt-2">{{ __('app.no_branch_means_all') }}</p>
-        @error('branch_ids')
-            <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
-        @enderror
+        <p class="text-xs text-gray-400 mt-2"><?php echo e(__('app.no_branch_means_all')); ?></p>
+        <?php $__errorArgs = ['branch_ids'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+            <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
     </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Action Buttons -->
     <div class="border-t border-gray-200 pt-6 flex items-center justify-between">
-        <a href="{{ route('admin.services.index') }}" 
+        <a href="<?php echo e(route('admin.services.index')); ?>" 
             class="px-6 py-3 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition">
-            {{ __('app.cancel') }}
+            <?php echo e(__('app.cancel')); ?>
+
         </a>
         <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold hover:shadow-lg transition flex items-center space-x-2">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
             </svg>
-            <span>{{ __('app.save_service') }}</span>
+            <span><?php echo e(__('app.save_service')); ?></span>
         </button>
     </div>
 </div>
 
 <script>
-let _existingSaved = {{ $existingImages->count() }};
+let _existingSaved = <?php echo e($existingImages->count()); ?>;
 let _newSelected   = 0;
 
 function _refreshImageCounter() {
@@ -361,4 +412,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-</script>
+</script><?php /**PATH C:\laragon\www\Mawid-app\resources\views/admin/services/_form.blade.php ENDPATH**/ ?>

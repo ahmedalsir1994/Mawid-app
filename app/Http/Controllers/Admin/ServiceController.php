@@ -62,6 +62,34 @@ class ServiceController extends Controller
             'branch_ids.*'     => ['integer', Rule::exists('branches', 'id')->where('business_id', $businessId)],
         ]);
 
+        // Image minimum guards
+        $newCount = $request->hasFile('images') ? count($request->file('images')) : 0;
+        $serviceCount = Service::where('business_id', $businessId)->count();
+        if ($serviceCount === 0) {
+            // This is the first service being created
+            if ($newCount < 3) {
+                return back()
+                    ->withErrors(['images' => 'If you have only one service, you must upload at least 3 images for it.'])
+                    ->withInput();
+            }
+        } else {
+            if ($newCount < 1) {
+                return back()
+                    ->withErrors(['images' => 'Please upload at least 1 photo for this service.'])
+                    ->withInput();
+            }
+            $existingTotal = ServiceImage::whereIn(
+                'service_id',
+                Service::where('business_id', $businessId)->pluck('id')
+            )->count();
+            if ($existingTotal + $newCount < 3) {
+                $needed = 3 - $existingTotal - $newCount;
+                return back()
+                    ->withErrors(['images' => "You need at least 3 photos total across all your services. Please add {$needed} more photo(s)."])
+                    ->withInput();
+            }
+        }
+
         $service = Service::create([
             'business_id'      => $businessId,
             'name'             => $data['name'],
@@ -109,6 +137,27 @@ class ServiceController extends Controller
             'branch_ids.*'      => ['integer', Rule::exists('branches', 'id')->where('business_id', $service->business_id)],
         ]);
 
+        // Image minimum guards
+        $service->loadMissing('images');
+        $existingImgCount = $service->images->count();
+        $newCount = $request->hasFile('images') ? count($request->file('images')) : 0;
+        $afterThis = $existingImgCount + $newCount;
+        if ($afterThis < 1) {
+            return back()
+                ->withErrors(['images' => 'This service must have at least 1 photo.'])
+                ->withInput();
+        }
+        $totalOther = ServiceImage::whereIn(
+            'service_id',
+            Service::where('business_id', $service->business_id)->where('id', '!=', $service->id)->pluck('id')
+        )->count();
+        if ($totalOther + $afterThis < 3) {
+            $needed = 3 - $totalOther - $afterThis;
+            return back()
+                ->withErrors(['images' => "You need at least 3 photos total across all your services. Please add {$needed} more photo(s)."])
+                ->withInput();
+        }
+
         $service->update([
             'name'             => $data['name'],
             'description'      => $data['description'] ?? null,
@@ -151,6 +200,25 @@ class ServiceController extends Controller
         $this->authorizeService($request, $service);
 
         abort_if($serviceImage->service_id !== $service->id, 403);
+
+        // Minimum image guards
+        $remainingOnService = $service->images()->where('id', '!=', $serviceImage->id)->count();
+        if ($remainingOnService < 1) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Each service must have at least 1 photo.'], 422);
+            }
+            return back()->with('error', 'Each service must have at least 1 photo.');
+        }
+        $totalAfterDelete = ServiceImage::whereIn(
+            'service_id',
+            Service::where('business_id', $service->business_id)->pluck('id')
+        )->count() - 1;
+        if ($totalAfterDelete < 3) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'You must keep at least 3 photos total across all your services.'], 422);
+            }
+            return back()->with('error', 'You must keep at least 3 photos total across all your services.');
+        }
 
         if (file_exists(public_path($serviceImage->path))) {
             unlink(public_path($serviceImage->path));
