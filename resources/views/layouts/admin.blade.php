@@ -64,7 +64,7 @@
 </head>
 
 <body class="font-sans antialiased bg-gray-50">
-    <div class="flex h-screen bg-gray-100">
+    <div class="flex h-screen bg-gray-100 ">
         <!-- Sidebar -->
         <div class="hidden md:flex md:flex-col md:w-64 md:bg-white md:shadow-lg">
             <!-- Logo Section -->
@@ -73,7 +73,7 @@
             </div>
 
             <!-- Navigation Links -->
-            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <nav class="flex-1  px-4 py-6 space-y-2 overflow-y-auto">
                 <!-- Dashboard -->
                 <a href="{{ auth()->user()->role === 'super_admin' ? route('admin.super.dashboard') : (auth()->user()->role === 'staff' ? route('admin.staff.dashboard') : route('admin.company.dashboard')) }}"
                     class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.super.dashboard', 'admin.company.dashboard', 'admin.staff.dashboard') ? 'sidebar-active' : '' }}">
@@ -141,15 +141,28 @@
                     </a>
                 @elseif (auth()->user()->role === 'company_admin')
                     <!-- Company Admin Only: Business Settings -->
+                    <div class="flex items-center ">
+
                     <a href="{{ route('admin.business.edit') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.business.*') ? 'sidebar-active' : '' }}">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        class="flex items-center  space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.business.*') ? 'sidebar-active' : '' }}">
+                        <svg class=" h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
                                 clip-rule="evenodd" />
                         </svg>
                         <span class="font-medium">{{ __('app.business') }}</span>
+                        <a href="{{ url('/') }}/{{ auth()->user()->business?->slug }}" target="_blank"
+                            class="ml-2 p-1 rounded hover:bg-blue-100" title="Open Public Booking Link"
+                            onclick="event.stopPropagation();">
+                            <svg class="w-4 h-4 text-blue-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
                     </a>
+
+                    </div>
+                   
 
                     <!-- Branches -->
                     @php $sidebarLicense = auth()->user()->business?->license; @endphp
@@ -207,7 +220,6 @@
                     </a>
 
                   
-
                     <!-- Company Admin: Time Off -->
                     <a href="{{ route('admin.time_off.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.time_off.*') ? 'sidebar-active' : '' }}">
@@ -769,15 +781,25 @@
                         <span class="font-medium">Billing History</span>
                     </a>
                 @elseif (auth()->user()->role === 'company_admin')
-                    <a href="{{ route('admin.business.edit') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.business.*') ? 'sidebar-active' : '' }}">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-medium">{{ __('app.business') }}</span>
-                    </a>
+                    <div class="flex items-center">
+                        <a href="{{ route('admin.business.edit') }}"
+                            class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.business.*') ? 'sidebar-active' : '' }}">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="font-medium">{{ __('app.business') }}</span>
+                        </a>
+                        <a href="{{ url('/') }}/{{ auth()->user()->business?->slug }}" target="_blank"
+                            class="ml-2 p-1 rounded hover:bg-blue-100" title="Open Public Booking Link"
+                            onclick="event.stopPropagation();">
+                            <svg class="w-4 h-4 text-blue-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
 
                     <a href="{{ route('admin.branches.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover {{ request()->routeIs('admin.branches.*') ? 'sidebar-active' : '' }}">

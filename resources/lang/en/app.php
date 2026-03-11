@@ -315,6 +315,7 @@ return [
     'your_business_name' => 'Your business name',
     'business_slug' => 'Business Slug',
     'slug_hint' => 'Used in your public booking page URL',
+    'public_booking_link' => 'Public Booking Link',
     'location_preferences' => 'Location & Preferences',
     'country' => 'Country',
     'default_language' => 'Default Language',

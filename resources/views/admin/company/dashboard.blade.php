@@ -89,6 +89,34 @@
             </a>
         </div>
 
+        <!-- Public Booking Link -->
+        <div class="bg-white rounded-xl shadow-md border border-blue-100 p-6">
+            <h3 class="text-gray-600 font-medium mb-2">{{ __('app.public_booking_link') ?? 'Public Booking Link' }}</h3>
+            <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                <span class="flex-1 text-sm text-gray-700 truncate select-all">{{ url('/') }}/{{ $business->slug }}</span>
+                <button type="button" onclick="navigator.clipboard.writeText('{{ url('/') }}/{{ $business->slug }}')"
+                    class="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Copy</span>
+                </button>
+                <a href="{{ url('/') }}/{{ $business->slug }}" target="_blank"
+                    class="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Open
+                </a>
+            </div>
+        </div>
+
         <!-- Pending Bookings -->
         <div class="bg-white rounded-xl shadow-md border border-yellow-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.pending') }}</h3>

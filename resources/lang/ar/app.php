@@ -311,6 +311,7 @@ return [
     'your_business_name' => 'اسم نشاطك التجاري',
     'business_slug' => 'معرّف الرابط',
     'slug_hint' => 'يُستخدم في رابط صفحة الحجز الخاصة بك',
+    'public_booking_link' => 'رابط الحجز العام',
     'location_preferences' => 'الموقع والتفضيلات',
     'default_language' => 'اللغة الافتراضية',
     'currency' => 'العملة',
