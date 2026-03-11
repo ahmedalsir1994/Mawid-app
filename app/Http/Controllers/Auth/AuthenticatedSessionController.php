@@ -27,12 +27,16 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
+
+        // If redirected from session expired, go to intended
+        $intended = $request->input('intended');
+        if ($intended) {
+            return redirect()->to($intended);
+        }
 
         // Redirect based on user role
         $user = auth()->user();
-        
         if ($user->role === 'super_admin') {
             return redirect()->route('admin.super.dashboard');
         } elseif ($user->role === 'company_admin') {
@@ -40,7 +44,6 @@ class AuthenticatedSessionController extends Controller
         } elseif ($user->role === 'staff') {
             return redirect()->route('admin.staff.dashboard');
         }
-        
         // Default redirect for customer
         return redirect()->route('profile.edit');
     }

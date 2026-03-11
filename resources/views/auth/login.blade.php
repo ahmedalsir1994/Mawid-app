@@ -7,15 +7,26 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+
     @if(session('error'))
         <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
             {{ session('error') }}
         </div>
     @endif
 
+    @if(request('expired'))
+        <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
+            {{ __('Your session expired. Please sign in again to continue.') }}
+        </div>
+    @endif
+
 
     <form method="POST" action="{{ route('login') }}">
+
         @csrf
+        @if(request('intended'))
+            <input type="hidden" name="intended" value="{{ request('intended') }}">
+        @endif
 
         <!-- Email Address -->
         <div>
