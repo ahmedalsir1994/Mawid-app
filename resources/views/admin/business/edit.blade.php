@@ -261,7 +261,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
                                         </svg>
                                         <span class="text-xs text-gray-500 font-medium">Click or drag photo</span>
-                                        <span class="text-[11px] text-gray-400">JPG · PNG · WebP · max 10 MB</span>
+                                        <span class="text-[11px] text-gray-400">JPG · PNG · WebP · max 2 MB</span>
                                     </div>
 
                                     {{-- Preview image (hidden until a file is picked or already saved) --}}
@@ -380,6 +380,13 @@
             function galleryPick(slot, input) {
                 if (!input.files || !input.files[0]) return;
                 const file      = input.files[0];
+
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Photo ' + slot + ' exceeds the 2 MB size limit. Please choose a smaller image.');
+                    input.value = '';
+                    return;
+                }
+
                 const preview   = document.getElementById('galleryPreview'   + slot);
                 const empty     = document.getElementById('galleryEmpty'     + slot);
                 const removeBtn = document.getElementById('galleryRemoveBtn' + slot);

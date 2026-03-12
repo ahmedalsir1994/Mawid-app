@@ -33,6 +33,10 @@
         #lightbox { transition: opacity .2s ease; }
         #lightbox.hidden { display:none; }
         #lightboxImg { transition: opacity .2s ease; }
+
+        /* Service detail modal */
+        #svcDetailModal { transition: opacity .2s ease; }
+        #svcDetailModal.hidden { display:none; }
     </style>
 </head>
 
@@ -282,13 +286,16 @@
                     @else
                         <ul id="svcList" class="divide-y divide-gray-100">
                             @foreach($services as $s)
-                                <li class="service-row px-6 py-4 flex items-start gap-4"
+                                <li class="service-row px-6 py-4 flex items-start gap-4 cursor-pointer"
                                     id="svcRow{{ $s->id }}"
                                     data-svc-id="{{ $s->id }}"
                                     data-svc-name="{{ $s->name }}"
                                     data-svc-duration="{{ $s->duration_minutes }}"
                                     data-svc-price="{{ $s->price ?? 0 }}"
-                                    data-category-id="{{ $s->service_category_id ?? '' }}">
+                                    data-category-id="{{ $s->service_category_id ?? '' }}"
+                                    data-svc-images='@json($s->images->map(fn($img) => asset($img->path))->values())'
+                                    data-svc-desc="{{ $s->description ?? '' }}"
+                                    onclick="openSvcDetail({{ $s->id }}, event)">
                                     <div class="shrink-0">
                                         @if($s->primaryImage)
                                             <img src="{{ asset($s->primaryImage) }}" alt="{{ $s->name }}"
@@ -313,7 +320,7 @@
                                         @if($s->description)
                                             <p id="svcDesc{{ $s->id }}" class="text-xs text-gray-400 mt-1 line-clamp-3">{{ $s->description }}</p>
                                             <button type="button" id="svcDescBtn{{ $s->id }}"
-                                                onclick="toggleSvcDesc({{ $s->id }})"
+                                                onclick="event.stopPropagation(); toggleSvcDesc({{ $s->id }})"
                                                 class="text-xs text-green-600 font-medium mt-0.5 hover:underline leading-none">
                                                 {{ __('app.read_more') ?? 'Read more' }}
                                             </button>
@@ -327,7 +334,7 @@
                                         <button type="button"
                                             id="svcSelectBtn{{ $s->id }}"
                                             class="svc-select-btn shrink-0 px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition whitespace-nowrap"
-                                            onclick="toggleMainSvc({{ $s->id }}, this)">
+                                            onclick="event.stopPropagation(); toggleMainSvc({{ $s->id }}, this)">
                                             + {{ __('app.select') ?? 'Select' }}
                                         </button>
                                     @endif
@@ -1557,6 +1564,147 @@
     })();
     </script>
     @endif
+
+    {{-- Service Detail Modal --}}
+    <div id="svcDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60" onclick="closeSvcDetail()"></div>
+        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            {{-- Close --}}
+            <button type="button" onclick="closeSvcDetail()"
+                class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-lg leading-none">
+                &times;
+            </button>
+            {{-- Image carousel (populated by JS) --}}
+            <div id="svcDetailCarousel" class="flex-shrink-0 bg-gray-100"></div>
+            {{-- Info --}}
+            <div class="overflow-y-auto p-5 flex-1">
+                <h3 id="svcDetailName" class="text-xl font-bold text-gray-900 pr-6"></h3>
+                <p id="svcDetailMeta" class="text-sm text-gray-500 mt-1"></p>
+                <p id="svcDetailDesc" class="text-sm text-gray-700 mt-3 leading-relaxed whitespace-pre-line"></p>
+            </div>
+            {{-- Select button --}}
+            <div class="p-4 border-t border-gray-100 flex-shrink-0">
+                <button id="svcDetailSelectBtn" type="button"
+                    onclick="svcDetailSelectCurrent()"
+                    class="w-full py-3 rounded-xl bg-green-600 text-white font-semibold text-sm hover:bg-green-700 transition">
+                    + {{ __('app.select') ?? 'Select' }} {{ __('app.service') ?? 'service' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        let svcDetailCurrentId = null;
+        let svcDetailImages    = [];
+        let svcDetailImgIndex  = 0;
+
+        window.openSvcDetail = function (id, event) {
+            if (event) event.stopPropagation();
+            const row = document.getElementById('svcRow' + id);
+            if (!row) return;
+            svcDetailCurrentId = id;
+
+            const name     = row.dataset.svcName;
+            const duration = parseInt(row.dataset.svcDuration);
+            const price    = parseFloat(row.dataset.svcPrice);
+            const desc     = row.dataset.svcDesc || '';
+            const images   = JSON.parse(row.dataset.svcImages || '[]');
+
+            document.getElementById('svcDetailName').textContent = name;
+
+            let meta = duration + ' {{ __('app.minutes') ?? 'min' }}';
+            if (price > 0) meta += ' \u00b7 ' + price.toFixed(2) + ' {{ $business->currency }}';
+            document.getElementById('svcDetailMeta').textContent = meta;
+
+            const descEl = document.getElementById('svcDetailDesc');
+            descEl.textContent = desc;
+            descEl.style.display = desc ? '' : 'none';
+
+            buildSvcCarousel(images);
+            syncSvcDetailBtn();
+
+            document.getElementById('svcDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeSvcDetail = function () {
+            document.getElementById('svcDetailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            svcDetailCurrentId = null;
+        };
+
+        function buildSvcCarousel(images) {
+            svcDetailImages   = images;
+            svcDetailImgIndex = 0;
+            renderSvcCarouselSlide();
+        }
+
+        function renderSvcCarouselSlide() {
+            const container = document.getElementById('svcDetailCarousel');
+            const total     = svcDetailImages.length;
+
+            if (total === 0) {
+                container.innerHTML = '<div class="h-48 flex items-center justify-center"><svg class="w-14 h-14 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>';
+                return;
+            }
+
+            const dots = total > 1
+                ? svcDetailImages.map((_, i) =>
+                    `<span class="inline-block w-1.5 h-1.5 rounded-full transition ${
+                        i === svcDetailImgIndex ? 'bg-white scale-125' : 'bg-white/50'
+                    }"></span>`).join('')
+                : '';
+
+            const nav = total > 1 ? `
+                <button type="button" onclick="svcCarouselPrev()" class="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition text-xl leading-none">&lsaquo;</button>
+                <button type="button" onclick="svcCarouselNext()" class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition text-xl leading-none">&rsaquo;</button>
+                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">${dots}</div>` : '';
+
+            container.innerHTML = `
+                <div class="relative">
+                    <img src="${svcDetailImages[svcDetailImgIndex]}" alt="" class="w-full h-64 object-cover">
+                    ${nav}
+                </div>`;
+        }
+
+        window.svcCarouselPrev = function () {
+            svcDetailImgIndex = (svcDetailImgIndex - 1 + svcDetailImages.length) % svcDetailImages.length;
+            renderSvcCarouselSlide();
+        };
+
+        window.svcCarouselNext = function () {
+            svcDetailImgIndex = (svcDetailImgIndex + 1) % svcDetailImages.length;
+            renderSvcCarouselSlide();
+        };
+
+        function syncSvcDetailBtn() {
+            const btn = document.getElementById('svcDetailSelectBtn');
+            if (!btn || !svcDetailCurrentId) return;
+            const selected = typeof mainSelectedServices !== 'undefined' && mainSelectedServices.has(String(svcDetailCurrentId));
+            if (selected) {
+                btn.textContent = '\u2713 {{ __('app.selected') ?? 'Selected' }}';
+                btn.className = 'w-full py-3 rounded-xl bg-gray-200 text-gray-700 font-semibold text-sm transition';
+            } else {
+                btn.textContent = '+ {{ __('app.select') ?? 'Select' }} {{ __('app.service') ?? 'service' }}';
+                btn.className = 'w-full py-3 rounded-xl bg-green-600 text-white font-semibold text-sm hover:bg-green-700 transition';
+            }
+        }
+
+        window.svcDetailSelectCurrent = function () {
+            if (!svcDetailCurrentId) return;
+            const rowBtn = document.getElementById('svcSelectBtn' + svcDetailCurrentId);
+            if (rowBtn) toggleMainSvc(svcDetailCurrentId, rowBtn);
+            syncSvcDetailBtn();
+        };
+
+        // Close on Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeSvcDetail();
+        });
+    })();
+    </script>
+
     {{-- Block Arabic input across all text fields --}}
     <script>
     (function () {

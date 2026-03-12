@@ -52,19 +52,15 @@
 
         <div class="flex items-center justify-between mb-1">
             <label class="block text-sm font-semibold text-gray-800">{{ __('app.service_image') }}</label>
-            <span id="imageCountBadge" class="text-xs font-semibold px-2 py-1 rounded-full {{ $existingImages->count() < 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
+            <span id="imageCountBadge" class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-600">
                 <span id="imageCountNum">{{ $existingImages->count() }}</span> photo(s) here
             </span>
         </div>
-        <div class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3 flex items-start gap-2">
-            <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        <div class="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-3 flex items-start gap-2">
+            <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
             </svg>
-            <span>
-                Each service needs <strong>at least 1 photo</strong>, and you need a minimum of
-                <strong>3 photos total</strong> across all your services.
-                You currently have <strong>{{ $__totalBizImages }}</strong> photo(s) saved across all services.
-            </span>
+            <span>Please upload <strong>at least 1 photo</strong> per service, up to a maximum of 3 (JPG, PNG, WebP &middot; max 2 MB each).</span>
         </div>
 
         @if($existingImages->count())
@@ -104,7 +100,7 @@
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 <span class="text-sm font-medium text-gray-600">Click to upload photos</span>
-                <span class="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP · up to 4 MB each · up to 10 files</span>
+                <span class="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP · up to 2 MB each · max 3 photos</span>
             </label>
             <input lang="en" dir="ltr" id="imagesInput" type="file" name="images[]" multiple accept="image/jpeg,image/jpg,image/png,image/webp"
                 class="sr-only" onchange="previewNewImages(this)">
