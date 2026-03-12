@@ -69,12 +69,6 @@
                         </div>
                     </div>
                     <div class="grid sm:grid-cols-2 gap-4 text-sm">
-                        @if($business->mobile)
-                        <div>
-                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">Mobile</p>
-                            <a href="tel:{{ $business->mobile }}" class="text-gray-700 hover:text-blue-600 transition">{{ $business->mobile }}</a>
-                        </div>
-                        @endif
                         @if($business->phone)
                         <div>
                             <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">Phone</p>

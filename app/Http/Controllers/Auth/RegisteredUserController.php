@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name'          => ['required', 'string', 'max:255'],
             'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'mobile'        => ['required', 'string', 'max:20'],
+            'phone'         => ['required', 'string', 'max:20'],
             'business_name' => ['required', 'string', 'max:255'],
             'business_type' => ['required', 'string', 'max:100'],
             'company_size'  => ['required', 'string', 'in:1-5,6-20,21-50,51-200,200+'],
@@ -52,7 +52,7 @@ class RegisteredUserController extends Controller
         $business = Business::create([
             'name'          => $request->business_name,
             'slug'          => Str::slug($request->business_name . '-' . Str::random(6)),
-            'mobile'        => $request->mobile,
+            'phone'         => $request->phone,
             'business_type' => $request->business_type,
             'company_size'  => $request->company_size,
             'country'       => 'OM',

@@ -15,7 +15,7 @@ class Business extends Model
         'country',
         'timezone',
         'currency',
-        'mobile',
+        'phone',
         'business_type',
         'company_size',
         'address',

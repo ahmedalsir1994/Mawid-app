@@ -102,7 +102,7 @@
                 <thead>
                     <tr class="border-b border-gray-100 bg-gray-50">
                         <th class="text-left px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wide">Name</th>
-                        <th class="text-left px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wide">Email / Mobile</th>
+                        <th class="text-left px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wide">Email / Phone</th>
                         <th class="text-left px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wide">Business</th>
                         <th class="text-left px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wide">Type / Size</th>
                         <th class="text-left px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wide">Plan</th>
@@ -125,8 +125,8 @@
                             </td>
                             <td class="px-5 py-4">
                                 <a href="mailto:{{ $reg->email }}" class="text-blue-700 hover:underline text-xs block">{{ $reg->email }}</a>
-                                @if(optional($reg->business)->mobile)
-                                    <a href="tel:{{ $reg->business->mobile }}" class="text-gray-500 text-xs mt-0.5 block">{{ $reg->business->mobile }}</a>
+                                @if(optional($reg->business)->phone)
+                                    <a href="tel:{{ $reg->business->phone }}" class="text-gray-500 text-xs mt-0.5 block">{{ $reg->business->phone }}</a>
                                 @endif
                             </td>
                             <td class="px-5 py-4 text-gray-700">{{ optional($reg->business)->name ?? '—' }}</td>

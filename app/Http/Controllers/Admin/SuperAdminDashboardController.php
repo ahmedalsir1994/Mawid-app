@@ -185,7 +185,7 @@ class SuperAdminDashboardController extends Controller
                 fputcsv($handle, [
                     $user->name,
                     $user->email,
-                    optional($user->business)->mobile ?? optional($user->business)->phone ?? '',
+                    optional($user->business)->phone ?? '',
                     optional($user->business)->name ?? '',
                     optional($user->business)->business_type ?? '',
                     optional($user->business)->company_size ?? '',

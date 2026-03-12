@@ -20,7 +20,7 @@ class RegistrationSubmissionController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhereHas('business', fn ($b) => $b->where('name', 'like', "%{$search}%")
-                      ->orWhere('mobile', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%")
                       ->orWhere('business_type', 'like', "%{$search}%")
                   );
             });

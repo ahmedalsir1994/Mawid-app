@@ -83,7 +83,7 @@
                     <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
                 </div>
 
-                {{-- Email + Mobile (side by side on md+) --}}
+                {{-- Email + Phone (side by side on md+) --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="email" :value="__('Email Address')" />
@@ -93,11 +93,11 @@
                         <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
                     </div>
                     <div>
-                        <x-input-label for="mobile" :value="__('Mobile Number')" />
-                        <x-text-input id="mobile" class="block mt-1 w-full" type="tel" name="mobile"
-                            :value="old('mobile')" required autocomplete="tel"
+                        <x-input-label for="phone" :value="__('Phone Number')" />
+                        <x-text-input id="phone" class="block mt-1 w-full" type="tel" name="phone"
+                            :value="old('phone')" required autocomplete="tel"
                             placeholder="+968 9X XXX XXX" />
-                        <x-input-error :messages="$errors->get('mobile')" class="mt-1.5" />
+                        <x-input-error :messages="$errors->get('phone')" class="mt-1.5" />
                     </div>
                 </div>
 

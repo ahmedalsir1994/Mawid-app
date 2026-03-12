@@ -59,7 +59,7 @@ class Booking extends Model
             }
             // Loaded but empty → legacy booking, fall back to primary service
             $single = $this->service ?? $this->service()->first();
-            return collect($single ? [$single] : []);
+            return new Collection($single ? [$single] : []);
         }
 
         // Relation not yet loaded — query DB
@@ -69,7 +69,7 @@ class Booking extends Model
         }
         // Fall back to primary service (legacy bookings)
         $single = $this->service ?? $this->service()->first();
-        return collect($single ? [$single] : []);
+        return new Collection($single ? [$single] : []);
     }
 
     /**

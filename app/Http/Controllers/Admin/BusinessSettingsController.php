@@ -48,7 +48,7 @@ class BusinessSettingsController extends Controller
                 'required', 'string', 'max:120',
                 Rule::unique('businesses', 'slug')->ignore($business->id),
             ],
-            'logo'           => ['nullable', 'image', 'mimes:jpeg,jpg,png,svg', 'max:10240'],
+            'logo'           => ['nullable', 'image', 'mimes:jpeg,jpg,png,svg', 'max:2048'],
             'gallery_image_1' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'gallery_image_2' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'gallery_image_3' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
