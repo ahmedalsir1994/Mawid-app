@@ -563,7 +563,10 @@
 
                 
                 <div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3"><?php echo e(__("app.available_times")); ?></p>
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide"><?php echo e(__("app.available_times")); ?></p>
+                        <span id="slotsRefreshIndicator" class="text-[10px] text-gray-400 hidden"></span>
+                    </div>
                     <div id="modalSlotsLoading" class="hidden text-center py-4">
                         <svg class="w-5 h-5 text-green-600 mx-auto animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -1081,6 +1084,9 @@
         const modalSummary  = document.getElementById("modalSummary");
 
         let allStaff = [], currentSlots = [], selectedStaffFilter = "all";
+        let selectedSlotData = null;
+        let slotsRefreshTimer = null, slotsIndicatorTimer = null, slotsRefreshAt = null;
+        let slotsRefreshAbort = null;
         let selectedBranchId = singleBranchId;
         let selectedServiceIds = []; // array of selected service ID strings
 
@@ -1179,6 +1185,8 @@
         modalDate.addEventListener("change", () => { if (selectedServiceIds.length > 0) loadSlots(); });
 
         function clearSlots() {
+            stopSlotsRefresh();
+            selectedSlotData = null;
             modalSlotsDiv.innerHTML = "";
             modalNoSlots.classList.add("hidden");
             modalNoSlots.textContent = '<?php echo e(__("app.no_available_slots") ?? "No available slots for this date."); ?>';
@@ -1220,6 +1228,7 @@
                 selectedStaffFilter = "all";
                 if (allStaff.length > 1) { staffSection.classList.remove("hidden"); renderStaffFilter(); }
                 renderSlots();
+                startSlotsRefresh();
             } catch (e) {
                 modalLoading.classList.add("hidden");
                 modalNoSlots.classList.remove("hidden");
@@ -1271,7 +1280,7 @@
                 b.type = "button";
                 b.className = "slot-btn px-2 py-2 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-gray-800 text-center transition";
                 b.textContent = s.label;
-                b.onclick = () => selectSlot(s, b);
+                b.onclick = () => { selectedSlotData = s; selectSlot(s, b); };
                 modalSlotsDiv.appendChild(b);
             });
         }
@@ -1321,6 +1330,71 @@
             confirmBtn.classList.remove("hidden");
             drawerHint.classList.add("hidden");
             bookingForm.scrollIntoView({ behavior:"smooth", block:"nearest" });
+        }
+
+        // ── Slots auto-refresh ─────────────────────────────────────────────────
+        function startSlotsRefresh() {
+            stopSlotsRefresh();
+            slotsRefreshAt = Date.now();
+            updateRefreshIndicator();
+            slotsRefreshTimer   = setInterval(silentRefreshSlots, 30000);
+            slotsIndicatorTimer = setInterval(updateRefreshIndicator, 10000);
+        }
+
+        function stopSlotsRefresh() {
+            clearInterval(slotsRefreshTimer);
+            clearInterval(slotsIndicatorTimer);
+            slotsRefreshTimer = slotsIndicatorTimer = null;
+            if (slotsRefreshAbort) { slotsRefreshAbort.abort(); slotsRefreshAbort = null; }
+            const ind = document.getElementById('slotsRefreshIndicator');
+            if (ind) ind.classList.add('hidden');
+        }
+
+        function updateRefreshIndicator() {
+            const ind = document.getElementById('slotsRefreshIndicator');
+            if (!ind || !slotsRefreshAt) return;
+            const sec = Math.round((Date.now() - slotsRefreshAt) / 1000);
+            ind.textContent = sec < 5 ? '\u21bb Just refreshed' : '\u21bb Updated ' + sec + 's ago';
+            ind.classList.remove('hidden');
+        }
+
+        async function silentRefreshSlots() {
+            if (selectedServiceIds.length === 0 || !modalDate.value) return;
+            if (slotsRefreshAbort) slotsRefreshAbort.abort();
+            slotsRefreshAbort = new AbortController();
+            const signal = slotsRefreshAbort.signal;
+            try {
+                const params = new URLSearchParams({ date: modalDate.value });
+                selectedServiceIds.forEach(id => params.append('service_ids[]', id));
+                if (selectedBranchId) params.append('branch_id', selectedBranchId);
+                const res  = await fetch(`/${businessSlug}/slots?${params}`, { signal });
+                const data = await res.json();
+                if (!data.slots) return;
+                allStaff     = data.staff  || [];
+                currentSlots = data.slots;
+                if (allStaff.length > 1) renderStaffFilter();
+                renderSlots();
+                if (selectedSlotData) {
+                    const still = currentSlots.find(s => s.start === selectedSlotData.start);
+                    if (still) {
+                        document.querySelectorAll('.slot-btn').forEach(b => {
+                            if (b.textContent.trim() === still.label) b.classList.add('selected');
+                        });
+                    } else {
+                        selectedSlotData = null;
+                        bookingForm.classList.add('hidden');
+                        confirmBtn.classList.add('hidden');
+                        drawerHint.classList.remove('hidden');
+                        modalSummary.classList.add('hidden');
+                        modalNoSlots.textContent = '<?php echo e(__("app.slot_no_longer_available")); ?>';
+                        modalNoSlots.classList.remove('hidden');
+                    }
+                }
+                slotsRefreshAt = Date.now();
+                updateRefreshIndicator();
+            } catch (e) {
+                if (e && e.name !== 'AbortError') { /* silent fail */ }
+            }
         }
 
         // ── Description expand (main page) ────────────────────────────────────
@@ -1417,6 +1491,7 @@
         };
 
         window.closeBookingModal = function () {
+            stopSlotsRefresh();
             const drawer = document.getElementById("bookingDrawer");
             drawer.classList.add("translate-x-full");
             setTimeout(() => {

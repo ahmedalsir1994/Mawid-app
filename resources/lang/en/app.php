@@ -233,6 +233,7 @@ return [
     'available_time_slots' => 'Available Time Slots',
     'loading' => 'Loading...',
     'no_available_slots' => 'No available time slots for this date',
+    'slot_no_longer_available' => 'The time slot you selected is no longer available. Please choose another.',
     'staff_member' => 'Staff Member',
     'business' => 'Business',
     'select_staff_optional' => 'Select Staff (Optional)',

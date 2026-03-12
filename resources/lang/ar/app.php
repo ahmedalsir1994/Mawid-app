@@ -236,6 +236,7 @@ return [
     'book_another_service' => 'احجز خدمة أخرى',
     'available_time_slots' => 'الأوقات المتاحة',
     'no_available_slots' => 'لا توجد أوقات متاحة لهذا اليوم',
+    'slot_no_longer_available' => 'الوقت الذي اخترته لم يعد متاحاً. الرجاء اختيار وقت آخر.',
     'select_staff_optional' => 'اختر موظفاً (اختياري)',
     'all_staff' => 'جميع الموظفين',
     'filter_slots_by_staff' => 'صفِّح الأوقات حسب الموظف أو اعرض الكل',
