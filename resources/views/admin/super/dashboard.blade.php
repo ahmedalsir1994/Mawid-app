@@ -444,4 +444,107 @@
         @endforelse
     </div>
 
+    <!-- Registration Submissions -->
+    <div id="registration-submissions" class="mt-8 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h2 class="text-xl font-bold text-gray-900">Registration Submissions</h2>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                    {{ $totalRegistrations }} total
+                </span>
+            </div>
+            <a href="{{ route('admin.super.registrations.export') }}"
+               class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export CSV
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 border-b border-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Business</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Plan</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Registered</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @forelse($recentRegistrations as $reg)
+                    @php $license = optional($reg->business)->license; @endphp
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                                    {{ strtoupper(substr($reg->name, 0, 1)) }}
+                                </div>
+                                <span class="font-medium text-gray-900">{{ $reg->name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500">{{ $reg->email }}</td>
+                        <td class="px-6 py-4 text-gray-700">{{ optional($reg->business)->name ?? '—' }}</td>
+                        <td class="px-6 py-4">
+                            @if($license)
+                                @php
+                                    $planColors = [
+                                        'free'  => 'bg-gray-100 text-gray-600',
+                                        'pro'   => 'bg-blue-100 text-blue-700',
+                                        'plus'  => 'bg-purple-100 text-purple-700',
+                                    ];
+                                    $planColor = $planColors[$license->plan] ?? 'bg-gray-100 text-gray-600';
+                                @endphp
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $planColor }}">
+                                    {{ ucfirst($license->plan) }}
+                                    @if($license->billing_cycle)
+                                        / {{ ucfirst($license->billing_cycle) }}
+                                    @endif
+                                </span>
+                            @else
+                                <span class="text-gray-400 text-xs">—</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($license)
+                                @php
+                                    $statusColors = [
+                                        'active'    => 'bg-green-100 text-green-700',
+                                        'expired'   => 'bg-red-100 text-red-700',
+                                        'past_due'  => 'bg-yellow-100 text-yellow-700',
+                                        'cancelled' => 'bg-gray-100 text-gray-500',
+                                        'trial'     => 'bg-teal-100 text-teal-700',
+                                    ];
+                                    $statusColor = $statusColors[$license->status] ?? 'bg-gray-100 text-gray-600';
+                                @endphp
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $statusColor }}">
+                                    {{ ucfirst(str_replace('_', ' ', $license->status)) }}
+                                </span>
+                            @else
+                                <span class="text-gray-400 text-xs">—</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-gray-400 whitespace-nowrap">{{ $reg->created_at->format('M d, Y') }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 text-sm">No registrations yet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($totalRegistrations > 10)
+        <div class="px-6 py-3 border-t border-gray-100 text-center">
+            <a href="{{ route('admin.super.users.index') }}"
+               class="text-sm text-blue-600 hover:text-blue-700 font-semibold transition">
+                View all {{ $totalRegistrations }} registrations &rarr;
+            </a>
+        </div>
+        @endif
+    </div>
+
 </x-admin-layout>

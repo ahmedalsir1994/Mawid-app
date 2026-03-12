@@ -73,11 +73,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">{{ __('app.service') }}</p>
-                            <p class="font-semibold text-gray-900">{{ $booking->service->name }}</p>
+                            <p class="font-semibold text-gray-900">{{ $booking->services_label }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">{{ __('app.duration') }}</p>
-                            <p class="font-semibold text-gray-900">{{ $booking->service->duration_minutes }}
+                            <p class="font-semibold text-gray-900">{{ $booking->total_duration }}
                                 {{ __('app.minutes') }}</p>
                         </div>
                         <div>

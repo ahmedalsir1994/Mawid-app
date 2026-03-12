@@ -89,14 +89,20 @@
         <div class="max-w-6xl mx-auto px-4">
             
             <?php
-                // Collect all ServiceImage records across every service (already eager-loaded)
-                $galleryImages = $services->flatMap(fn($s) => $s->images)->values();
-                // Fallback: if no new-style images, use legacy single `image` fields
-                if ($galleryImages->isEmpty()) {
-                    $galleryImages = $services
-                        ->filter(fn($s) => $s->image)
-                        ->map(fn($s) => (object)['path' => $s->image, 'alt' => $s->name])
-                        ->values();
+                // 1. Use business-level gallery images if any are set
+                $bizGallery = array_filter($business->gallery_images ?? []);
+                if (!empty($bizGallery)) {
+                    $galleryImages = collect(array_values($bizGallery))
+                        ->map(fn($p) => (object)['path' => $p, 'alt' => $business->name]);
+                } else {
+                    // Fallback: service images
+                    $galleryImages = $services->flatMap(fn($s) => $s->images)->values();
+                    if ($galleryImages->isEmpty()) {
+                        $galleryImages = $services
+                            ->filter(fn($s) => $s->image)
+                            ->map(fn($s) => (object)['path' => $s->image, 'alt' => $s->name])
+                            ->values();
+                    }
                 }
                 $hasGallery = $galleryImages->count() > 0;
             ?>
@@ -129,7 +135,7 @@
                                         <?php if($galleryImages->count() > 3): ?>
                                             <div class="absolute inset-0 bg-black/50 flex items-center justify-center"
                                                 onclick="event.stopPropagation(); openLightbox(2)">
-                                                <span class="text-white text-sm font-semibold">+<?php echo e($galleryImages->count() - 3); ?> more</span>
+                                                <span class="text-white text-sm font-semibold">+<?php echo e($galleryImages->count() - 3); ?> <?php echo e(__('app.more_photos')); ?></span>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -146,7 +152,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            See all images
+                            <?php echo e(__('app.see_all_images')); ?>
+
                         </button>
                     <?php endif; ?>
                 </div>
@@ -215,14 +222,14 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="font-semibold text-amber-900 text-sm">Online booking is temporarily unavailable</p>
-                            <p class="text-amber-800 text-sm mt-0.5">This business has reached its online booking limit for this month. Please contact them directly to schedule your appointment.</p>
+                            <p class="font-semibold text-amber-900 text-sm"><?php echo e(__('app.booking_limit_title')); ?></p>
+                            <p class="text-amber-800 text-sm mt-0.5"><?php echo e(__('app.booking_limit_message')); ?></p>
                             <?php if($business->phone): ?>
                                 <a href="tel:<?php echo e($business->phone); ?>" class="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                     </svg>
-                                    Call <?php echo e($business->phone); ?>
+                                    <?php echo e(__('app.call')); ?> <?php echo e($business->phone); ?>
 
                                 </a>
                             <?php endif; ?>
@@ -230,12 +237,26 @@
                     </div>
                 <?php endif; ?>
 
+                
+                <?php
+                    $categories = $business->serviceCategories()->orderBy('name')->get();
+                ?>
                 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100">
+                    <div class="px-6 pt-4 pb-2 border-b border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900"><?php echo e(__("app.select_service")); ?></h2>
+                        <div class="mt-3 flex flex-wrap gap-2" id="categoryTabs">
+                            <button type="button" onclick="filterCategory('featured')"
+                                data-cat="featured"
+                                class="cat-tab px-4 py-2 rounded-full text-sm font-semibold border transition <?php echo e($selectedCategory === 'featured' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-700 border-green-600 hover:bg-green-50'); ?>"><?php echo e(__('app.featured')); ?></button>
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <button type="button" onclick="filterCategory('<?php echo e($cat->id); ?>')"
+                                    data-cat="<?php echo e($cat->id); ?>"
+                                    class="cat-tab px-4 py-2 rounded-full text-sm font-semibold border transition <?php echo e($selectedCategory == $cat->id ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-700 border-green-600 hover:bg-green-50'); ?>"><?php echo e($cat->name); ?></button>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
                     </div>
-                    <?php if($services->isEmpty()): ?>
-                        <div class="px-6 py-14 text-center">
+                    <?php if($services->isEmpty() && $categories->isEmpty()): ?>
+                        <div id="svcEmptyState" class="px-6 py-14 text-center">
                             <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
                                 <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -263,9 +284,15 @@
                             <?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <ul class="divide-y divide-gray-100">
+                        <ul id="svcList" class="divide-y divide-gray-100">
                             <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="service-row px-6 py-4 flex items-start gap-4">
+                                <li class="service-row px-6 py-4 flex items-start gap-4"
+                                    id="svcRow<?php echo e($s->id); ?>"
+                                    data-svc-id="<?php echo e($s->id); ?>"
+                                    data-svc-name="<?php echo e($s->name); ?>"
+                                    data-svc-duration="<?php echo e($s->duration_minutes); ?>"
+                                    data-svc-price="<?php echo e($s->price ?? 0); ?>"
+                                    data-category-id="<?php echo e($s->service_category_id ?? ''); ?>">
                                     <div class="shrink-0">
                                         <?php if($s->primaryImage): ?>
                                             <img src="<?php echo e(asset($s->primaryImage)); ?>" alt="<?php echo e($s->name); ?>"
@@ -289,22 +316,35 @@
                                             <?php endif; ?>
                                         </p>
                                         <?php if($s->description): ?>
-                                            <p class="text-xs text-gray-400 mt-1 line-clamp-2"><?php echo e($s->description); ?></p>
+                                            <p id="svcDesc<?php echo e($s->id); ?>" class="text-xs text-gray-400 mt-1 line-clamp-3"><?php echo e($s->description); ?></p>
+                                            <button type="button" id="svcDescBtn<?php echo e($s->id); ?>"
+                                                onclick="toggleSvcDesc(<?php echo e($s->id); ?>)"
+                                                class="text-xs text-green-600 font-medium mt-0.5 hover:underline leading-none">
+                                                <?php echo e(__('app.read_more') ?? 'Read more'); ?>
+
+                                            </button>
                                         <?php endif; ?>
                                     </div>
                                     <?php if(!empty($bookingLimitReached)): ?>
                                         <span class="shrink-0 px-5 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-400 bg-gray-50 cursor-not-allowed select-none">
-                                            Unavailable
+                                            <?php echo e(__('app.unavailable')); ?>
+
                                         </span>
                                     <?php else: ?>
                                         <button type="button"
-                                            class="shrink-0 book-btn px-5 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-800 hover:border-gray-900 hover:bg-gray-50 transition"
-                                            data-service-id="<?php echo e($s->id); ?>"
-                                            data-service-name="<?php echo e($s->name); ?>"
-                                            onclick="openBookingModal(this)"> <?php echo e(__("app.book")); ?></button>
+                                            id="svcSelectBtn<?php echo e($s->id); ?>"
+                                            class="svc-select-btn shrink-0 px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition whitespace-nowrap"
+                                            onclick="toggleMainSvc(<?php echo e($s->id); ?>, this)">
+                                            + <?php echo e(__('app.select') ?? 'Select'); ?>
+
+                                        </button>
                                     <?php endif; ?>
                                 </li>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <li id="svcNoResults" class="hidden px-6 py-10 text-center text-gray-500 text-sm">
+                                <?php echo e(__('app.no_services_available')); ?>
+
+                            </li>
                         </ul>
                     <?php endif; ?>
                 </div>
@@ -405,6 +445,20 @@
     </div>
 
     
+    <div id="svcSelBar" class="hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <div class="min-w-0">
+                <p class="font-semibold text-gray-900 text-sm" id="selBarCount"></p>
+                <p class="text-xs text-gray-500 mt-0.5" id="selBarDetails"></p>
+            </div>
+            <button type="button" onclick="proceedWithSelected()"
+                class="shrink-0 px-6 py-2.5 bg-gray-900 text-white font-semibold text-sm rounded-xl hover:bg-gray-800 active:scale-95 transition">
+                <?php echo e(__('app.book_now') ?? 'Book Now'); ?> &rarr;
+            </button>
+        </div>
+    </div>
+
+    
     <div id="bookingModal" class="hidden fixed inset-0 z-50 flex justify-end" aria-modal="true">
         <div id="modalBackdrop" class="absolute inset-0 bg-black/50" onclick="closeBookingModal()"></div>
         <div id="bookingDrawer"
@@ -456,8 +510,8 @@
                     <div id="modalServiceList" class="space-y-2">
                         <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <label class="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50 transition">
-                                <input type="radio" name="modal_service" class="modal-service-radio sr-only"
-                                    value="<?php echo e($s->id); ?>" data-name="<?php echo e($s->name); ?>" data-duration="<?php echo e($s->duration_minutes); ?>">
+                                <input type="checkbox" name="modal_service" class="modal-service-checkbox w-4 h-4 rounded accent-green-600"
+                                    value="<?php echo e($s->id); ?>" data-name="<?php echo e($s->name); ?>" data-duration="<?php echo e($s->duration_minutes); ?>" data-price="<?php echo e($s->price ?? 0); ?>">
                                 <?php if($s->primaryImage): ?>
                                     <img src="<?php echo e(asset($s->primaryImage)); ?>" class="w-10 h-10 rounded-md object-cover shrink-0">
                                 <?php else: ?>
@@ -473,12 +527,17 @@
 
                                         <?php if($s->price): ?> &middot; <?php echo e(number_format($s->price,2)); ?> <?php echo e($business->currency); ?> <?php endif; ?>
                                     </p>
+                                    <?php if($s->description): ?>
+                                        <p class="text-xs text-gray-400 mt-0.5 line-clamp-2"><?php echo e($s->description); ?></p>
+                                    <?php endif; ?>
                                 </div>
-                                <svg class="w-5 h-5 text-green-600 shrink-0 opacity-0 service-check" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
                             </label>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                    
+                    <div id="serviceTotalBar" class="hidden mt-3 bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-sm text-green-800 flex items-center justify-between">
+                        <span id="serviceTotalLabel" class="font-medium"></span>
+                        <button type="button" onclick="clearServiceSelection()" class="text-xs text-gray-400 hover:text-red-500 transition ml-3">✕ <?php echo e(__('app.clear')); ?></button>
                     </div>
                 </div>
 
@@ -535,7 +594,7 @@
                     class="hidden space-y-4">
                     <?php echo csrf_field(); ?>
                     <input type="hidden" name="branch_id" id="hidden_branch_id">
-                    <input type="hidden" name="service_id" id="hidden_service_id">
+                    <div id="hidden_service_ids_container"></div>
                     <input type="hidden" name="staff_user_id" id="hidden_staff_user_id">
                     <input type="hidden" name="date" id="hidden_date">
                     <input type="hidden" name="start_time" id="hidden_start_time">
@@ -554,26 +613,409 @@
                         <select name="customer_country"
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white" required>
                             <option value=""><?php echo e(__("app.select_a_country")); ?></option>
-                            <option value="OM" <?php echo e(old("customer_country") == "OM" ? "selected" : ""); ?>>Oman</option>
-                            <option value="SA" <?php echo e(old("customer_country") == "SA" ? "selected" : ""); ?>>Saudi Arabia</option>
-                            <option value="AE" <?php echo e(old("customer_country") == "AE" ? "selected" : ""); ?>>UAE</option>
-                            <option value="KW" <?php echo e(old("customer_country") == "KW" ? "selected" : ""); ?>>Kuwait</option>
-                            <option value="QA" <?php echo e(old("customer_country") == "QA" ? "selected" : ""); ?>>Qatar</option>
-                            <option value="BH" <?php echo e(old("customer_country") == "BH" ? "selected" : ""); ?>>Bahrain</option>
+                            <?php
+                                $countries = [
+                                    'AF' => 'Afghanistan',
+                                    'AL' => 'Albania',
+                                    'DZ' => 'Algeria',
+                                    'AD' => 'Andorra',
+                                    'AO' => 'Angola',
+                                    'AG' => 'Antigua and Barbuda',
+                                    'AR' => 'Argentina',
+                                    'AM' => 'Armenia',
+                                    'AU' => 'Australia',
+                                    'AT' => 'Austria',
+                                    'AZ' => 'Azerbaijan',
+                                    'BS' => 'Bahamas',
+                                    'BH' => 'Bahrain',
+                                    'BD' => 'Bangladesh',
+                                    'BB' => 'Barbados',
+                                    'BY' => 'Belarus',
+                                    'BE' => 'Belgium',
+                                    'BZ' => 'Belize',
+                                    'BJ' => 'Benin',
+                                    'BT' => 'Bhutan',
+                                    'BO' => 'Bolivia',
+                                    'BA' => 'Bosnia and Herzegovina',
+                                    'BW' => 'Botswana',
+                                    'BR' => 'Brazil',
+                                    'BN' => 'Brunei',
+                                    'BG' => 'Bulgaria',
+                                    'BF' => 'Burkina Faso',
+                                    'BI' => 'Burundi',
+                                    'CV' => 'Cabo Verde',
+                                    'KH' => 'Cambodia',
+                                    'CM' => 'Cameroon',
+                                    'CA' => 'Canada',
+                                    'CF' => 'Central African Republic',
+                                    'TD' => 'Chad',
+                                    'CL' => 'Chile',
+                                    'CN' => 'China',
+                                    'CO' => 'Colombia',
+                                    'KM' => 'Comoros',
+                                    'CG' => 'Congo',
+                                    'CD' => 'Congo (DRC)',
+                                    'CR' => 'Costa Rica',
+                                    'HR' => 'Croatia',
+                                    'CU' => 'Cuba',
+                                    'CY' => 'Cyprus',
+                                    'CZ' => 'Czech Republic',
+                                    'DK' => 'Denmark',
+                                    'DJ' => 'Djibouti',
+                                    'DM' => 'Dominica',
+                                    'DO' => 'Dominican Republic',
+                                    'EC' => 'Ecuador',
+                                    'EG' => 'Egypt',
+                                    'SV' => 'El Salvador',
+                                    'GQ' => 'Equatorial Guinea',
+                                    'ER' => 'Eritrea',
+                                    'EE' => 'Estonia',
+                                    'SZ' => 'Eswatini',
+                                    'ET' => 'Ethiopia',
+                                    'FJ' => 'Fiji',
+                                    'FI' => 'Finland',
+                                    'FR' => 'France',
+                                    'GA' => 'Gabon',
+                                    'GM' => 'Gambia',
+                                    'GE' => 'Georgia',
+                                    'DE' => 'Germany',
+                                    'GH' => 'Ghana',
+                                    'GR' => 'Greece',
+                                    'GD' => 'Grenada',
+                                    'GT' => 'Guatemala',
+                                    'GN' => 'Guinea',
+                                    'GW' => 'Guinea-Bissau',
+                                    'GY' => 'Guyana',
+                                    'HT' => 'Haiti',
+                                    'HN' => 'Honduras',
+                                    'HU' => 'Hungary',
+                                    'IS' => 'Iceland',
+                                    'IN' => 'India',
+                                    'ID' => 'Indonesia',
+                                    'IR' => 'Iran',
+                                    'IQ' => 'Iraq',
+                                    'IE' => 'Ireland',
+                                    'IT' => 'Italy',
+                                    'JM' => 'Jamaica',
+                                    'JP' => 'Japan',
+                                    'JO' => 'Jordan',
+                                    'KZ' => 'Kazakhstan',
+                                    'KE' => 'Kenya',
+                                    'KI' => 'Kiribati',
+                                    'KW' => 'Kuwait',
+                                    'KG' => 'Kyrgyzstan',
+                                    'LA' => 'Laos',
+                                    'LV' => 'Latvia',
+                                    'LB' => 'Lebanon',
+                                    'LS' => 'Lesotho',
+                                    'LR' => 'Liberia',
+                                    'LY' => 'Libya',
+                                    'LI' => 'Liechtenstein',
+                                    'LT' => 'Lithuania',
+                                    'LU' => 'Luxembourg',
+                                    'MG' => 'Madagascar',
+                                    'MW' => 'Malawi',
+                                    'MY' => 'Malaysia',
+                                    'MV' => 'Maldives',
+                                    'ML' => 'Mali',
+                                    'MT' => 'Malta',
+                                    'MH' => 'Marshall Islands',
+                                    'MR' => 'Mauritania',
+                                    'MU' => 'Mauritius',
+                                    'MX' => 'Mexico',
+                                    'FM' => 'Micronesia',
+                                    'MD' => 'Moldova',
+                                    'MC' => 'Monaco',
+                                    'MN' => 'Mongolia',
+                                    'ME' => 'Montenegro',
+                                    'MA' => 'Morocco',
+                                    'MZ' => 'Mozambique',
+                                    'MM' => 'Myanmar',
+                                    'NA' => 'Namibia',
+                                    'NR' => 'Nauru',
+                                    'NP' => 'Nepal',
+                                    'NL' => 'Netherlands',
+                                    'NZ' => 'New Zealand',
+                                    'NI' => 'Nicaragua',
+                                    'NE' => 'Niger',
+                                    'NG' => 'Nigeria',
+                                    'KP' => 'North Korea',
+                                    'MK' => 'North Macedonia',
+                                    'NO' => 'Norway',
+                                    'OM' => 'Oman',
+                                    'PK' => 'Pakistan',
+                                    'PW' => 'Palau',
+                                    'PS' => 'Palestine',
+                                    'PA' => 'Panama',
+                                    'PG' => 'Papua New Guinea',
+                                    'PY' => 'Paraguay',
+                                    'PE' => 'Peru',
+                                    'PH' => 'Philippines',
+                                    'PL' => 'Poland',
+                                    'PT' => 'Portugal',
+                                    'QA' => 'Qatar',
+                                    'RO' => 'Romania',
+                                    'RU' => 'Russia',
+                                    'RW' => 'Rwanda',
+                                    'KN' => 'Saint Kitts and Nevis',
+                                    'LC' => 'Saint Lucia',
+                                    'VC' => 'Saint Vincent and the Grenadines',
+                                    'WS' => 'Samoa',
+                                    'SM' => 'San Marino',
+                                    'ST' => 'Sao Tome and Principe',
+                                    'SA' => 'Saudi Arabia',
+                                    'SN' => 'Senegal',
+                                    'RS' => 'Serbia',
+                                    'SC' => 'Seychelles',
+                                    'SL' => 'Sierra Leone',
+                                    'SG' => 'Singapore',
+                                    'SK' => 'Slovakia',
+                                    'SI' => 'Slovenia',
+                                    'SB' => 'Solomon Islands',
+                                    'SO' => 'Somalia',
+                                    'ZA' => 'South Africa',
+                                    'SS' => 'South Sudan',
+                                    'ES' => 'Spain',
+                                    'LK' => 'Sri Lanka',
+                                    'SD' => 'Sudan',
+                                    'SR' => 'Suriname',
+                                    'SE' => 'Sweden',
+                                    'CH' => 'Switzerland',
+                                    'SY' => 'Syria',
+                                    'TW' => 'Taiwan',
+                                    'TJ' => 'Tajikistan',
+                                    'TZ' => 'Tanzania',
+                                    'TH' => 'Thailand',
+                                    'TL' => 'Timor-Leste',
+                                    'TG' => 'Togo',
+                                    'TO' => 'Tonga',
+                                    'TT' => 'Trinidad and Tobago',
+                                    'TN' => 'Tunisia',
+                                    'TR' => 'Turkey',
+                                    'TM' => 'Turkmenistan',
+                                    'TV' => 'Tuvalu',
+                                    'UG' => 'Uganda',
+                                    'UA' => 'Ukraine',
+                                    'AE' => 'United Arab Emirates',
+                                    'GB' => 'United Kingdom',
+                                    'US' => 'United States',
+                                    'UY' => 'Uruguay',
+                                    'UZ' => 'Uzbekistan',
+                                    'VU' => 'Vanuatu',
+                                    'VE' => 'Venezuela',
+                                    'VN' => 'Vietnam',
+                                    'YE' => 'Yemen',
+                                    'ZM' => 'Zambia',
+                                    'ZW' => 'Zimbabwe',
+                                ];
+                            ?>
+                            <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($code); ?>" <?php echo e(old('customer_country') == $code ? 'selected' : ''); ?>><?php echo e($name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1"><?php echo e(__("app.phone_whatsapp")); ?> *</label>
                         <div class="flex gap-2">
+                            <?php
+                                $dialCodes = [
+                                    '+93'  => '🇦🇫 +93',   // Afghanistan
+                                    '+355' => '🇦🇱 +355',  // Albania
+                                    '+213' => '🇩🇿 +213',  // Algeria
+                                    '+376' => '🇦🇩 +376',  // Andorra
+                                    '+244' => '🇦🇴 +244',  // Angola
+                                    '+1'   => '🇺🇸 +1',    // US/Canada
+                                    '+374' => '🇦🇲 +374',  // Armenia
+                                    '+61'  => '🇦🇺 +61',   // Australia
+                                    '+43'  => '🇦🇹 +43',   // Austria
+                                    '+994' => '🇦🇿 +994',  // Azerbaijan
+                                    '+1242'=> '🇧🇸 +1242', // Bahamas
+                                    '+973' => '🇧🇭 +973',  // Bahrain
+                                    '+880' => '🇧🇩 +880',  // Bangladesh
+                                    '+1246'=> '🇧🇧 +1246', // Barbados
+                                    '+375' => '🇧🇾 +375',  // Belarus
+                                    '+32'  => '🇧🇪 +32',   // Belgium
+                                    '+501' => '🇧🇿 +501',  // Belize
+                                    '+229' => '🇧🇯 +229',  // Benin
+                                    '+975' => '🇧🇹 +975',  // Bhutan
+                                    '+591' => '🇧🇴 +591',  // Bolivia
+                                    '+387' => '🇧🇦 +387',  // Bosnia and Herzegovina
+                                    '+267' => '🇧🇼 +267',  // Botswana
+                                    '+55'  => '🇧🇷 +55',   // Brazil
+                                    '+673' => '🇧🇳 +673',  // Brunei
+                                    '+359' => '🇧🇬 +359',  // Bulgaria
+                                    '+226' => '🇧🇫 +226',  // Burkina Faso
+                                    '+257' => '🇧🇮 +257',  // Burundi
+                                    '+238' => '🇨🇻 +238',  // Cabo Verde
+                                    '+855' => '🇰🇭 +855',  // Cambodia
+                                    '+237' => '🇨🇲 +237',  // Cameroon
+                                    '+236' => '🇨🇫 +236',  // Central African Republic
+                                    '+235' => '🇹🇩 +235',  // Chad
+                                    '+56'  => '🇨🇱 +56',   // Chile
+                                    '+86'  => '🇨🇳 +86',   // China
+                                    '+57'  => '🇨🇴 +57',   // Colombia
+                                    '+269' => '🇰🇲 +269',  // Comoros
+                                    '+242' => '🇨🇬 +242',  // Congo
+                                    '+243' => '🇨🇩 +243',  // Congo DRC
+                                    '+506' => '🇨🇷 +506',  // Costa Rica
+                                    '+385' => '🇭🇷 +385',  // Croatia
+                                    '+53'  => '🇨🇺 +53',   // Cuba
+                                    '+357' => '🇨🇾 +357',  // Cyprus
+                                    '+420' => '🇨🇿 +420',  // Czech Republic
+                                    '+45'  => '🇩🇰 +45',   // Denmark
+                                    '+253' => '🇩🇯 +253',  // Djibouti
+                                    '+1767'=> '🇩🇲 +1767', // Dominica
+                                    '+1809'=> '🇩🇴 +1809', // Dominican Republic
+                                    '+593' => '🇪🇨 +593',  // Ecuador
+                                    '+20'  => '🇪🇬 +20',   // Egypt
+                                    '+503' => '🇸🇻 +503',  // El Salvador
+                                    '+240' => '🇬🇶 +240',  // Equatorial Guinea
+                                    '+291' => '🇪🇷 +291',  // Eritrea
+                                    '+372' => '🇪🇪 +372',  // Estonia
+                                    '+268' => '🇸🇿 +268',  // Eswatini
+                                    '+251' => '🇪🇹 +251',  // Ethiopia
+                                    '+679' => '🇫🇯 +679',  // Fiji
+                                    '+358' => '🇫🇮 +358',  // Finland
+                                    '+33'  => '🇫🇷 +33',   // France
+                                    '+241' => '🇬🇦 +241',  // Gabon
+                                    '+220' => '🇬🇲 +220',  // Gambia
+                                    '+995' => '🇬🇪 +995',  // Georgia
+                                    '+49'  => '🇩🇪 +49',   // Germany
+                                    '+233' => '🇬🇭 +233',  // Ghana
+                                    '+30'  => '🇬🇷 +30',   // Greece
+                                    '+1473'=> '🇬🇩 +1473', // Grenada
+                                    '+502' => '🇬🇹 +502',  // Guatemala
+                                    '+224' => '🇬🇳 +224',  // Guinea
+                                    '+245' => '🇬🇼 +245',  // Guinea-Bissau
+                                    '+592' => '🇬🇾 +592',  // Guyana
+                                    '+509' => '🇭🇹 +509',  // Haiti
+                                    '+504' => '🇭🇳 +504',  // Honduras
+                                    '+36'  => '🇭🇺 +36',   // Hungary
+                                    '+354' => '🇮🇸 +354',  // Iceland
+                                    '+91'  => '🇮🇳 +91',   // India
+                                    '+62'  => '🇮🇩 +62',   // Indonesia
+                                    '+98'  => '🇮🇷 +98',   // Iran
+                                    '+964' => '🇮🇶 +964',  // Iraq
+                                    '+353' => '🇮🇪 +353',  // Ireland
+                                    '+39'  => '🇮🇹 +39',   // Italy
+                                    '+1876'=> '🇯🇲 +1876', // Jamaica
+                                    '+81'  => '🇯🇵 +81',   // Japan
+                                    '+962' => '🇯🇴 +962',  // Jordan
+                                    '+7'   => '🇰🇿 +7',    // Kazakhstan/Russia
+                                    '+254' => '🇰🇪 +254',  // Kenya
+                                    '+686' => '🇰🇮 +686',  // Kiribati
+                                    '+965' => '🇰🇼 +965',  // Kuwait
+                                    '+996' => '🇰🇬 +996',  // Kyrgyzstan
+                                    '+856' => '🇱🇦 +856',  // Laos
+                                    '+371' => '🇱🇻 +371',  // Latvia
+                                    '+961' => '🇱🇧 +961',  // Lebanon
+                                    '+266' => '🇱🇸 +266',  // Lesotho
+                                    '+231' => '🇱🇷 +231',  // Liberia
+                                    '+218' => '🇱🇾 +218',  // Libya
+                                    '+423' => '🇱🇮 +423',  // Liechtenstein
+                                    '+370' => '🇱🇹 +370',  // Lithuania
+                                    '+352' => '🇱🇺 +352',  // Luxembourg
+                                    '+261' => '🇲🇬 +261',  // Madagascar
+                                    '+265' => '🇲🇼 +265',  // Malawi
+                                    '+60'  => '🇲🇾 +60',   // Malaysia
+                                    '+960' => '🇲🇻 +960',  // Maldives
+                                    '+223' => '🇲🇱 +223',  // Mali
+                                    '+356' => '🇲🇹 +356',  // Malta
+                                    '+692' => '🇲🇭 +692',  // Marshall Islands
+                                    '+222' => '🇲🇷 +222',  // Mauritania
+                                    '+230' => '🇲🇺 +230',  // Mauritius
+                                    '+52'  => '🇲🇽 +52',   // Mexico
+                                    '+691' => '🇫🇲 +691',  // Micronesia
+                                    '+373' => '🇲🇩 +373',  // Moldova
+                                    '+377' => '🇲🇨 +377',  // Monaco
+                                    '+976' => '🇲🇳 +976',  // Mongolia
+                                    '+382' => '🇲🇪 +382',  // Montenegro
+                                    '+212' => '🇲🇦 +212',  // Morocco
+                                    '+258' => '🇲🇿 +258',  // Mozambique
+                                    '+95'  => '🇲🇲 +95',   // Myanmar
+                                    '+264' => '🇳🇦 +264',  // Namibia
+                                    '+674' => '🇳🇷 +674',  // Nauru
+                                    '+977' => '🇳🇵 +977',  // Nepal
+                                    '+31'  => '🇳🇱 +31',   // Netherlands
+                                    '+64'  => '🇳🇿 +64',   // New Zealand
+                                    '+505' => '🇳🇮 +505',  // Nicaragua
+                                    '+227' => '🇳🇪 +227',  // Niger
+                                    '+234' => '🇳🇬 +234',  // Nigeria
+                                    '+850' => '🇰🇵 +850',  // North Korea
+                                    '+389' => '🇲🇰 +389',  // North Macedonia
+                                    '+47'  => '🇳🇴 +47',   // Norway
+                                    '+968' => '🇴🇲 +968',  // Oman
+                                    '+92'  => '🇵🇰 +92',   // Pakistan
+                                    '+680' => '🇵🇼 +680',  // Palau
+                                    '+970' => '🇵🇸 +970',  // Palestine
+                                    '+507' => '🇵🇦 +507',  // Panama
+                                    '+675' => '🇵🇬 +675',  // Papua New Guinea
+                                    '+595' => '🇵🇾 +595',  // Paraguay
+                                    '+51'  => '🇵🇪 +51',   // Peru
+                                    '+63'  => '🇵🇭 +63',   // Philippines
+                                    '+48'  => '🇵🇱 +48',   // Poland
+                                    '+351' => '🇵🇹 +351',  // Portugal
+                                    '+974' => '🇶🇦 +974',  // Qatar
+                                    '+40'  => '🇷🇴 +40',   // Romania
+                                    '+250' => '🇷🇼 +250',  // Rwanda
+                                    '+1869'=> '🇰🇳 +1869', // Saint Kitts and Nevis
+                                    '+1758'=> '🇱🇨 +1758', // Saint Lucia
+                                    '+1784'=> '🇻🇨 +1784', // Saint Vincent
+                                    '+685' => '🇼🇸 +685',  // Samoa
+                                    '+378' => '🇸🇲 +378',  // San Marino
+                                    '+239' => '🇸🇹 +239',  // Sao Tome and Principe
+                                    '+966' => '🇸🇦 +966',  // Saudi Arabia
+                                    '+221' => '🇸🇳 +221',  // Senegal
+                                    '+381' => '🇷🇸 +381',  // Serbia
+                                    '+248' => '🇸🇨 +248',  // Seychelles
+                                    '+232' => '🇸🇱 +232',  // Sierra Leone
+                                    '+65'  => '🇸🇬 +65',   // Singapore
+                                    '+421' => '🇸🇰 +421',  // Slovakia
+                                    '+386' => '🇸🇮 +386',  // Slovenia
+                                    '+677' => '🇸🇧 +677',  // Solomon Islands
+                                    '+252' => '🇸🇴 +252',  // Somalia
+                                    '+27'  => '🇿🇦 +27',   // South Africa
+                                    '+211' => '🇸🇸 +211',  // South Sudan
+                                    '+34'  => '🇪🇸 +34',   // Spain
+                                    '+94'  => '🇱🇰 +94',   // Sri Lanka
+                                    '+249' => '🇸🇩 +249',  // Sudan
+                                    '+597' => '🇸🇷 +597',  // Suriname
+                                    '+46'  => '🇸🇪 +46',   // Sweden
+                                    '+41'  => '🇨🇭 +41',   // Switzerland
+                                    '+963' => '🇸🇾 +963',  // Syria
+                                    '+886' => '🇹🇼 +886',  // Taiwan
+                                    '+992' => '🇹🇯 +992',  // Tajikistan
+                                    '+255' => '🇹🇿 +255',  // Tanzania
+                                    '+66'  => '🇹🇭 +66',   // Thailand
+                                    '+670' => '🇹🇱 +670',  // Timor-Leste
+                                    '+228' => '🇹🇬 +228',  // Togo
+                                    '+676' => '🇹🇴 +676',  // Tonga
+                                    '+1868'=> '🇹🇹 +1868', // Trinidad and Tobago
+                                    '+216' => '🇹🇳 +216',  // Tunisia
+                                    '+90'  => '🇹🇷 +90',   // Turkey
+                                    '+993' => '🇹🇲 +993',  // Turkmenistan
+                                    '+688' => '🇹🇻 +688',  // Tuvalu
+                                    '+256' => '🇺🇬 +256',  // Uganda
+                                    '+380' => '🇺🇦 +380',  // Ukraine
+                                    '+971' => '🇦🇪 +971',  // UAE
+                                    '+44'  => '🇬🇧 +44',   // United Kingdom
+                                    '+598' => '🇺🇾 +598',  // Uruguay
+                                    '+998' => '🇺🇿 +998',  // Uzbekistan
+                                    '+678' => '🇻🇺 +678',  // Vanuatu
+                                    '+58'  => '🇻🇪 +58',   // Venezuela
+                                    '+84'  => '🇻🇳 +84',   // Vietnam
+                                    '+967' => '🇾🇪 +967',  // Yemen
+                                    '+260' => '🇿🇲 +260',  // Zambia
+                                    '+263' => '🇿🇼 +263',  // Zimbabwe
+                                ];
+                                $defaultCode = old('customer_country_code', '+968');
+                            ?>
                             <select name="customer_country_code"
                                 class="px-3 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white shrink-0">
-                                <option value="+968" <?php echo e(old("customer_country_code","+968") == "+968" ? "selected":""); ?>>🇴🇲 +968</option>
-                                <option value="+966" <?php echo e(old("customer_country_code") == "+966" ? "selected":""); ?>>🇸🇦 +966</option>
-                                <option value="+971" <?php echo e(old("customer_country_code") == "+971" ? "selected":""); ?>>🇦🇪 +971</option>
-                                <option value="+965" <?php echo e(old("customer_country_code") == "+965" ? "selected":""); ?>>🇰🇼 +965</option>
-                                <option value="+974" <?php echo e(old("customer_country_code") == "+974" ? "selected":""); ?>>🇶🇦 +974</option>
-                                <option value="+973" <?php echo e(old("customer_country_code") == "+973" ? "selected":""); ?>>🇧🇭 +973</option>
+                                <?php $__currentLoopData = $dialCodes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($code); ?>" <?php echo e($defaultCode == $code ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <input type="tel" name="customer_phone" value="<?php echo e(old("customer_phone")); ?>"
                                 class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -613,19 +1055,11 @@
         </div>
     </div>
 
-    <select id="service" class="sr-only" aria-hidden="true">
-        <option value=""></option>
-        <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <option value="<?php echo e($s->id); ?>" data-duration="<?php echo e($s->duration_minutes); ?>"><?php echo e($s->name); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </select>
-
     <script>
     (() => {
         const businessSlug  = <?php echo json_encode($business->slug, 15, 512) ?>;
         const allBranches   = <?php echo json_encode(isset($branches) ? $branches->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'service_ids' => $b->services->pluck('id')]) : collect()) ?>;
         const singleBranchId = allBranches.length === 1 ? allBranches[0].id : null;
-        const serviceSelect = document.getElementById("service");
         const modalDate     = document.getElementById("modalDate");
         const modalSlotsDiv = document.getElementById("modalSlots");
         const modalNoSlots       = document.getElementById("modalNoSlots");
@@ -641,6 +1075,7 @@
 
         let allStaff = [], currentSlots = [], selectedStaffFilter = "all";
         let selectedBranchId = singleBranchId;
+        let selectedServiceIds = []; // array of selected service ID strings
 
         // Set single branch silently
         if (singleBranchId) {
@@ -650,84 +1085,91 @@
 
         modalDate.min = new Date().toISOString().split("T")[0];
 
-        // Branch radio change handler
+        // ── Helper: get checked service objects ────────────────────────────────
+        function getSelectedServices() {
+            return Array.from(document.querySelectorAll('.modal-service-checkbox:checked'))
+                .map(cb => ({
+                    id:       cb.value,
+                    name:     cb.dataset.name,
+                    duration: parseInt(cb.dataset.duration),
+                    price:    parseFloat(cb.dataset.price || 0)
+                }));
+        }
+
+        function updateServiceTotal() {
+            const selected = getSelectedServices();
+            const bar  = document.getElementById('serviceTotalBar');
+            const lbl  = document.getElementById('serviceTotalLabel');
+            if (selected.length === 0) { bar.classList.add('hidden'); return; }
+            const totalDur   = selected.reduce((s, x) => s + x.duration, 0);
+            const totalPrice = selected.reduce((s, x) => s + x.price, 0);
+            let text = selected.length === 1
+                ? selected[0].name
+                : selected.length + ' <?php echo e(__("app.services")); ?>: ' + selected.map(s => s.name).join(', ');
+            text += ' · ' + totalDur + ' <?php echo e(__("app.minutes")); ?>';
+            if (totalPrice > 0) text += ' · ' + totalPrice.toFixed(2) + ' <?php echo e($business->currency); ?>';
+            lbl.textContent = text;
+            bar.classList.remove('hidden');
+        }
+
+        window.clearServiceSelection = function () {
+            document.querySelectorAll('.modal-service-checkbox').forEach(cb => { cb.checked = false; });
+            selectedServiceIds = [];
+            document.getElementById('serviceTotalBar').classList.add('hidden');
+            clearSlots();
+        };
+
+        // ── Branch radio handler ───────────────────────────────────────────────
         document.querySelectorAll(".modal-branch-radio").forEach(r => {
             r.addEventListener("change", function () {
                 document.querySelectorAll(".branch-check").forEach(i => i.style.opacity = "0");
                 this.closest("label").querySelector(".branch-check").style.opacity = "1";
                 selectedBranchId = parseInt(this.value);
                 document.getElementById("hidden_branch_id").value = selectedBranchId;
-                // Filter visible services by branch
                 filterServicesByBranch(JSON.parse(this.dataset.services || "[]"));
                 clearSlots();
-                if (serviceSelect.value && modalDate.value) loadSlots();
+                if (selectedServiceIds.length > 0 && modalDate.value) loadSlots();
             });
         });
 
         function filterServicesByBranch(serviceIds) {
             if (!serviceIds || serviceIds.length === 0) {
-                // Show all services if branch has no specific service restrictions
-                document.querySelectorAll(".modal-service-radio").forEach(r => {
-                    r.closest("label").style.display = "";
+                document.querySelectorAll(".modal-service-checkbox").forEach(cb => {
+                    cb.closest("label").style.display = "";
                 });
                 return;
             }
             const ids = serviceIds.map(id => parseInt(id));
-            let firstVisible = null;
-            document.querySelectorAll(".modal-service-radio").forEach(r => {
-                const sId = parseInt(r.value);
-                const label = r.closest("label");
+            document.querySelectorAll(".modal-service-checkbox").forEach(cb => {
+                const sId  = parseInt(cb.value);
+                const label = cb.closest("label");
                 if (ids.includes(sId)) {
                     label.style.display = "";
-                    if (!firstVisible) firstVisible = r;
                 } else {
                     label.style.display = "none";
-                    if (r.checked) {
-                        r.checked = false;
-                        label.querySelector(".service-check").style.opacity = "0";
-                        serviceSelect.value = "";
+                    if (cb.checked) {
+                        cb.checked = false;
                     }
                 }
             });
+            // Re-sync after hiding
+            selectedServiceIds = Array.from(document.querySelectorAll('.modal-service-checkbox:checked')).map(c => c.value);
+            updateServiceTotal();
+            clearSlots();
         }
 
-        window.openBookingModal = function (btn) {
-            const modal  = document.getElementById("bookingModal");
-            const drawer = document.getElementById("bookingDrawer");
-            modal.classList.remove("hidden");
-            document.body.style.overflow = "hidden";
-            requestAnimationFrame(() => drawer.classList.remove("translate-x-full"));
-            if (btn) {
-                const sid   = btn.dataset.serviceId;
-                const radio = document.querySelector(`.modal-service-radio[value="${sid}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    radio.closest("label").querySelector(".service-check").style.opacity = "1";
-                    serviceSelect.value = sid;
-                    if (modalDate.value) loadSlots();
-                }
-            }
-        };
-
-        window.closeBookingModal = function () {
-            const drawer = document.getElementById("bookingDrawer");
-            drawer.classList.add("translate-x-full");
-            setTimeout(() => {
-                document.getElementById("bookingModal").classList.add("hidden");
-                document.body.style.overflow = "";
-            }, 300);
-        };
-
-        document.querySelectorAll(".modal-service-radio").forEach(r => {
-            r.addEventListener("change", function () {
-                document.querySelectorAll(".service-check").forEach(i => i.style.opacity = "0");
-                this.closest("label").querySelector(".service-check").style.opacity = "1";
-                serviceSelect.value = this.value;
-                if (modalDate.value) loadSlots();
+        // ── Service checkbox handler ───────────────────────────────────────────
+        document.querySelectorAll(".modal-service-checkbox").forEach(cb => {
+            cb.addEventListener("change", function () {
+                selectedServiceIds = Array.from(document.querySelectorAll('.modal-service-checkbox:checked')).map(c => c.value);
+                updateServiceTotal();
+                clearSlots();
+                if (selectedServiceIds.length > 0 && modalDate.value) loadSlots();
             });
         });
 
-        modalDate.addEventListener("change", () => { if (serviceSelect.value) loadSlots(); });
+        // ── Date change handler ────────────────────────────────────────────────
+        modalDate.addEventListener("change", () => { if (selectedServiceIds.length > 0) loadSlots(); });
 
         function clearSlots() {
             modalSlotsDiv.innerHTML = "";
@@ -744,21 +1186,21 @@
         async function loadSlots() {
             clearSlots();
             staffSection.classList.add("hidden");
-            const serviceId = serviceSelect.value, date = modalDate.value;
-            if (!serviceId || !date) return;
+            if (selectedServiceIds.length === 0 || !modalDate.value) return;
             modalLoading.classList.remove("hidden");
             try {
-                let url = `/${businessSlug}/services/${serviceId}/slots?date=${encodeURIComponent(date)}`;
-                if (selectedBranchId) url += `&branch_id=${selectedBranchId}`;
-                const res  = await fetch(url);
+                const params = new URLSearchParams({ date: modalDate.value });
+                selectedServiceIds.forEach(id => params.append('service_ids[]', id));
+                if (selectedBranchId) params.append('branch_id', selectedBranchId);
+                const res  = await fetch(`/${businessSlug}/slots?${params}`);
                 const data = await res.json();
                 modalLoading.classList.add("hidden");
                 if (!data.slots || data.slots.length === 0) {
                     if (data.reason === 'time_off') {
-                        timeOffNoteText.textContent = data.note || '<?php echo e(__("app.business_closed_day") ?? "The business is closed on this day."); ?>';
+                        timeOffNoteText.textContent = data.note || '<?php echo e(__("app.business_closed_day")); ?>';
                         modalTimeOffNotice.classList.remove("hidden");
                     } else if (data.reason === 'limit_reached') {
-                        modalNoSlots.textContent = 'This business has reached its monthly booking limit. Please contact them directly.';
+                        modalNoSlots.textContent = '<?php echo e(__("app.booking_limit_contact")); ?>';
                         modalNoSlots.classList.remove("hidden");
                     } else {
                         modalNoSlots.textContent = '<?php echo e(__("app.no_available_slots") ?? "No available slots for this date."); ?>';
@@ -787,7 +1229,6 @@
                     (a ? "border-green-600 bg-green-50" : "border-gray-200 bg-white hover:border-green-400");
                 btn.style.width = "72px";
 
-                // Avatar
                 let avatarHtml;
                 if (photo) {
                     avatarHtml = `<img src="${photo}" alt="${name}" class="w-12 h-12 rounded-full object-cover mx-auto">`;
@@ -831,25 +1272,36 @@
         function selectSlot(slot, btnEl) {
             document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
             btnEl.classList.add("selected");
-            if (!slot.available_staff || slot.available_staff.length === 0) { alert("No staff available for this slot."); return; }
+            if (!slot.available_staff || slot.available_staff.length === 0) { alert('<?php echo e(__("app.no_staff_slot")); ?>'); return; }
             const staff = selectedStaffFilter !== "all"
                 ? slot.available_staff.find(s => s.id === parseInt(selectedStaffFilter))
                 : slot.available_staff[0];
-            if (!staff) { alert("Selected staff is not available for this slot."); return; }
-            document.getElementById("hidden_service_id").value    = serviceSelect.value;
+            if (!staff) { alert('<?php echo e(__("app.staff_not_available")); ?>'); return; }
+
+            // Populate service_ids[] hidden inputs
+            const container = document.getElementById("hidden_service_ids_container");
+            container.innerHTML = '';
+            selectedServiceIds.forEach(id => {
+                const inp = document.createElement('input');
+                inp.type = 'hidden'; inp.name = 'service_ids[]'; inp.value = id;
+                container.appendChild(inp);
+            });
+
             document.getElementById("hidden_staff_user_id").value = staff.id;
             document.getElementById("hidden_date").value          = modalDate.value;
             document.getElementById("hidden_start_time").value    = slot.start;
             document.getElementById("hidden_branch_id").value     = selectedBranchId || '';
-            const svcText = serviceSelect.options[serviceSelect.selectedIndex].text;
-            const dateStr = new Date(modalDate.value).toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
-            document.getElementById("sumService").textContent  = svcText;
+
+            const selected = getSelectedServices();
+            const svcText  = selected.map(s => s.name).join(', ');
+            const dateStr  = new Date(modalDate.value).toLocaleDateString('<?php echo e(app()->getLocale() === "ar" ? "ar-SA" : "en-US"); ?>', { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+            document.getElementById("sumService").textContent = svcText;
             const photoHtml = staff.photo
                 ? `<img src="${staff.photo}" class="w-5 h-5 rounded-full object-cover flex-shrink-0" alt="${staff.name}">`
                 : `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px] flex-shrink-0">${staff.name.charAt(0).toUpperCase()}</span>`;
-            document.getElementById("sumStaff").innerHTML    = photoHtml + `<span>With ${staff.name}</span>`;
+            document.getElementById("sumStaff").innerHTML    = photoHtml + `<span><?php echo e(__("app.with")); ?> ${staff.name}</span>`;
             document.getElementById("sumDateTime").textContent = `${dateStr} at ${slot.label}`;
-            // Show branch in summary
+
             const sumBranchEl = document.getElementById("sumBranch");
             if (selectedBranchId && allBranches.length > 1) {
                 const br = allBranches.find(b => b.id === selectedBranchId);
@@ -864,15 +1316,121 @@
             bookingForm.scrollIntoView({ behavior:"smooth", block:"nearest" });
         }
 
+        // ── Description expand (main page) ────────────────────────────────────
+        window.toggleSvcDesc = function(id) {
+            const desc = document.getElementById('svcDesc' + id);
+            const btn  = document.getElementById('svcDescBtn' + id);
+            if (!desc) return;
+            if (desc.classList.contains('line-clamp-3')) {
+                desc.classList.remove('line-clamp-3');
+                if (btn) btn.textContent = '<?php echo e(__("app.show_less") ?? "Show less"); ?>';
+            } else {
+                desc.classList.add('line-clamp-3');
+                if (btn) btn.textContent = '<?php echo e(__("app.read_more") ?? "Read more"); ?>';
+            }
+        };
+
+        // ── Main page multi-service selection ─────────────────────────────────
+        const mainSelectedServices = new Map();
+
+        window.toggleMainSvc = function(id, btn) {
+            const key = String(id);
+            const row = document.getElementById('svcRow' + id);
+            if (mainSelectedServices.has(key)) {
+                mainSelectedServices.delete(key);
+                btn.textContent = '+ <?php echo e(__("app.select") ?? "Select"); ?>';
+                btn.classList.remove('bg-green-600', 'text-white', 'border-green-600');
+                btn.classList.add('border-gray-300', 'text-gray-700');
+            } else {
+                if (row) {
+                    mainSelectedServices.set(key, {
+                        id: key,
+                        name: row.dataset.svcName,
+                        duration: parseInt(row.dataset.svcDuration),
+                        price: parseFloat(row.dataset.svcPrice)
+                    });
+                }
+                btn.textContent = '✓ <?php echo e(__("app.selected") ?? "Selected"); ?>';
+                btn.classList.add('bg-green-600', 'text-white', 'border-green-600');
+                btn.classList.remove('border-gray-300', 'text-gray-700');
+            }
+            updateSelBar();
+        };
+
+        function updateSelBar() {
+            const bar = document.getElementById('svcSelBar');
+            if (!bar) return;
+            const count = mainSelectedServices.size;
+            if (count === 0) { bar.classList.add('hidden'); return; }
+            bar.classList.remove('hidden');
+            const svcs = Array.from(mainSelectedServices.values());
+            const totalDur   = svcs.reduce((a, x) => a + x.duration, 0);
+            const totalPrice = svcs.reduce((a, x) => a + x.price, 0);
+            const svcLabel = count === 1
+                ? '<?php echo e(__("app.service") ?? "service"); ?>'
+                : '<?php echo e(__("app.services") ?? "services"); ?>';
+            document.getElementById('selBarCount').textContent =
+                count + ' ' + svcLabel + ' <?php echo e(__("app.selected") ?? "selected"); ?>';
+            let detail = totalDur + ' <?php echo e(__("app.minutes") ?? "min"); ?>';
+            if (totalPrice > 0) detail += ' · ' + totalPrice.toFixed(2) + ' <?php echo e($business->currency); ?>';
+            document.getElementById('selBarDetails').textContent = detail;
+        }
+
+        window.proceedWithSelected = function() {
+            const ids = Array.from(mainSelectedServices.keys());
+            if (ids.length > 0) openBookingModal(ids);
+        };
+
         window.submitBooking = function () { bookingForm.submit(); };
 
-        <?php if(old("service_id") && old("date")): ?>
+        window.openBookingModal = function (btn) {
+            const modal  = document.getElementById("bookingModal");
+            const drawer = document.getElementById("bookingDrawer");
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+            requestAnimationFrame(() => drawer.classList.remove("translate-x-full"));
+            if (Array.isArray(btn)) {
+                // Pre-select multiple services passed as array of ID strings
+                document.querySelectorAll('.modal-service-checkbox').forEach(cb => {
+                    cb.checked = btn.includes(cb.value);
+                });
+                selectedServiceIds = [...btn];
+                updateServiceTotal();
+                if (modalDate.value && selectedServiceIds.length > 0) loadSlots();
+            } else if (btn && btn.dataset) {
+                const sid = btn.dataset.serviceId;
+                const cb  = document.querySelector(`.modal-service-checkbox[value="${sid}"]`);
+                if (cb) {
+                    cb.checked = true;
+                    selectedServiceIds = [sid];
+                    updateServiceTotal();
+                    if (modalDate.value) loadSlots();
+                }
+            }
+        };
+
+        window.closeBookingModal = function () {
+            const drawer = document.getElementById("bookingDrawer");
+            drawer.classList.add("translate-x-full");
+            setTimeout(() => {
+                document.getElementById("bookingModal").classList.add("hidden");
+                document.body.style.overflow = "";
+            }, 300);
+        };
+
+        <?php if(old('date')): ?>
         window.addEventListener("DOMContentLoaded", () => {
             openBookingModal(null);
-            const radio = document.querySelector(`.modal-service-radio[value="<?php echo e(old("service_id")); ?>"]`);
-            if (radio) { radio.checked = true; radio.closest("label").querySelector(".service-check").style.opacity = "1"; serviceSelect.value = radio.value; }
-            modalDate.value = "<?php echo e(old("date")); ?>";
-            loadSlots();
+            <?php $__currentLoopData = old('service_ids', []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $oldSid): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            (function(){
+                const cb = document.querySelector(`.modal-service-checkbox[value="<?php echo e($oldSid); ?>"]`);
+                if (cb) { cb.checked = true; }
+            })();
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            selectedServiceIds = <?php echo json_encode(array_map('strval', old('service_ids', []))) ?>;
+            updateServiceTotal();
+            modalDate.value = "<?php echo e(old('date')); ?>";
+            if (selectedServiceIds.length > 0) loadSlots();
         });
         <?php endif; ?>
 
@@ -882,15 +1440,59 @@
                 closeLightbox();
             }
         });
+
+        // ── Category filtering (no page reload) ───────────────────────────────
+        window.filterCategory = function(catId) {
+            // Update tab styles
+            document.querySelectorAll('.cat-tab').forEach(btn => {
+                const active = btn.dataset.cat == catId;
+                btn.classList.toggle('bg-green-600', active);
+                btn.classList.toggle('text-white',   active);
+                btn.classList.toggle('border-green-600', active);
+                btn.classList.toggle('bg-white',     !active);
+                btn.classList.toggle('text-green-700', !active);
+            });
+
+            // Show/hide service rows
+            const rows = document.querySelectorAll('.service-row');
+            let visibleCount = 0;
+            rows.forEach(row => {
+                const match = catId === 'featured' || row.dataset.categoryId == catId;
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            // Show empty-state or the list
+            const emptyEl = document.getElementById('svcEmptyState');
+            const listEl  = document.getElementById('svcList');
+            const noResultsEl = document.getElementById('svcNoResults');
+            if (emptyEl)      emptyEl.style.display      = visibleCount === 0 && rows.length === 0 ? '' : 'none';
+            if (listEl)       listEl.style.display       = '';
+            if (noResultsEl)  noResultsEl.style.display  = visibleCount === 0 && rows.length > 0 ? '' : 'none';
+
+            // Update URL without reload
+            const url = new URL(window.location);
+            url.searchParams.set('category', catId);
+            history.replaceState(null, '', url);
+        };
+
+        // Apply initial category on page load
+        filterCategory('<?php echo e($selectedCategory); ?>');
     })();
     </script>
 
     
     <?php
-        $galleryImages = $services->flatMap(fn($s) => $s->images)->values();
-        if ($galleryImages->isEmpty()) {
-            $galleryImages = $services->filter(fn($s) => $s->image)
-                ->map(fn($s) => (object)['path' => $s->image, 'alt' => $s->name])->values();
+        $bizGallery2 = array_filter($business->gallery_images ?? []);
+        if (!empty($bizGallery2)) {
+            $galleryImages = collect(array_values($bizGallery2))
+                ->map(fn($p) => (object)['path' => $p, 'alt' => $business->name]);
+        } else {
+            $galleryImages = $services->flatMap(fn($s) => $s->images)->values();
+            if ($galleryImages->isEmpty()) {
+                $galleryImages = $services->filter(fn($s) => $s->image)
+                    ->map(fn($s) => (object)['path' => $s->image, 'alt' => $s->name])->values();
+            }
         }
     ?>
     <?php if($galleryImages->count() > 0): ?>

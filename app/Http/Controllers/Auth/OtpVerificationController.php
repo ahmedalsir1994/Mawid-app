@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -61,6 +62,9 @@ class OtpVerificationController extends Controller
             'otp_expires_at'    => null,
         ]);
 
+        // Refresh model to get the latest DB state (ensures pending_plan is current)
+        $user->refresh();
+
         // Read pending plan from DB (reliable — survives session loss)
         $pendingPlan  = $user->pending_plan;
         $pendingCycle = $user->pending_cycle ?? 'monthly';
@@ -77,14 +81,22 @@ class OtpVerificationController extends Controller
 
         // If a paid plan was selected before registration, auto-initiate payment
         if ($pendingPlan && in_array($pendingPlan, ['pro', 'plus'])) {
-            Mail::to($user->email)->send(new WelcomeMail($user, $pendingPlan, pendingPayment: true));
+            try {
+                Mail::to($user->email)->send(new WelcomeMail($user, $pendingPlan, pendingPayment: true));
+            } catch (\Exception $e) {
+                Log::warning('Welcome mail (paid plan) failed: ' . $e->getMessage());
+            }
             return redirect()->route('admin.upgrade.autopay', [
                 'plan'  => $pendingPlan,
                 'cycle' => $pendingCycle,
             ])->with('success', 'Email verified! Redirecting you to payment...');
         }
 
-        Mail::to($user->email)->send(new WelcomeMail($user, 'free'));
+        try {
+            Mail::to($user->email)->send(new WelcomeMail($user, 'free'));
+        } catch (\Exception $e) {
+            Log::warning('Welcome mail (free plan) failed: ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.dashboard')
             ->with('success', 'Your email has been verified. Welcome to ' . config('app.name') . '!');

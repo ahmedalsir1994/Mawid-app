@@ -43,12 +43,12 @@ class NewBookingNotification extends Notification
             'booking_id' => $this->booking->id,
             'customer_name' => $this->booking->customer_name,
             'customer_phone' => $this->booking->customer_phone,
-            'service_name' => $this->booking->service->name,
+            'service_name' => $this->booking->services_label,
             'branch_name' => $this->booking->branch?->name,
             'booking_date' => $this->booking->booking_date,
             'start_time' => $this->booking->start_time,
             'reference_code' => $this->booking->reference_code,
-            'message' => "New booking from {$this->booking->customer_name} for {$this->booking->service->name}",
+            'message' => "New booking from {$this->booking->customer_name} for {$this->booking->services_label}",
         ];
     }
 }

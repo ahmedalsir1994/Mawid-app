@@ -37,21 +37,27 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'mobile'        => ['required', 'string', 'max:20'],
+            'business_name' => ['required', 'string', 'max:255'],
+            'business_type' => ['required', 'string', 'max:100'],
+            'company_size'  => ['required', 'string', 'in:1-5,6-20,21-50,51-200,200+'],
+            'password'      => ['required', 'confirmed', Rules\Password::defaults()],
             'plan'          => ['nullable', 'in:free,pro,plus'],
             'billing_cycle' => ['nullable', 'in:monthly,yearly'],
         ]);
 
         // Create a business for the new user
         $business = Business::create([
-            'name' => $request->name . "'s Business",
-            'slug' => Str::slug($request->name . '-' . Str::random(6)),
-            'email' => $request->email,
-            'country' => 'OM', // Default country
-            'currency' => 'OMR', // Default currency
-            'timezone' => 'Asia/Muscat', // Default timezone
+            'name'          => $request->business_name,
+            'slug'          => Str::slug($request->business_name . '-' . Str::random(6)),
+            'mobile'        => $request->mobile,
+            'business_type' => $request->business_type,
+            'company_size'  => $request->company_size,
+            'country'       => 'OM',
+            'currency'      => 'OMR',
+            'timezone'      => 'Asia/Muscat',
         ]);
 
         // Create user with company_admin role and assign business

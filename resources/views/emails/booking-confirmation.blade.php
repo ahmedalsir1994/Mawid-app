@@ -46,11 +46,11 @@
         <table class="details-table">
             <tr>
                 <td>📋 Service</td>
-                <td>{{ $booking->service->name }}</td>
+                <td>{{ $booking->services_label }}</td>
             </tr>
             <tr>
                 <td>⏱ Duration</td>
-                <td>{{ $booking->service->duration_minutes }} minutes</td>
+                <td>{{ $booking->total_duration }} minutes</td>
             </tr>
             <tr>
                 <td>📅 Date</td>

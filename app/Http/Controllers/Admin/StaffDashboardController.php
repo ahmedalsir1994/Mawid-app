@@ -32,7 +32,7 @@ class StaffDashboardController extends Controller
             ->count();
         
         $upcomingBookings = $business->bookings()
-            ->with('staff')
+            ->with(['service', 'services', 'staff'])
             ->where('staff_user_id', $user->id)
             ->where('status', 'confirmed')
             ->whereDate('booking_date', '>=', now())
@@ -42,7 +42,7 @@ class StaffDashboardController extends Controller
             ->get();
 
         $todayBookingsList = $business->bookings()
-            ->with(['service', 'staff'])
+            ->with(['service', 'services', 'staff'])
             ->where('staff_user_id', $user->id)
             ->whereDate('booking_date', today())
             ->orderBy('start_time')
@@ -65,7 +65,7 @@ class StaffDashboardController extends Controller
         }
 
         $calendarBookings = $business->bookings()
-            ->with(['service', 'business'])
+            ->with(['service', 'services', 'business'])
             ->where('staff_user_id', $user->id)
             ->whereBetween('booking_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('booking_date')

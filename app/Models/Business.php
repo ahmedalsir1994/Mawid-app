@@ -11,10 +11,13 @@ class Business extends Model
         'name',
         'slug',
         'logo',
+        'gallery_images',
         'country',
         'timezone',
         'currency',
-        'phone',
+        'mobile',
+        'business_type',
+        'company_size',
         'address',
         'default_language',
         'settings',
@@ -23,6 +26,7 @@ class Business extends Model
 
     protected $casts = [
         'settings' => 'array',
+        'gallery_images' => 'array',
         'is_active' => 'boolean',
     ];
 
@@ -34,6 +38,11 @@ class Business extends Model
     public function services()
     {
         return $this->hasMany(Service::class);
+    }
+
+    public function serviceCategories()
+    {
+        return $this->hasMany(ServiceCategory::class);
     }
 
     public function workingHours()

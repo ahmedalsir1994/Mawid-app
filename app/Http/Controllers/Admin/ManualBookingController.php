@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\NewBookingNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -55,14 +56,21 @@ class ManualBookingController extends Controller
         abort_if(!$business, 403);
 
         $data = $request->validate([
-            'service_id' => ['required', 'integer', 'exists:services,id'],
-            'date'       => ['required', 'date'],
-            'branch_id'  => ['nullable', 'integer', 'exists:branches,id'],
+            'service_ids'   => ['required', 'array', 'min:1'],
+            'service_ids.*' => ['required', 'integer'],
+            'date'          => ['required', 'date'],
+            'branch_id'     => ['nullable', 'integer', 'exists:branches,id'],
         ]);
 
-        $service = Service::where('id', $data['service_id'])
+        $serviceIds = array_unique(array_map('intval', $data['service_ids']));
+        $services   = Service::whereIn('id', $serviceIds)
             ->where('business_id', $business->id)
-            ->firstOrFail();
+            ->where('is_active', true)
+            ->get();
+
+        if ($services->count() !== count($serviceIds)) {
+            return response()->json(['error' => 'Invalid service selection.'], 422);
+        }
 
         $date = Carbon::parse($data['date'], $business->timezone)->startOfDay();
 
@@ -84,7 +92,7 @@ class ManualBookingController extends Controller
             return response()->json(['slots' => [], 'reason' => 'closed']);
         }
 
-        $duration = (int) $service->duration_minutes;
+        $duration = (int) $services->sum('duration_minutes');
         $interval = 15; // 15-minute grid — all durations must be multiples of 15
 
         $shifts = [[
@@ -196,7 +204,8 @@ class ManualBookingController extends Controller
         abort_if(!$business, 403);
 
         $data = $request->validate([
-            'service_id'     => ['required', 'integer', 'exists:services,id'],
+            'service_ids'    => ['required', 'array', 'min:1'],
+            'service_ids.*'  => ['required', 'integer'],
             'staff_user_id'  => ['required', 'integer', 'exists:users,id'],
             'branch_id'      => ['nullable', 'integer', 'exists:branches,id'],
             'date'           => ['required', 'date'],
@@ -207,10 +216,18 @@ class ManualBookingController extends Controller
             'customer_notes' => ['nullable', 'string', 'max:500'],
         ]);
 
-        // Verify service belongs to this business
-        $service = Service::where('id', $data['service_id'])
+        // Verify all services belong to this business
+        $serviceIds = array_unique(array_map('intval', $data['service_ids']));
+        $services   = Service::whereIn('id', $serviceIds)
             ->where('business_id', $business->id)
-            ->firstOrFail();
+            ->where('is_active', true)
+            ->get();
+
+        if ($services->count() !== count($serviceIds)) {
+            return back()->withErrors(['service_ids' => 'One or more selected services are invalid.'])->withInput();
+        }
+
+        $service = $services->first(); // primary service (for backward compat)
 
         // Staff can only create bookings assigned to themselves
         if ($user->role === 'staff' && (int) $data['staff_user_id'] !== $user->id) {
@@ -221,9 +238,10 @@ class ManualBookingController extends Controller
             ->where('business_id', $business->id)
             ->firstOrFail();
 
+        $totalDuration = (int) $services->sum('duration_minutes');
         $date  = Carbon::parse($data['date'], $business->timezone)->toDateString();
         $start = Carbon::parse($date.' '.$data['start_time'], $business->timezone);
-        $end   = $start->copy()->addMinutes((int) $service->duration_minutes);
+        $end   = $start->copy()->addMinutes($totalDuration);
 
         // Overlap check — prevents double-booking same as public flow
         $hasOverlap = Booking::where('staff_user_id', $selectedStaff->id)
@@ -268,24 +286,39 @@ class ManualBookingController extends Controller
             'is_walk_in'     => true,
         ]);
 
-        $booking->load('service', 'staff', 'branch');
+        $booking->services()->attach($serviceIds);
+        $booking->load('service', 'services', 'staff', 'branch');
 
         // Send confirmation to customer if email provided
         if (!empty($data['customer_email'])) {
             try {
                 Mail::to($data['customer_email'])->send(new BookingConfirmationMail($booking, $business));
             } catch (\Exception $e) {
-                \Log::warning('Walk-in confirmation email failed: '.$e->getMessage());
+                Log::warning('Walk-in confirmation email failed: '.$e->getMessage());
             }
         }
 
-        // Notify the assigned staff member (only if someone else created the booking)
-        if ($selectedStaff->id !== $user->id) {
-            $selectedStaff->notify(new NewBookingNotification($booking));
+        // Notify the assigned staff member
+        $selectedStaff->notify(new NewBookingNotification($booking));
+        try {
+            Mail::to($selectedStaff->email)->send(new StaffBookingNotificationMail($booking, $business, $selectedStaff));
+        } catch (\Exception $e) {
+            Log::warning('Walk-in staff notification email failed: '.$e->getMessage());
+        }
+
+        // Notify company admins (skip if admin is also the assigned staff)
+        $companyAdmins = User::where('business_id', $business->id)
+            ->where('role', 'company_admin')
+            ->where('is_active', true)
+            ->where('id', '!=', $selectedStaff->id)
+            ->get();
+
+        foreach ($companyAdmins as $admin) {
+            $admin->notify(new NewBookingNotification($booking));
             try {
-                Mail::to($selectedStaff->email)->send(new StaffBookingNotificationMail($booking, $business, $selectedStaff));
+                Mail::to($admin->email)->send(new StaffBookingNotificationMail($booking, $business, $admin));
             } catch (\Exception $e) {
-                \Log::warning('Walk-in staff notification email failed: '.$e->getMessage());
+                Log::warning('Walk-in admin notification email failed: '.$e->getMessage());
             }
         }
 

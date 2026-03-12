@@ -1,5 +1,31 @@
 ﻿<?php echo csrf_field(); ?>
 
+<?php
+    $bizId = $service->business_id ?? auth()->user()->business_id;
+    $categories = \App\Models\ServiceCategory::where('business_id', $bizId)->orderBy('name')->get();
+?>
+
+<div>
+    <label class="block text-sm font-semibold text-gray-800 mb-2">Category</label>
+    <select name="service_category_id" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+        <option value="">Select category</option>
+        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($cat->id); ?>" <?php if(old('service_category_id', $service->service_category_id ?? '') == $cat->id): ?> selected <?php endif; ?>><?php echo e($cat->name); ?></option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
+    <a href="<?php echo e(route('admin.service_categories.index')); ?>" class="text-xs text-green-700 hover:underline mt-1 inline-block">Manage categories</a>
+    <?php $__errorArgs = ['service_category_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+        <p class="text-red-600 text-sm mt-2"><?php echo e($message); ?></p>
+    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+</div>
+
 <div class="space-y-6">
     <!-- Service Name -->
     <div>

@@ -63,7 +63,7 @@
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gray-50">
+<body class="font-sans antialiased bg-gray-50 overflow-hidden">
     <div class="flex h-screen bg-gray-100 ">
         <!-- Sidebar -->
         <div class="hidden md:flex md:flex-col md:w-64 md:bg-white md:shadow-lg">
@@ -130,6 +130,16 @@
                         <?php endif; ?>
                     </a>
 
+                    <!-- Super Admin Only: Registration Submissions -->
+                    <a href="<?php echo e(route('admin.super.registrations.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.registrations.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        <span class="font-medium">Registration Submissions</span>
+                    </a>
+
                     <!-- Super Admin Only: Billing History -->
                     <a href="<?php echo e(route('admin.super.billing.index')); ?>"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.billing.*') ? 'sidebar-active' : ''); ?>">
@@ -175,6 +185,15 @@
                         <?php if($sidebarLicense && $sidebarLicense->isPlus()): ?>
                             <span class="ml-auto text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">🚀</span>
                         <?php endif; ?>
+                    </a>
+
+                    <!-- Service Categories -->
+                    <a href="<?php echo e(route('admin.service_categories.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.service_categories.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 7a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7zm0-4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V3z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium"><?php echo e(__('app.service_categories')); ?></span>
                     </a>
 
                     <!-- Services -->
@@ -393,20 +412,19 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
-                                <?php if(auth()->user()->unreadNotifications->count() > 0): ?>
-                                    <span
-                                        class="absolute top-1 <?php echo e(app()->getLocale() === 'ar' ? 'left-1' : 'right-1'); ?> w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
-                                        <?php echo e(auth()->user()->unreadNotifications->count()); ?>
+                                <?php $__notifCount = auth()->user()->unreadNotifications()->count(); ?>
+                                <span id="notifBadge"
+                                    class="absolute top-1 <?php echo e(app()->getLocale() === 'ar' ? 'left-1' : 'right-1'); ?> w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold <?php echo e($__notifCount > 0 ? '' : 'hidden'); ?>">
+                                    <?php echo e($__notifCount); ?>
 
-                                    </span>
-                                <?php endif; ?>
+                                </span>
                             </button>
 
                             <!-- Notification Dropdown -->
                             <div id="notificationDropdown" class="hidden fixed top-[4.5rem] left-2 right-2 <?php echo e(app()->getLocale() === 'ar' ? 'sm:absolute sm:top-auto sm:right-auto sm:left-0 sm:mt-2' : 'sm:absolute sm:top-auto sm:left-auto sm:right-0 sm:mt-2'); ?> sm:w-96 bg-white rounded-lg shadow-lg z-50 border border-gray-200 max-h-[70vh] sm:max-h-96 overflow-y-auto">
                                 <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                                     <h3 class="text-sm font-bold text-gray-800"><?php echo e(__('app.notifications')); ?></h3>
-                                    <?php if(auth()->user()->unreadNotifications->count() > 0): ?>
+                                    <span id="notifMarkAllContainer" class="<?php echo e($__notifCount > 0 ? '' : 'hidden'); ?>">
                                         <form method="POST" action="<?php echo e(route('admin.notifications.mark-all-read')); ?>"
                                             class="inline">
                                             <?php echo csrf_field(); ?>
@@ -416,84 +434,15 @@
 
                                             </button>
                                         </form>
-                                    <?php endif; ?>
+                                    </span>
                                 </div>
 
-                                <?php $__empty_1 = true; $__currentLoopData = auth()->user()->notifications->take(10); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <?php
-                                        $notifType = $notification->data['type'] ?? 'booking';
-                                        if ($notifType === 'contact_submission') {
-                                            $notifUrl = route('admin.contact-submissions.show', $notification->data['id']);
-                                            $notifIcon = 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z';
-                                            $notifIconBg = 'bg-green-100';
-                                            $notifIconColor = 'text-green-600';
-                                            $notifSub = ($notification->data['email'] ?? '') . ' · ' . ($notification->data['phone'] ?? '');
-                                        } elseif ($notifType === 'new_user') {
-                                            $notifUrl = route('admin.super.users.show', $notification->data['user_id'] ?? 0);
-                                            $notifIcon = 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z';
-                                            $notifIconBg = 'bg-blue-100';
-                                            $notifIconColor = 'text-blue-600';
-                                            $notifSub = ($notification->data['user_email'] ?? '') . ' · ' . ($notification->data['business_name'] ?? '');
-                                        } elseif ($notifType === 'new_license') {
-                                            $notifUrl = route('admin.super.licenses.show', $notification->data['license_id'] ?? 0);
-                                            $notifIcon = 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z';
-                                            $notifIconBg = 'bg-purple-100';
-                                            $notifIconColor = 'text-purple-600';
-                                            $notifSub = ucfirst($notification->data['plan'] ?? '') . ' · ' . ($notification->data['business_name'] ?? '');
-                                        } elseif ($notifType === 'auto_renew_failed') {
-                                            $notifUrl = $notification->data['url'] ?? route('admin.billing.index');
-                                            $notifIcon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z';
-                                            $notifIconBg = 'bg-red-100';
-                                            $notifIconColor = 'text-red-600';
-                                            $notifSub = ($notification->data['reason'] ?? '') . ' · Attempt ' . ($notification->data['attempt'] ?? 1);
-                                        } else {
-                                            $notifUrl = (auth()->user()->role === 'staff'
-                                                ? route('admin.staff.bookings.show', $notification->data['booking_id'] ?? 0)
-                                                : route('admin.bookings.show', $notification->data['booking_id'] ?? 0)) . '?notification=' . $notification->id;
-                                            $notifIcon = 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z';
-                                            $notifIconBg = 'bg-green-100';
-                                            $notifIconColor = 'text-green-600';
-                                            $notifSub = isset($notification->data['booking_date'])
-                                                ? \Carbon\Carbon::parse($notification->data['booking_date'])->format('M d, Y') . (isset($notification->data['start_time']) ? ' at ' . substr($notification->data['start_time'], 0, 5) : '')
-                                                : '';
-                                        }
-                                    ?>
-                                    <a href="<?php echo e($notifUrl); ?>"
-                                        class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 <?php echo e($notification->read_at ? 'bg-white' : 'bg-blue-50'); ?>">
-                                        <div class="flex items-start space-x-3">
-                                            <div class="flex-shrink-0 w-10 h-10 <?php echo e($notifIconBg); ?> rounded-full flex items-center justify-center">
-                                                <svg class="w-5 h-5 <?php echo e($notifIconColor); ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?php echo e($notifIcon); ?>" />
-                                                </svg>
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium text-gray-900">
-                                                    <?php echo e($notification->data['message'] ?? ''); ?>
-
-                                                </p>
-                                                <?php if($notifSub): ?>
-                                                <p class="text-xs text-gray-500 mt-1"><?php echo e($notifSub); ?></p>
-                                                <?php endif; ?>
-                                                <p class="text-xs text-gray-400 mt-1">
-                                                    <?php echo e($notification->created_at->diffForHumans()); ?>
-
-                                                </p>
-                                            </div>
-                                            <?php if(!$notification->read_at): ?>
-                                                <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </a>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <div class="px-4 py-8 text-center text-gray-500">
-                                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                        </svg>
-                                        <p class="text-sm"><?php echo e(__('app.no_notifications')); ?></p>
-                                    </div>
-                                <?php endif; ?>
+                                <div id="notifItemsList">
+                                    <?php echo $__env->make('layouts.partials.notification-items', [
+                                        'notifications'  => auth()->user()->notifications()->latest()->take(10)->get(),
+                                        'notifUserRole'  => auth()->user()->role,
+                                    ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                                </div>
                             </div>
                         </div>
 
@@ -780,6 +729,16 @@
                         <?php endif; ?>
                     </a>
 
+                    <!-- Super Admin Only: Registration Submissions -->
+                    <a href="<?php echo e(route('admin.super.registrations.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.registrations.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        <span class="font-medium">Registration Submissions</span>
+                    </a>
+
                     <!-- Super Admin Only: Billing History -->
                     <a href="<?php echo e(route('admin.super.billing.index')); ?>"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.super.billing.*') ? 'sidebar-active' : ''); ?>">
@@ -816,6 +775,15 @@
                             <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
                         </svg>
                         <span class="font-medium"><?php echo e(__('app.branches')); ?></span>
+                    </a>
+
+                    <!-- Service Categories -->
+                    <a href="<?php echo e(route('admin.service_categories.index')); ?>"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 sidebar-hover <?php echo e(request()->routeIs('admin.service_categories.*') ? 'sidebar-active' : ''); ?>">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 7a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7zm0-4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V3z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">Categories</span>
                     </a>
 
                     <a href="<?php echo e(route('admin.services.index')); ?>"
@@ -1078,6 +1046,64 @@
                 stripArabic(el);
             }
         }, true);
+        // ── Notification auto-polling (every 30 s) ─────────────────────────────
+        (function () {
+            let lastUnread = <?php echo e(auth()->user()->unreadNotifications()->count()); ?>;
+
+            function pollNotifications() {
+                fetch('<?php echo e(route('admin.notifications.poll')); ?>', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                })
+                .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function (data) {
+                    // Update badge
+                    var badge = document.getElementById('notifBadge');
+                    if (badge) {
+                        badge.textContent = data.unread_count;
+                        badge.classList.toggle('hidden', data.unread_count === 0);
+                    }
+                    // Update mark-all button visibility
+                    var markAll = document.getElementById('notifMarkAllContainer');
+                    if (markAll) {
+                        markAll.classList.toggle('hidden', !data.show_mark_all);
+                    }
+                    // Refresh the items list
+                    var list = document.getElementById('notifItemsList');
+                    if (list) {
+                        list.innerHTML = data.items_html;
+                    }
+                    // Toast when new notifications arrive
+                    if (data.unread_count > lastUnread) {
+                        showNotifToast();
+                    }
+                    lastUnread = data.unread_count;
+                })
+                .catch(function () { /* silently ignore network errors */ });
+            }
+
+            function showNotifToast() {
+                var isRtl = document.documentElement.dir === 'rtl';
+                var toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 ' + (isRtl ? 'left-4' : 'right-4') +
+                    ' bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg z-[9999]' +
+                    ' flex items-center gap-2 text-sm font-medium transition-opacity duration-300';
+                toast.innerHTML =
+                    '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"' +
+                    ' d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5' +
+                    'a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436' +
+                    'L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>' +
+                    '<span><?php echo e(__("app.new_notification")); ?></span>';
+                document.body.appendChild(toast);
+                setTimeout(function () {
+                    toast.style.opacity = '0';
+                    setTimeout(function () { toast.remove(); }, 300);
+                }, 4000);
+            }
+
+            // Poll every 30 seconds
+            setInterval(pollNotifications, 30000);
+        })();
     })();
     </script>
 </body>

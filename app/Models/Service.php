@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Service extends Model
 {
     protected $fillable = [
-        'business_id', 'name', 'image', 'description', 'duration_minutes', 'price', 'is_active'
+        'business_id', 'service_category_id', 'name', 'image', 'description', 'duration_minutes', 'price', 'is_active'
     ];
 
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ServiceCategory::class, 'service_category_id');
     }
 
     public function bookings()

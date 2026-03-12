@@ -23,6 +23,32 @@
                 ? number_format($planData['price_yearly_display'], 1) . ' OMR/mo · ' . number_format($planData['price_yearly'], 2) . ' OMR/yr'
                 : number_format($planData['price_monthly'], 1) . ' OMR/mo';
         }
+
+        $businessTypes = [
+            'beauty_salon'      => 'Beauty Salon',
+            'barbershop'        => 'Barbershop',
+            'spa_wellness'      => 'Spa & Wellness',
+            'medical_clinic'    => 'Medical Clinic',
+            'dental_clinic'     => 'Dental Clinic',
+            'fitness_gym'       => 'Fitness & Gym',
+            'personal_trainer'  => 'Personal Trainer',
+            'photography'       => 'Photography Studio',
+            'cleaning_services' => 'Cleaning Services',
+            'home_services'     => 'Home Services',
+            'tutoring'          => 'Tutoring & Education',
+            'legal_consulting'  => 'Legal Consulting',
+            'financial_services'=> 'Financial Services',
+            'it_services'       => 'IT Services',
+            'other'             => 'Other',
+        ];
+
+        $companySizes = [
+            '1-5'    => '1 – 5 employees',
+            '6-20'   => '6 – 20 employees',
+            '21-50'  => '21 – 50 employees',
+            '51-200' => '51 – 200 employees',
+            '200+'   => '200+ employees',
+        ];
     @endphp
 
     {{-- Plan banner shown when registering from a paid plan CTA --}}
@@ -38,60 +64,128 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" class="space-y-5">
         @csrf
-
-        {{-- Carry selected plan through to the POST handler --}}
         <input type="hidden" name="plan"          value="{{ $selectedPlan }}">
         <input type="hidden" name="billing_cycle" value="{{ $selectedCycle }}">
 
-        <!-- Name -->
+        {{-- ── Section: Personal Info ──────────────────────────────── --}}
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Your Information</p>
+            <div class="space-y-4">
+
+                {{-- Full Name --}}
+                <div>
+                    <x-input-label for="name" :value="__('Full Name')" />
+                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
+                        :value="old('name')" required autofocus autocomplete="name"
+                        placeholder="Ahmed Al-Harthi" />
+                    <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
+                </div>
+
+                {{-- Email + Mobile (side by side on md+) --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="email" :value="__('Email Address')" />
+                        <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
+                            :value="old('email')" required autocomplete="username"
+                            placeholder="you@example.com" />
+                        <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
+                    </div>
+                    <div>
+                        <x-input-label for="mobile" :value="__('Mobile Number')" />
+                        <x-text-input id="mobile" class="block mt-1 w-full" type="tel" name="mobile"
+                            :value="old('mobile')" required autocomplete="tel"
+                            placeholder="+968 9X XXX XXX" />
+                        <x-input-error :messages="$errors->get('mobile')" class="mt-1.5" />
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        {{-- ── Divider ─────────────────────────────────────────────── --}}
+        <div class="border-t border-gray-100"></div>
+
+        {{-- ── Section: Business Info ──────────────────────────────── --}}
+        <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Business Information</p>
+            <div class="space-y-4">
+
+                {{-- Business Name --}}
+                <div>
+                    <x-input-label for="business_name" :value="__('Business Name')" />
+                    <x-text-input id="business_name" class="block mt-1 w-full" type="text" name="business_name"
+                        :value="old('business_name')" required
+                        placeholder="My Awesome Business" />
+                    <x-input-error :messages="$errors->get('business_name')" class="mt-1.5" />
+                </div>
+
+                {{-- Business Type + Company Size (side by side on md+) --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="business_type" :value="__('Business Type')" />
+                        <select id="business_type" name="business_type" required
+                            class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm text-sm">
+                            <option value="" disabled {{ old('business_type') ? '' : 'selected' }}>Select type…</option>
+                            @foreach($businessTypes as $value => $label)
+                                <option value="{{ $value }}" {{ old('business_type') === $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('business_type')" class="mt-1.5" />
+                    </div>
+                    <div>
+                        <x-input-label for="company_size" :value="__('Company Size')" />
+                        <select id="company_size" name="company_size" required
+                            class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm text-sm">
+                            <option value="" disabled {{ old('company_size') ? '' : 'selected' }}>Select size…</option>
+                            @foreach($companySizes as $value => $label)
+                                <option value="{{ $value }}" {{ old('company_size') === $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('company_size')" class="mt-1.5" />
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        {{-- ── Divider ─────────────────────────────────────────────── --}}
+        <div class="border-t border-gray-100"></div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        {{-- ── Section: Password ───────────────────────────────────── --}}
+        <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Security</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <x-input-label for="password" :value="__('Password')" />
+                    <x-text-input id="password" class="block mt-1 w-full" type="password"
+                        name="password" required autocomplete="new-password" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
+                </div>
+                <div>
+                    <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                    <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password"
+                        name="password_confirmation" required autocomplete="new-password" />
+                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5" />
+                </div>
+            </div>
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
+        {{-- ── Submit ───────────────────────────────────────────────── --}}
+        <div class="flex items-center justify-between pt-1 gap-3 flex-wrap">
             @error('plan')
-                <p class="text-sm text-red-600 me-auto">{{ $message }}</p>
+                <p class="text-sm text-red-600">{{ $message }}</p>
             @enderror
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+            <a class="text-sm text-gray-500 hover:text-gray-800 transition underline" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
-
-            <x-primary-button class="ms-4">
-                {{ $isPaid ? __('Register & Proceed to Payment') : __('Register') }}
+            <x-primary-button>
+                {{ $isPaid ? __('Register & Proceed to Payment') : __('Create Account') }}
             </x-primary-button>
         </div>
     </form>

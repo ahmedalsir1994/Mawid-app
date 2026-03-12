@@ -117,6 +117,14 @@ class SuperAdminDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Registration Submissions
+        $totalRegistrations = User::where('role', 'company_admin')->count();
+        $recentRegistrations = User::where('role', 'company_admin')
+            ->with(['business.license'])
+            ->latest()
+            ->take(10)
+            ->get();
+
         return view('admin.super.dashboard', compact(
             'totalBusinesses',
             'activeLicenses',
@@ -135,7 +143,62 @@ class SuperAdminDashboardController extends Controller
             'topBusinesses',
             'totalContactSubmissions',
             'unreadContactSubmissions',
-            'recentContactSubmissions'
+            'recentContactSubmissions',
+            'totalRegistrations',
+            'recentRegistrations'
         ));
+    }
+
+    public function exportRegistrations()
+    {
+        $registrations = User::where('role', 'company_admin')
+            ->with(['business.license'])
+            ->latest()
+            ->get();
+
+        $filename = 'registration_submissions_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($registrations) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV header row
+            fputcsv($handle, [
+                'Name',
+                'Email',
+                'Business Phone',
+                'Business Name',
+                'Business Type',
+                'Company Size',
+                'Plan',
+                'Billing Cycle',
+                'License Status',
+                'Registered At',
+            ]);
+
+            foreach ($registrations as $user) {
+                $license = optional($user->business)->license;
+                fputcsv($handle, [
+                    $user->name,
+                    $user->email,
+                    optional($user->business)->mobile ?? optional($user->business)->phone ?? '',
+                    optional($user->business)->name ?? '',
+                    optional($user->business)->business_type ?? '',
+                    optional($user->business)->company_size ?? '',
+                    $license ? ucfirst($license->plan) : '',
+                    $license ? ucfirst($license->billing_cycle ?? '') : '',
+                    $license ? ucfirst($license->status) : '',
+                    $user->created_at->format('Y-m-d H:i:s'),
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

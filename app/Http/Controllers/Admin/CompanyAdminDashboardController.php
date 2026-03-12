@@ -34,13 +34,13 @@ class CompanyAdminDashboardController extends Controller
 
         // Recent data
         $recentBookings = $business->bookings()
-            ->with(['service', 'staff'])
+            ->with(['service', 'services', 'staff'])
             ->latest()
             ->take(10)
             ->get();
 
         $upcomingBookings = $business->bookings()
-            ->with(['service', 'staff'])
+            ->with(['service', 'services', 'staff'])
             ->where('status', 'confirmed')
             ->whereDate('booking_date', '>=', now())
             ->orderBy('booking_date')
@@ -116,7 +116,7 @@ class CompanyAdminDashboardController extends Controller
         }
 
         $calendarBookings = $business->bookings()
-            ->with(['service', 'business', 'staff'])
+            ->with(['service', 'services', 'business', 'staff'])
             ->whereBetween('booking_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('booking_date')
             ->orderBy('start_time')

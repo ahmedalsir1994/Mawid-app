@@ -19,7 +19,8 @@ return [
     'notifications' => 'الإشعارات',
     'admin' => 'الإدارة',
     'mark_all_read' => 'تحديد الكل كمقروء',
-    'no_notifications' => 'لا توجد إشعارات',
+    'no_notifications'  => 'لا توجد إشعارات',
+    'new_notification'  => 'لديك إشعار جديد',
     'sign_out' => 'تسجيل الخروج',
 
     // Common Actions
@@ -124,6 +125,8 @@ return [
     'showing_of' => 'عرض :count من :total',
     'see_all_bookings' => 'عرض جميع الحجوزات',
     'day_off' => 'يوم عطلة',
+    'view_details' => 'عرض التفاصيل',
+    'select' => 'اختر',
 
     // User & Business fields
     'name' => 'الاسم',
@@ -176,6 +179,7 @@ return [
     'view_all' => 'عرض الكل',
     'show_more' => 'عرض المزيد',
     'show_less' => 'عرض أقل',
+    'read_more' => 'اقرأ المزيد',
     'created' => 'تم الإنشاء',
     'last_updated' => 'آخر تحديث',
     'created_at' => 'تاريخ الإنشاء',
@@ -354,6 +358,17 @@ return [
     'contact_support_reactivate' => 'تواصل مع الدعم لإعادة تفعيل ترخيصك.',
     'contact_support' => 'تواصل مع الدعم',
     'reactivate_license' => 'أعد تفعيل الترخيص لاستعادة الوصول.',
+
+    // Categories
+    'service_categories' => 'فئات الخدمات',
+    'manage_service_categories' => 'إدارة فئات خدماتك',
+    'category_name' => 'اسم الفئة',
+    'create_category' => 'إنشاء ',
+    'delete_category' => 'حذف ',
+    'add_category' => 'إضافة فئة',
+    'edit_category' => 'تعديل ',
+
+
 
     // Services
     'manage_business_services' => 'إدارة خدمات نشاطك التجاري',
@@ -666,4 +681,19 @@ return [
     'bookings_unavailable'        => 'الحجز غير متاح',
     'return_to_home'              => 'العودة للرئيسية',
     'questions_contact'           => 'لديك سؤال؟ تواصل مع النشاط مباشرة، أو تحقق من بريدك لتفاصيل الحجز.',
+    'no_services_available'       => 'لا توجد خدمات متاحة بعد.',
+    'please_check_back_later'     => 'يرجى التحقق مرة أخرى لاحقاً.',
+    'business_closed_day'         => 'هذا النشاط التجاري مغلق في هذا اليوم.',
+    'more_photos'                 => 'المزيد',
+    'see_all_images'              => 'عرض جميع الصور',
+    'booking_limit_title'         => 'الحجز الإلكتروني غير متاح مؤقتاً',
+    'booking_limit_message'       => 'وصل هذا النشاط التجاري إلى الحد الأقصى للحجوزات الإلكترونية هذا الشهر. يرجى التواصل معهم مباشرةً لتحديد موعدك.',
+    'call'                        => 'اتصل بـ',
+    'featured'                    => 'المميزة',
+    'unavailable'                 => 'غير متاح',
+    'clear'                       => 'مسح',
+    'with'                        => 'مع',
+    'booking_limit_contact'       => 'وصل النشاط التجاري إلى الحد الأقصى للحجز الشهري. يرجى التواصل معهم مباشرةً.',
+    'no_staff_slot'               => 'لا يوجد موظف متاح لهذه الخانة الزمنية.',
+    'staff_not_available'         => 'الموظف المختار غير متاح لهذه الخانة الزمنية.',
 ];

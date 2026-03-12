@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Admin\UpgradeController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
+use App\Http\Controllers\Admin\RegistrationSubmissionController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\PaymobController;
 use App\Http\Controllers\Admin\ManualBookingController;
@@ -54,12 +55,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Shared notification route — accessible by all authenticated roles
+// Shared notification routes — accessible by all authenticated roles
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::post('/notifications/mark-all-read', function () {
         auth()->user()->unreadNotifications->markAsRead();
         return back()->with('success', 'All notifications marked as read.');
     })->name('notifications.mark-all-read');
+
+    // JSON polling endpoint for live notification updates (no page reload)
+    Route::get('/notifications/poll', function () {
+        $user       = auth()->user();
+        $unread     = $user->unreadNotifications()->count();
+        $items      = $user->notifications()->latest()->take(10)->get();
+        $html       = view('layouts.partials.notification-items', [
+            'notifications' => $items,
+            'notifUserRole' => $user->role,
+        ])->render();
+
+        return response()->json([
+            'unread_count'  => $unread,
+            'items_html'    => $html,
+            'show_mark_all' => $unread > 0,
+        ]);
+    })->name('notifications.poll');
 });
 
 // Super Admin Routes
@@ -87,6 +105,11 @@ Route::middleware(['auth', 'check_role:super_admin'])->prefix('admin')->name('ad
     Route::patch('/contact-submissions/{contactSubmission}/mark-read', [ContactSubmissionController::class, 'markRead'])->name('contact-submissions.mark-read');
     Route::patch('/contact-submissions/{contactSubmission}/mark-unread', [ContactSubmissionController::class, 'markUnread'])->name('contact-submissions.mark-unread');
     Route::delete('/contact-submissions/{contactSubmission}', [ContactSubmissionController::class, 'destroy'])->name('contact-submissions.destroy');
+
+    // Registration Submissions
+    Route::get('/super/registrations', [RegistrationSubmissionController::class, 'index'])->name('super.registrations.index');
+    Route::get('/super/registrations/export', [SuperAdminDashboardController::class, 'exportRegistrations'])->name('super.registrations.export');
+    Route::get('/super/registrations/{user}', [RegistrationSubmissionController::class, 'show'])->name('super.registrations.show');
 
     // Billing History (super admin)
     Route::get('/super/billing', [SuperAdminBillingController::class, 'index'])->name('super.billing.index');
@@ -139,6 +162,7 @@ Route::middleware(['auth', 'check_role:company_admin', 'check_license'])->prefix
 
     Route::get('/business', [BusinessSettingsController::class, 'edit'])->name('business.edit');
     Route::post('/business', [BusinessSettingsController::class, 'update'])->name('business.update');
+    Route::delete('/business/gallery/{slot}', [BusinessSettingsController::class, 'removeGalleryImage'])->name('business.gallery.remove');
     
     Route::resource('services', ServiceController::class)->except(['show']);
     Route::delete('/services/{service}/images/{serviceImage}', [ServiceController::class, 'destroyImage'])
@@ -166,11 +190,18 @@ Route::middleware(['auth', 'check_role:company_admin', 'check_license'])->prefix
     Route::post('/bookings/manual', [ManualBookingController::class, 'store'])->name('bookings.manual.store');
 
     // Bookings
+    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.status');
+    Route::post('/bookings/{booking}/reassign', [BookingController::class, 'reassignStaff'])->name('bookings.reassign');
     Route::post('/bookings/{booking}/reminder', [BookingController::class, 'markReminderSent'])->name('bookings.reminder');
     
+});
+
+// Service Categories
+Route::middleware(['auth', 'check_role:company_admin', 'check_license'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('service_categories', App\Http\Controllers\Admin\ServiceCategoryController::class)->except(['show']);
 });
 
 // Public Booking Routes (must be last as it has catch-all {businessSlug})
@@ -179,6 +210,9 @@ Route::middleware(['auth', 'check_role:company_admin', 'check_license'])->prefix
 Route::get('/{businessSlug}/services/{serviceId}/slots', [PublicBookingController::class, 'slots'])
     ->where('businessSlug', '[^\.]+')
     ->name('public.slots');
+Route::get('/{businessSlug}/slots', [PublicBookingController::class, 'multiServiceSlots'])
+    ->where('businessSlug', '[^\.]+')
+    ->name('public.multi_slots');
 Route::get('/{businessSlug}/success/{bookingId}', [PublicBookingController::class, 'success'])
     ->where('businessSlug', '[^\.]+')
     ->name('public.success');

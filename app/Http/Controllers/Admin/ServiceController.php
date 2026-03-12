@@ -47,19 +47,20 @@ class ServiceController extends Controller
         }
 
         $data = $request->validate([
-            'name'             => ['required', 'string', 'max:120'],
-            'images'           => ['nullable', 'array', 'max:10'],
-            'images.*'         => ['image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
-            'description'      => ['nullable', 'string', 'max:1000'],
-            'duration_minutes' => ['required', 'integer', 'min:15', 'max:480', function ($attribute, $value, $fail) {
+            'name'                => ['required', 'string', 'max:120'],
+            'service_category_id' => ['nullable', 'integer', Rule::exists('service_categories', 'id')->where('business_id', $businessId)],
+            'images'              => ['nullable', 'array', 'max:10'],
+            'images.*'            => ['image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
+            'description'         => ['nullable', 'string', 'max:1000'],
+            'duration_minutes'    => ['required', 'integer', 'min:15', 'max:480', function ($attribute, $value, $fail) {
                 if ($value % 15 !== 0) {
                     $fail('Duration must be a multiple of 15 minutes (e.g. 15, 30, 45, 60, 75, 90, 120…).');
                 }
             }],
-            'price'            => ['nullable', 'numeric', 'min:0'],
-            'is_active'        => ['nullable', Rule::in(['on'])],
-            'branch_ids'       => ['nullable', 'array'],
-            'branch_ids.*'     => ['integer', Rule::exists('branches', 'id')->where('business_id', $businessId)],
+            'price'               => ['nullable', 'numeric', 'min:0'],
+            'is_active'           => ['nullable', Rule::in(['on'])],
+            'branch_ids'          => ['nullable', 'array'],
+            'branch_ids.*'        => ['integer', Rule::exists('branches', 'id')->where('business_id', $businessId)],
         ]);
 
         // Image minimum guards
@@ -91,12 +92,13 @@ class ServiceController extends Controller
         }
 
         $service = Service::create([
-            'business_id'      => $businessId,
-            'name'             => $data['name'],
-            'description'      => $data['description'] ?? null,
-            'duration_minutes' => (int) $data['duration_minutes'],
-            'price'            => $data['price'] ?? null,
-            'is_active'        => isset($data['is_active']),
+            'business_id'        => $businessId,
+            'name'               => $data['name'],
+            'service_category_id'=> $data['service_category_id'] ?? null,
+            'description'        => $data['description'] ?? null,
+            'duration_minutes'   => (int) $data['duration_minutes'],
+            'price'              => $data['price'] ?? null,
+            'is_active'          => isset($data['is_active']),
         ]);
 
         $service->branches()->sync($data['branch_ids'] ?? []);
@@ -122,19 +124,20 @@ class ServiceController extends Controller
         $this->authorizeService($request, $service);
 
         $data = $request->validate([
-            'name'              => ['required', 'string', 'max:120'],
-            'images'            => ['nullable', 'array', 'max:10'],
-            'images.*'          => ['image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
-            'description'       => ['nullable', 'string', 'max:1000'],
-            'duration_minutes'  => ['required', 'integer', 'min:15', 'max:480', function ($attribute, $value, $fail) {
+            'name'                => ['required', 'string', 'max:120'],
+            'service_category_id' => ['nullable', 'integer', Rule::exists('service_categories', 'id')->where('business_id', $service->business_id)],
+            'images'              => ['nullable', 'array', 'max:10'],
+            'images.*'            => ['image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
+            'description'         => ['nullable', 'string', 'max:1000'],
+            'duration_minutes'    => ['required', 'integer', 'min:15', 'max:480', function ($attribute, $value, $fail) {
                 if ($value % 15 !== 0) {
                     $fail('Duration must be a multiple of 15 minutes (e.g. 15, 30, 45, 60, 75, 90, 120…).');
                 }
             }],
-            'price'             => ['nullable', 'numeric', 'min:0'],
-            'is_active'         => ['nullable', Rule::in(['on'])],
-            'branch_ids'        => ['nullable', 'array'],
-            'branch_ids.*'      => ['integer', Rule::exists('branches', 'id')->where('business_id', $service->business_id)],
+            'price'               => ['nullable', 'numeric', 'min:0'],
+            'is_active'           => ['nullable', Rule::in(['on'])],
+            'branch_ids'          => ['nullable', 'array'],
+            'branch_ids.*'        => ['integer', Rule::exists('branches', 'id')->where('business_id', $service->business_id)],
         ]);
 
         // Image minimum guards
@@ -159,11 +162,12 @@ class ServiceController extends Controller
         }
 
         $service->update([
-            'name'             => $data['name'],
-            'description'      => $data['description'] ?? null,
-            'duration_minutes' => (int) $data['duration_minutes'],
-            'price'            => $data['price'] ?? null,
-            'is_active'        => isset($data['is_active']),
+            'name'                => $data['name'],
+            'service_category_id' => $data['service_category_id'] ?? null,
+            'description'         => $data['description'] ?? null,
+            'duration_minutes'    => (int) $data['duration_minutes'],
+            'price'               => $data['price'] ?? null,
+            'is_active'           => isset($data['is_active']),
         ]);
 
         $service->branches()->sync($data['branch_ids'] ?? []);

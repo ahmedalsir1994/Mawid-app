@@ -341,7 +341,7 @@
                                             'customer_name' => $booking->customer_name,
                                             'customer_email' => $booking->customer_email,
                                             'customer_phone' => $booking->customer_phone,
-                                            'service' => $booking->service->name,
+                                            'service' => $booking->services_label,
                                             'date' => \Carbon\Carbon::parse($booking->booking_date)->format('F j, Y'),
                                             'time' => substr($booking->start_time, 0, 5) . ' - ' . substr($booking->end_time, 0, 5),
                                             'status' => $booking->status,
@@ -408,7 +408,7 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                         <div class="flex-1">
                             <p class="font-semibold text-gray-900"><?php echo e($booking->customer_name); ?></p>
-                            <p class="text-sm text-gray-600"><?php echo e($booking->service->name); ?></p>
+                            <p class="text-sm text-gray-600"><?php echo e($booking->services_label); ?></p>
                             <p class="text-xs text-gray-500">
                                 <?php echo e(\Carbon\Carbon::parse($booking->booking_date)->format('M d, Y')); ?> at
                                 <?php echo e(substr($booking->start_time, 0, 5)); ?>

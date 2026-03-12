@@ -18,7 +18,8 @@ return [
     'notifications' => 'Notifications',
     'admin' => 'Admin',
     'mark_all_read' => 'Mark all as read',
-    'no_notifications' => 'No notifications',
+    'no_notifications'  => 'No notifications',
+    'new_notification'  => 'You have a new notification',
     'sign_out' => 'Sign out',
     
     // Common Actions
@@ -81,6 +82,7 @@ return [
     'available_slots' => 'Available Slots',
     'no_slots_available' => 'No slots available',
     'day_off' => 'Day Off',
+    'view_details' => 'View Details',
     
     // User & Business
     'booking_details' => 'Booking Details',
@@ -138,6 +140,7 @@ return [
     'view_all' => 'View All',
     'show_more' => 'Show More',
     'show_less' => 'Show Less',
+    'read_more' => 'Read More',
     'created' => 'Created',
     'last_updated' => 'Last Updated',
     'created_at' => 'Created At',
@@ -245,6 +248,7 @@ return [
     'secure_booking' => 'Secure booking',
     'instant_confirmation' => 'Instant confirmation',
     'choose_a_service' => 'Choose a service...',
+    'select' => 'Book',
     
     // Time Off
     'time_off_holidays' => 'Time Off & Holidays',
@@ -377,6 +381,17 @@ return [
     'contact_support_reactivate' => 'Contact support to reactivate your license.',
     'contact_support' => 'Contact Support',
     'reactivate_license' => 'Reactivate license to restore access.',
+
+    // Categories
+    'service_categories' => 'Categories',
+    'manage_service_categories' => 'Manage your service categories',
+    'category_name' => 'Category Name',
+    'create_category' => 'Create',
+    'delete_category' => 'Delete',
+    'add_category' => 'Add Category',
+    'edit_category' => 'Edit ',
+
+   
     
     // Services
     'services' => 'Services',
@@ -764,4 +779,19 @@ return [
     'bookings_unavailable'        => 'Bookings Unavailable',
     'return_to_home'              => 'Return to Home',
     'questions_contact'           => 'Questions? Contact the business directly or check your email for booking details.',
+    'no_services_available'       => 'No services available yet.',
+    'please_check_back_later'     => 'Please check back later.',
+    'business_closed_day'         => 'The business is closed on this day.',
+    'more_photos'                 => 'more',
+    'see_all_images'              => 'See all photos',
+    'booking_limit_title'         => 'Online booking is temporarily unavailable',
+    'booking_limit_message'       => 'This business has reached its online booking limit for this month. Please contact them directly to schedule your appointment.',
+    'call'                        => 'Call',
+    'featured'                    => 'Featured',
+    'unavailable'                 => 'Unavailable',
+    'clear'                       => 'Clear',
+    'with'                        => 'With',
+    'booking_limit_contact'       => 'This business has reached its monthly booking limit. Please contact them directly.',
+    'no_staff_slot'               => 'No staff available for this slot.',
+    'staff_not_available'         => 'Selected staff is not available for this slot.',
 ];

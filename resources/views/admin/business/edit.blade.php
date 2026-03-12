@@ -40,8 +40,17 @@
                                         class="h-24 w-auto rounded-lg shadow-md border border-gray-200">
                                 </div>
                             @endif
-                            <input lang="en" dir="ltr" type="file" name="logo" accept="image/*"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                            <label for="logoFileInput" class="flex items-center gap-3 cursor-pointer group mt-1">
+                                <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-lg border-2 border-dashed border-gray-300 group-hover:border-green-400 group-hover:bg-green-50 transition-all bg-gray-50">
+                                    <svg class="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-600 group-hover:text-green-700 transition-colors">{{ $business->logo ? 'Change logo' : 'Upload logo' }}</span>
+                                </div>
+                                <span id="logoFileName" class="text-sm text-gray-400 italic truncate max-w-xs">No file chosen</span>
+                            </label>
+                            <input lang="en" dir="ltr" type="file" name="logo" id="logoFileInput" accept="image/*"
+                                class="sr-only" onchange="logoFileSelected(this)" />
                             <p class="text-gray-600 text-xs mt-2">{{ __('app.upload_logo_hint') }}</p>
                             @error('logo') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
@@ -211,6 +220,143 @@
                     </div>
                 </div>
 
+                <!-- Gallery Images Section -->
+                @php
+                    $gallery = $business->gallery_images ?? [null, null, null];
+                    while (count($gallery) < 3) $gallery[] = null;
+                @endphp
+                <div class="border-b border-gray-200 pb-8">
+                    <h3 class="text-lg font-bold text-gray-800 mb-1">Gallery Images</h3>
+                    <p class="text-sm text-gray-500 mb-4">Upload 3 photos to showcase your business. All 3 are required before saving.</p>
+
+                    @error('gallery')
+                        <div class="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span>{{ $message }}</span>
+                        </div>
+                    @enderror
+
+                    <div id="galleryError" class="hidden mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        <span id="galleryErrorMsg">Please upload all 3 gallery photos before saving.</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        @foreach([1, 2, 3] as $slot)
+                            @php $img = $gallery[$slot - 1] ?? null; @endphp
+                            <div>
+                                <p class="text-xs font-semibold text-gray-600 mb-2">Photo {{ $slot }}</p>
+
+                                {{-- Card: single element, toggled by JS between empty/filled states --}}
+                                <div id="galleryCard{{ $slot }}"
+                                     class="relative w-full h-40 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer transition-colors hover:border-green-400 hover:bg-green-50"
+                                     onclick="document.getElementById('galleryInput{{ $slot }}').click()"
+                                     ondragover="event.preventDefault(); this.classList.add('!border-green-500','!bg-green-100')"
+                                     ondragleave="this.classList.remove('!border-green-500','!bg-green-100')"
+                                     ondrop="galleryDrop(event, {{ $slot }})">
+
+                                    {{-- Empty placeholder --}}
+                                    <div id="galleryEmpty{{ $slot }}" class="absolute inset-0 flex flex-col items-center justify-center gap-1 pointer-events-none {{ $img ? 'hidden' : '' }}">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        <span class="text-xs text-gray-500 font-medium">Click or drag photo</span>
+                                        <span class="text-[11px] text-gray-400">JPG · PNG · WebP · max 10 MB</span>
+                                    </div>
+
+                                    {{-- Preview image (hidden until a file is picked or already saved) --}}
+                                    <img id="galleryPreview{{ $slot }}"
+                                         src="{{ $img ? asset($img) : '' }}"
+                                         alt="Photo {{ $slot }}"
+                                         class="absolute inset-0 w-full h-full object-cover {{ $img ? '' : 'hidden' }}">
+
+                                    {{-- Remove button (only visible when a photo is present) --}}
+                                    <button type="button" id="galleryRemoveBtn{{ $slot }}"
+                                        class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow transition {{ $img ? '' : 'hidden' }}"
+                                        onclick="event.stopPropagation(); galleryRemove({{ $slot }}, '{{ route('admin.business.gallery.remove', $slot) }}', {{ $img ? 'true' : 'false' }})"
+                                        title="Remove">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {{-- Filename shown after picking a new file --}}
+                                <p id="galleryName{{ $slot }}" class="hidden mt-1.5 text-xs text-gray-500 truncate px-0.5"></p>
+
+                                <input type="file" id="galleryInput{{ $slot }}" name="gallery_image_{{ $slot }}"
+                                       accept="image/jpeg,image/jpg,image/png,image/webp"
+                                       class="hidden" onchange="galleryPick({{ $slot }}, this)">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Services & Images Section -->
+                @php
+                    $bizServices = \App\Models\Service::where('business_id', $business->id)
+                        ->with('images')
+                        ->orderBy('name')->get();
+                @endphp
+                @if($bizServices->isNotEmpty())
+                <div class="border-b border-gray-200 pb-8">
+                    <div class="flex items-center justify-between mb-1">
+                        <h3 class="text-lg font-bold text-gray-800">Services &amp; Photos</h3>
+                        <a href="{{ route('admin.services.index') }}" class="text-xs font-semibold text-green-700 hover:underline">Manage services →</a>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-5">Each service displays its own photos on the public page. Click a service to add or change its photos.</p>
+                    <div class="space-y-3">
+                        @foreach($bizServices as $svc)
+                            @php
+                                $svcImages = $svc->images;
+                                $firstImg  = $svcImages->first();
+                            @endphp
+                            <div class="flex items-center gap-4 p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-white transition">
+                                {{-- Thumbnail --}}
+                                <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-white">
+                                    @if($firstImg)
+                                        <img src="{{ asset($firstImg->path) }}" alt="{{ $svc->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                {{-- Info --}}
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-gray-900 text-sm truncate">{{ $svc->name }}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        {{ $svcImages->count() }} photo{{ $svcImages->count() !== 1 ? 's' : '' }}
+                                        &middot; {{ $svc->duration_minutes }} min
+                                        @if($svc->price !== null) &middot; {{ number_format($svc->price, 2) }} {{ $business->currency }} @endif
+                                    </p>
+                                    {{-- Mini strip of images --}}
+                                    @if($svcImages->count() > 1)
+                                        <div class="mt-2 flex gap-1.5">
+                                            @foreach($svcImages->take(5) as $si)
+                                                <img src="{{ asset($si->path) }}" class="w-8 h-8 rounded object-cover border border-gray-100">
+                                            @endforeach
+                                            @if($svcImages->count() > 5)
+                                                <div class="w-8 h-8 rounded bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                                                    +{{ $svcImages->count() - 5 }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                                {{-- Edit link --}}
+                                <a href="{{ route('admin.services.edit', $svc) }}"
+                                   class="shrink-0 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition">
+                                    Edit photos
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-end space-x-4">
                     <a href="{{ route('admin.dashboard') }}"
@@ -228,6 +374,125 @@
                     </button>
                 </div>
             </form>
+
+            <script>
+            /* ── Gallery: pick file from input ── */
+            function galleryPick(slot, input) {
+                if (!input.files || !input.files[0]) return;
+                const file      = input.files[0];
+                const preview   = document.getElementById('galleryPreview'   + slot);
+                const empty     = document.getElementById('galleryEmpty'     + slot);
+                const removeBtn = document.getElementById('galleryRemoveBtn' + slot);
+                const nameEl    = document.getElementById('galleryName'      + slot);
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    empty.classList.add('hidden');
+                    removeBtn.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+
+                if (nameEl) {
+                    nameEl.textContent = file.name;
+                    nameEl.classList.remove('hidden');
+                }
+
+                checkGalleryError();
+            }
+
+            /* ── Gallery: remove a slot (saved = AJAX, unsaved = local reset) ── */
+            function galleryRemove(slot, url, isSaved) {
+                if (isSaved) {
+                    if (!confirm('Remove this photo?')) return;
+                    fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) { if (data.ok) galleryReset(slot); })
+                    .catch(function() { alert('Could not remove the photo. Please try again.'); });
+                } else {
+                    galleryReset(slot);
+                }
+            }
+
+            function galleryReset(slot) {
+                const preview   = document.getElementById('galleryPreview'   + slot);
+                const empty     = document.getElementById('galleryEmpty'     + slot);
+                const removeBtn = document.getElementById('galleryRemoveBtn' + slot);
+                const nameEl    = document.getElementById('galleryName'      + slot);
+                const inputEl   = document.getElementById('galleryInput'     + slot);
+                preview.classList.add('hidden');
+                preview.src = '';
+                empty.classList.remove('hidden');
+                removeBtn.classList.add('hidden');
+                if (nameEl)  { nameEl.classList.add('hidden'); nameEl.textContent = ''; }
+                if (inputEl) inputEl.value = '';
+            }
+
+            /* ── Gallery: drag-and-drop ── */
+            function galleryDrop(event, slot) {
+                event.preventDefault();
+                const card = document.getElementById('galleryCard' + slot);
+                if (card) card.classList.remove('!border-green-500', '!bg-green-50');
+                const input = document.getElementById('galleryInput' + slot);
+                if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+                    const dt = new DataTransfer();
+                    dt.items.add(event.dataTransfer.files[0]);
+                    input.files = dt.files;
+                    galleryPick(slot, input);
+                }
+            }
+
+            /* ── Gallery: show/hide error banner ── */
+            function checkGalleryError() {
+                var allFilled = [1, 2, 3].every(function(s) {
+                    var p = document.getElementById('galleryPreview' + s);
+                    return p && !p.classList.contains('hidden') && p.src && p.src !== window.location.href;
+                });
+                if (allFilled) {
+                    var err = document.getElementById('galleryError');
+                    if (err) err.classList.add('hidden');
+                }
+            }
+
+            /* ── Logo file-picker display ── */
+            function logoFileSelected(input) {
+                var nameEl = document.getElementById('logoFileName');
+                if (nameEl && input.files && input.files[0]) {
+                    nameEl.textContent = input.files[0].name;
+                    nameEl.classList.remove('text-gray-400', 'italic');
+                    nameEl.classList.add('text-green-700', 'font-medium');
+                }
+            }
+
+            /* ── Form submit: validate all 3 gallery slots filled ── */
+            (function () {
+                var form = document.querySelector('form[action="{{ route('admin.business.update') }}"]');
+                if (!form) return;
+                form.addEventListener('submit', function(e) {
+                    var emptySlots = [1, 2, 3].filter(function(s) {
+                        var p = document.getElementById('galleryPreview' + s);
+                        return !p || p.classList.contains('hidden') || !p.src || p.src === window.location.href;
+                    });
+                    if (emptySlots.length > 0) {
+                        e.preventDefault();
+                        var err = document.getElementById('galleryError');
+                        var msg = document.getElementById('galleryErrorMsg');
+                        if (err && msg) {
+                            msg.textContent = 'Please upload a photo for slot ' + emptySlots.join(', ') + ' before saving.';
+                            err.classList.remove('hidden');
+                            err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                });
+            })();
+            </script>
         </div>
     </div>
 </x-admin-layout>

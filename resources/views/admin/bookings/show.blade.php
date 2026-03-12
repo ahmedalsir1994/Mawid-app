@@ -17,6 +17,13 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto">
+        @if(session('success'))
+            <div class="mb-4 flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-800 text-sm font-medium">
+                <svg class="w-5 h-5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                {{ session('success') }}
+            </div>
+        @endif
+
         <!-- Status Card -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-6">
             <div class="flex items-center justify-between">
@@ -84,13 +91,24 @@
                 Appointment Details
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div class="{{ $booking->allServices()->count() > 1 ? 'md:col-span-2' : '' }}">
                     <p class="text-sm text-gray-600 font-medium">Service</p>
-                    <p class="text-lg font-semibold text-green-600">{{ $booking->service->name }}</p>
+                    @if($booking->allServices()->count() > 1)
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            @foreach($booking->allServices() as $svc)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 border border-green-200 text-sm font-medium text-green-800">
+                                    <span>{{ $svc->name }}</span>
+                                    <span class="text-green-500 text-xs">· {{ $svc->duration_minutes }} min</span>
+                                </span>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-lg font-semibold text-green-600">{{ $booking->services_label }}</p>
+                    @endif
                 </div>
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Duration</p>
-                    <p class="text-lg font-semibold text-gray-900">{{ $booking->service->duration_minutes }} minutes</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ $booking->total_duration }} minutes</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Date</p>
@@ -106,16 +124,34 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Assigned Staff</p>
-                    @if($booking->staff)
-                        <div class="flex items-center space-x-2 mt-1">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span
-                                    class="text-blue-700 font-bold text-sm">{{ strtoupper(substr($booking->staff->name, 0, 1)) }}</span>
-                            </div>
-                            <p class="text-lg font-semibold text-gray-900">{{ $booking->staff->name }}</p>
-                        </div>
+                    @if(auth()->user()->role === 'company_admin' && count($staffMembers))
+                        <form method="POST" action="{{ route('admin.bookings.reassign', $booking) }}" class="mt-2 flex items-center gap-2">
+                            @csrf
+                            <select name="staff_user_id"
+                                class="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+                                <option value="">— Unassigned —</option>
+                                @foreach($staffMembers as $sm)
+                                    <option value="{{ $sm->id }}" @selected($booking->staff_user_id == $sm->id)>
+                                        {{ $sm->name }}{{ $sm->title ? ' · '.$sm->title : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit"
+                                class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition whitespace-nowrap">
+                                Reassign
+                            </button>
+                        </form>
                     @else
-                        <p class="text-sm text-gray-400 italic mt-1">Not assigned</p>
+                        @if($booking->staff)
+                            <div class="flex items-center space-x-2 mt-1">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-700 font-bold text-sm">{{ strtoupper(substr($booking->staff->name, 0, 1)) }}</span>
+                                </div>
+                                <p class="text-lg font-semibold text-gray-900">{{ $booking->staff->name }}</p>
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-400 italic mt-1">Not assigned</p>
+                        @endif
                     @endif
                 </div>
                 @if($booking->branch)
@@ -134,10 +170,10 @@
                     </div>
                 </div>
                 @endif
-                @if($booking->notes)
+                @if($booking->customer_notes)
                     <div class="md:col-span-2">
                         <p class="text-sm text-gray-600 font-medium">Notes</p>
-                        <p class="text-gray-900">{{ $booking->notes }}</p>
+                        <p class="text-gray-900">{{ $booking->customer_notes }}</p>
                     </div>
                 @endif
             </div>
@@ -185,7 +221,7 @@
                         $message = "Hello {$booking->customer_name}! 👋\n\n";
                         $message .= "This is a reminder from *" . $booking->business->name . "*\n\n";
                         $message .= "📅 *Appointment Details:*\n";
-                        $message .= "Service: {$booking->service->name}\n";
+                        $message .= "Service: {$booking->services_label}\n";
                         $message .= "Date: {$date}\n";
                         $message .= "Time: {$time}\n";
 

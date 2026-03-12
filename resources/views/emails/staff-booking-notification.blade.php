@@ -56,7 +56,7 @@
             @endif
             <tr>
                 <td>📋 Service</td>
-                <td>{{ $booking->service->name }} ({{ $booking->service->duration_minutes }} min)</td>
+                <td>{{ $booking->services_label }} ({{ $booking->total_duration }} min)</td>
             </tr>
             <tr>
                 <td>📅 Date</td>

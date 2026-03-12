@@ -61,11 +61,11 @@
                         <div class="flex-shrink-0 text-center">
                             <div class="text-2xl font-bold text-gray-900">
                                 {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }}</div>
-                            <div class="text-xs text-gray-600">{{ $booking->service->duration }}min</div>
+                            <div class="text-xs text-gray-600">{{ $booking->total_duration }}min</div>
                         </div>
 
                         <div class="flex-1">
-                            <h3 class="font-bold text-gray-900">{{ $booking->service->name }}</h3>
+                            <h3 class="font-bold text-gray-900">{{ $booking->services_label }}</h3>
                             <p class="text-sm text-gray-600">
                                 <span class="font-medium">{{ $booking->customer_name }}</span>
                                 @if($booking->customer_phone)
@@ -196,11 +196,11 @@
                             <div class="flex-shrink-0 text-center bg-white rounded-lg p-3 shadow-sm">
                                 <div class="text-2xl font-bold text-gray-900">
                                     {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }}</div>
-                                <div class="text-xs text-gray-600 mt-1">{{ $booking->service->duration }} min</div>
+                                <div class="text-xs text-gray-600 mt-1">{{ $booking->total_duration }} min</div>
                             </div>
 
                             <div class="flex-1">
-                                <h4 class="font-bold text-lg text-gray-900 mb-1">{{ $booking->service->name }}</h4>
+                                <h4 class="font-bold text-lg text-gray-900 mb-1">{{ $booking->services_label }}</h4>
                                 <p class="text-sm text-gray-600 mb-2">
                                     <span class="font-medium">{{ $booking->customer_name }}</span>
                                     @if($booking->customer_phone)
@@ -275,7 +275,7 @@
                                     <div class="font-bold mb-0.5">
                                         {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }}
                                     </div>
-                                    <div class="truncate font-medium">{{ $booking->service->name }}</div>
+                                    <div class="truncate font-medium">{{ $booking->services_label }}</div>
                                     <div class="truncate text-[10px] opacity-75 mt-0.5">
                                         {{ $booking->customer_name }}</div>
                                 </div>
@@ -352,7 +352,7 @@
                                             <span class="font-semibold">
                                                 {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }}
                                             </span>
-                                            {{ $booking->service->name }}
+                                            {{ $booking->services_label }}
                                         </div>
                                     @endforeach
 
@@ -387,11 +387,11 @@
                         </div>
 
                         <div class="flex-1">
-                            <h3 class="font-bold text-gray-900">{{ $booking->service->name }}</h3>
+                            <h3 class="font-bold text-gray-900">{{ $booking->services_label }}</h3>
                             <p class="text-sm text-gray-600">
                                 <span class="font-medium">{{ $booking->customer_name }}</span>
                                 • {{ \Carbon\Carbon::parse($booking->start_time)->format('h:i A') }}
-                                • {{ $booking->service->duration }} min
+                                • {{ $booking->total_duration }} min
                             </p>
                         </div>
 

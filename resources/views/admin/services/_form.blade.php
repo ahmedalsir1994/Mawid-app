@@ -1,5 +1,24 @@
 ﻿@csrf
 
+@php
+    $bizId = $service->business_id ?? auth()->user()->business_id;
+    $categories = \App\Models\ServiceCategory::where('business_id', $bizId)->orderBy('name')->get();
+@endphp
+
+<div>
+    <label class="block text-sm font-semibold text-gray-800 mb-2">Category</label>
+    <select name="service_category_id" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+        <option value="">Select category</option>
+        @foreach($categories as $cat)
+            <option value="{{ $cat->id }}" @if(old('service_category_id', $service->service_category_id ?? '') == $cat->id) selected @endif>{{ $cat->name }}</option>
+        @endforeach
+    </select>
+    <a href="{{ route('admin.service_categories.index') }}" class="text-xs text-green-700 hover:underline mt-1 inline-block">Manage categories</a>
+    @error('service_category_id')
+        <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+    @enderror
+</div>
+
 <div class="space-y-6">
     <!-- Service Name -->
     <div>

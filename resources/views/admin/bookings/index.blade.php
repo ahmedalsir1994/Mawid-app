@@ -22,6 +22,15 @@
                     class="px-4 py-2 rounded-lg text-sm font-medium transition {{ $filter === 'all' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     {{ __('app.all') }}
                 </a>
+                @if(auth()->user()->role === 'company_admin')
+                <a href="{{ route('admin.bookings.export', ['filter' => $filter]) }}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export CSV
+                </a>
+                @endif
                 @php $createRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.create' : 'admin.bookings.create'; @endphp
                 <a href="{{ route($createRoute) }}"
                    class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1.5">
@@ -88,7 +97,12 @@
                             <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 font-medium text-gray-800">{{ $b->booking_date }}</td>
                                 <td class="px-6 py-4 text-gray-600">{{ substr($b->start_time, 0, 5) }}</td>
-                                <td class="px-6 py-4 text-gray-600">{{ $b->service->name }}</td>
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $b->services_label }}
+                                    @if($b->services->count() > 1)
+                                        <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-green-100 text-green-700">×{{ $b->services->count() }}</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4">
                                     @if($b->branch)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
@@ -151,6 +165,18 @@
 
                                 <td class="px-6 py-4 text-right">
                                     @php
+                                        $showRoute = auth()->user()->role === 'staff' ? 'admin.staff.bookings.show' : 'admin.bookings.show';
+                                    @endphp
+                                    <a href="{{ route($showRoute, $b) }}"
+                                       class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition mr-2"
+                                       title="View Details">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        {{ __('app.view_details') }}
+                                    </a>
+                                    @php
                                         // Clean and format phone number
                                         $phone = preg_replace('/[^0-9+]/', '', $b->customer_phone);
                                         $phone = ltrim($phone, '+');
@@ -167,7 +193,7 @@
                                         $message = "Hello {$b->customer_name}! 👋\n\n";
                                         $message .= "This is a reminder from *" . auth()->user()->business->name . "*\n\n";
                                         $message .= "📅 *Appointment Details:*\n";
-                                        $message .= "Service: {$b->service->name}\n";
+                                        $message .= "Service: {$b->services_label}\n";
                                         $message .= "Date: {$date}\n";
                                         $message .= "Time: {$time}\n";
 

@@ -40,22 +40,41 @@
                         Appointment Details
                     </h3>
 
-                    {{-- Service --}}
+                    {{-- Services (multi-select checkboxes) --}}
                     <div class="mb-4">
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Service <span class="text-red-500">*</span></label>
-                        <select name="service_id" id="serviceSelect" required
-                                class="w-full px-4 py-2.5 rounded-xl border {{ $errors->has('service_id') ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50' }} text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">— Select a service —</option>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Services <span class="text-red-500">*</span>
+                            <span class="text-xs font-normal text-gray-400">(select one or more)</span>
+                        </label>
+                        @error('service_ids')
+                            <p class="text-xs text-red-500 mb-1">{{ $message }}</p>
+                        @enderror
+                        <div class="space-y-2 max-h-52 overflow-y-auto pr-1">
                             @foreach($services as $svc)
-                                <option value="{{ $svc->id }}"
-                                        data-duration="{{ $svc->duration_minutes }}"
-                                        data-price="{{ $svc->price }}"
-                                        {{ old('service_id') == $svc->id ? 'selected' : '' }}>
-                                    {{ $svc->name }} · {{ $svc->duration_minutes }} min
-                                    @if($svc->price > 0) · {{ number_format($svc->price, 3) }} OMR @endif
-                                </option>
+                                <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition
+                                              {{ collect(old('service_ids', []))->contains((string)$svc->id) ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50 hover:border-green-300 hover:bg-green-50' }}">
+                                    <input type="checkbox"
+                                           name="service_ids[]"
+                                           value="{{ $svc->id }}"
+                                           class="service-checkbox w-4 h-4 rounded text-green-600 border-gray-300 focus:ring-green-500"
+                                           data-duration="{{ $svc->duration_minutes }}"
+                                           data-price="{{ $svc->price }}"
+                                           data-name="{{ $svc->name }}"
+                                           {{ collect(old('service_ids', []))->contains((string)$svc->id) ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-800 leading-snug">
+                                        {{ $svc->name }}
+                                        <span class="text-gray-400 text-xs">· {{ $svc->duration_minutes }} min</span>
+                                        @if($svc->price > 0)
+                                            <span class="text-gray-400 text-xs">· {{ number_format($svc->price, 3) }} OMR</span>
+                                        @endif
+                                    </span>
+                                </label>
                             @endforeach
-                        </select>
+                        </div>
+                        {{-- Combined total bar --}}
+                        <div id="serviceTotalBar" class="hidden mt-2 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-xs font-medium text-green-800">
+                            <span id="serviceTotalLabel"></span>
+                        </div>
                     </div>
 
                     @if($branches->isNotEmpty())
@@ -227,10 +246,12 @@
         let isLoading      = false;      // prevents double-requests
         let abortController = null;      // cancels stale in-flight requests
 
-        const serviceSelect = document.getElementById('serviceSelect');
+        const serviceCheckboxes = () => [...document.querySelectorAll('.service-checkbox')];
         const branchSelect  = document.getElementById('branchSelect');
         const dateInput     = document.getElementById('dateInput');
         const loadBtn       = document.getElementById('loadSlotsBtn');
+        const serviceTotalBar   = document.getElementById('serviceTotalBar');
+        const serviceTotalLabel = document.getElementById('serviceTotalLabel');
 
         const slotsSection  = document.getElementById('slotsSection');
         const slotsLoading  = document.getElementById('slotsLoading');
@@ -249,12 +270,31 @@
         const submitHint     = document.getElementById('submitHint');
         const bookingSummaryBox = document.getElementById('bookingSummaryBox');
 
-        // Reset slots when inputs change
-        [serviceSelect, dateInput, branchSelect].forEach(el => {
+        // Reset slots when any service checkbox changes
+        serviceCheckboxes().forEach(cb => cb.addEventListener('change', () => {
+            updateServiceTotal();
+            resetSlots();
+        }));
+        // Reset slots when date or branch changes
+        [dateInput, branchSelect].forEach(el => {
             if (el) el.addEventListener('change', resetSlots);
         });
 
         loadBtn.addEventListener('click', loadSlots);
+
+        function updateServiceTotal() {
+            const selected = serviceCheckboxes().filter(cb => cb.checked);
+            if (selected.length === 0) {
+                serviceTotalBar.classList.add('hidden');
+                return;
+            }
+            const totalDuration = selected.reduce((sum, cb) => sum + parseInt(cb.dataset.duration || 0), 0);
+            const totalPrice    = selected.reduce((sum, cb) => sum + parseFloat(cb.dataset.price || 0), 0);
+            let label = `${selected.length} service${selected.length > 1 ? 's' : ''} · ${totalDuration} min total`;
+            if (totalPrice > 0) label += ` · ${totalPrice.toFixed(3)} OMR`;
+            serviceTotalLabel.textContent = label;
+            serviceTotalBar.classList.remove('hidden');
+        }
 
         function resetSlots() {
             selectedSlot  = null;
@@ -271,8 +311,9 @@
         }
 
         function loadSlots() {
-            if (!serviceSelect.value) {
-                alert('Please select a service first.');
+            const selected = serviceCheckboxes().filter(cb => cb.checked);
+            if (selected.length === 0) {
+                alert('Please select at least one service first.');
                 return;
             }
             if (!dateInput.value) {
@@ -293,9 +334,11 @@
             slotsGrid.innerHTML = '';
 
             const params = new URLSearchParams({
-                service_id: serviceSelect.value,
                 date: dateInput.value,
                 branch_id: branchSelect ? branchSelect.value : '',
+            });
+            serviceCheckboxes().filter(cb => cb.checked).forEach(cb => {
+                params.append('service_ids[]', cb.value);
             });
 
             fetch(`${slotsUrl}?${params}`, {
@@ -454,18 +497,20 @@
             if (!selectedSlot || !selectedStaff) return;
             const d = new Date(dateInput.value + 'T00:00:00');
             const dateStr = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const svcOpt = serviceSelect.options[serviceSelect.selectedIndex];
+            const selectedSvcs = serviceCheckboxes().filter(cb => cb.checked);
+            const svcLabel = selectedSvcs.map(cb => cb.dataset.name).join(', ');
 
             document.getElementById('summaryDate').textContent    = dateStr;
             document.getElementById('summaryTime').textContent    = `${selectedSlot.start} – ${selectedSlot.end}`;
-            document.getElementById('summaryService').textContent = svcOpt ? svcOpt.text : '';
+            document.getElementById('summaryService').textContent = svcLabel;
             document.getElementById('summaryStaff').textContent   = selectedStaff.name;
             bookingSummaryBox.classList.remove('hidden');
         }
 
         // If old() values are present (after validation failure), try to restore state
-        @if(old('start_time') && old('service_id'))
+        @if(old('start_time') && count(old('service_ids', [])) > 0)
         window.addEventListener('DOMContentLoaded', () => {
+            updateServiceTotal();
             // Trigger slot load to restore available slots after validation failure
             setTimeout(loadSlots, 100);
         });

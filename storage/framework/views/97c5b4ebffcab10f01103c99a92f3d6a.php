@@ -35,6 +35,7 @@
 <?php unset($__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5); ?>
 <?php endif; ?>
 
+
     <?php if(session('error')): ?>
         <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
             <?php echo e(session('error')); ?>
@@ -42,9 +43,20 @@
         </div>
     <?php endif; ?>
 
+    <?php if(request('expired')): ?>
+        <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
+            <?php echo e(__('Your session expired. Please sign in again to continue.')); ?>
+
+        </div>
+    <?php endif; ?>
+
 
     <form method="POST" action="<?php echo e(route('login')); ?>">
+
         <?php echo csrf_field(); ?>
+        <?php if(request('intended')): ?>
+            <input type="hidden" name="intended" value="<?php echo e(request('intended')); ?>">
+        <?php endif; ?>
 
         <!-- Email Address -->
         <div>
