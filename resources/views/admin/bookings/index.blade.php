@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.bookings') }}</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.bookings') }}</h2>
                 <p class="text-gray-500 text-sm mt-1">{{ __('app.manage_track_appointments') }}</p>
             </div>
 

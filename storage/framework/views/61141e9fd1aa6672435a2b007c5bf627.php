@@ -96,7 +96,7 @@
         <!-- Total Bookings -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.total_bookings')); ?></h3>
-            <p class="text-3xl font-bold text-gray-900"><?php echo e($totalBookings); ?></p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900"><?php echo e($totalBookings); ?></p>
             <a href="<?php echo e(route('admin.bookings.index')); ?>"
                 class="text-sm text-green-600 hover:text-green-700 font-medium mt-3 inline-block">
                 <?php echo e(__('app.view_all')); ?> →
@@ -104,37 +104,41 @@
         </div>
 
         <!-- Public Booking Link -->
-        <div class="bg-white rounded-xl shadow-md border border-blue-100 p-6">
-            <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.public_booking_link') ?? 'Public Booking Link'); ?></h3>
-            <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
-                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                <span class="flex-1 text-sm text-gray-700 truncate select-all"><?php echo e(url('/')); ?>/<?php echo e($business->slug); ?></span>
-                <button type="button" onclick="navigator.clipboard.writeText('<?php echo e(url('/')); ?>/<?php echo e($business->slug); ?>')"
-                    class="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-xl shadow-md border border-blue-100 p-3 sm:p-6">
+            <h3 class="text-gray-600 font-medium text-xs sm:text-sm mb-2 leading-snug"><?php echo e(__('app.public_booking_link') ?? 'Public Booking Link'); ?></h3>
+            <div class="flex flex-col gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2 py-2 sm:px-3 sm:py-2.5">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                     </svg>
-                    <span>Copy</span>
-                </button>
-                <a href="<?php echo e(url('/')); ?>/<?php echo e($business->slug); ?>" target="_blank"
-                    class="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    Open
-                </a>
+                    <span class="text-xs text-gray-600 truncate select-all min-w-0"><?php echo e(url('/')); ?>/<?php echo e($business->slug); ?></span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="navigator.clipboard.writeText('<?php echo e(url('/')); ?>/<?php echo e($business->slug); ?>')"
+                        class="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span><?php echo e(__('app.copy') ?? 'Copy'); ?></span>
+                    </button>
+                    <a href="<?php echo e(url('/')); ?>/<?php echo e($business->slug); ?>" target="_blank"
+                        class="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        <span class="hidden sm:inline ml-4"><?php echo e(__('app.open') ?? 'Open'); ?></span>
+                    </a>
+                </div>
             </div>
         </div>
 
         <!-- Pending Bookings -->
         <div class="bg-white rounded-xl shadow-md border border-yellow-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.pending')); ?></h3>
-            <p class="text-3xl font-bold text-yellow-600"><?php echo e($pendingBookings); ?></p>
+            <p class="text-2xl sm:text-3xl font-bold text-yellow-600"><?php echo e($pendingBookings); ?></p>
             <a href="<?php echo e(route('admin.bookings.index', ['filter' => 'today'])); ?>"
                 class="text-sm text-yellow-600 hover:text-yellow-700 font-medium mt-3 inline-block">
                 <?php echo e(__('app.review')); ?> →
@@ -144,7 +148,7 @@
         <!-- Services -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.services')); ?></h3>
-            <p class="text-3xl font-bold text-gray-900"><?php echo e($totalServices); ?></p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900"><?php echo e($totalServices); ?></p>
             <a href="<?php echo e(route('admin.services.index')); ?>"
                 class="text-sm text-green-600 hover:text-green-700 font-medium mt-3 inline-block">
                 <?php echo e(__('app.manage_services')); ?> →
@@ -154,7 +158,7 @@
         <!-- Team Members -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2"><?php echo e(__('app.team_members')); ?></h3>
-            <p class="text-3xl font-bold text-gray-900"><?php echo e($userCount); ?></p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900"><?php echo e($userCount); ?></p>
             <p class="text-sm text-gray-600 mt-2"><?php echo e($totalStaff); ?> <?php echo e(__('app.staff_members')); ?></p>
         </div>
 

@@ -30,10 +30,10 @@
                 {{ __('landing.pricing_badge') }}
             </div>
             @if($licenseExpired ?? false)
-            <h2 class="text-4xl font-bold mb-3">Reactivate Your Subscription</h2>
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">Reactivate Your Subscription</h2>
             <p class="text-gray-500 max-w-xl mx-auto">Your account is on the Free plan. Reactivate your previous plan or upgrade to restore full access instantly.</p>
             @else
-            <h2 class="text-4xl font-bold mb-3">{{ __('landing.pricing_title') }}</h2>
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">{{ __('landing.pricing_title') }}</h2>
             <p class="text-gray-500 max-w-xl mx-auto">{{ __('landing.pricing_subtitle') }}</p>
             @endif
 
@@ -84,7 +84,7 @@
                 <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_free_name') }}</h3>
                 <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_free_tagline') }}</p>
                 <div class="mb-6">
-                    <span class="text-4xl font-bold text-gray-800">{{ __('landing.plan_free_price') }}</span>
+                    <span class="text-3xl sm:text-4xl font-bold text-gray-800">{{ __('landing.plan_free_price') }}</span>
                     <span class="text-gray-500 text-sm ml-1">{{ __('landing.plan_free_period') }}</span>
                 </div>
                 <ul class="space-y-2 mb-8">
@@ -131,7 +131,7 @@
                             <span class="text-sm line-through text-gray-400">10 OMR</span>
                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
                         </div>
-                        <span class="text-4xl font-bold text-gray-900">6.5</span>
+                        <span class="text-3xl sm:text-4xl font-bold text-gray-900">6.5</span>
                         <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
                         <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
                     </div>
@@ -141,7 +141,7 @@
                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 45%</span>
                         </div>
                         <div class="flex items-end gap-2">
-                            <span class="text-4xl font-bold text-gray-900">5.5</span>
+                            <span class="text-3xl sm:text-4xl font-bold text-gray-900">5.5</span>
                             <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
@@ -195,7 +195,7 @@
                             <span class="text-sm line-through text-gray-400">14 OMR</span>
                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 30%</span>
                         </div>
-                        <span class="text-4xl font-bold text-gray-900">9.8</span>
+                        <span class="text-3xl sm:text-4xl font-bold text-gray-900">9.8</span>
                         <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
                         <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
                     </div>
@@ -205,7 +205,7 @@
                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
                         </div>
                         <div class="flex items-end gap-2">
-                            <span class="text-4xl font-bold text-gray-900">9.1</span>
+                            <span class="text-3xl sm:text-4xl font-bold text-gray-900">9.1</span>
                             <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-1">

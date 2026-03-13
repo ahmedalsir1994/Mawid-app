@@ -1,7 +1,7 @@
 ﻿<x-admin-layout>
     <x-slot name="header">
         <div>
-            <h2 class="font-bold text-3xl text-gray-800">{{ __('app.time_off_holidays') }}</h2>
+            <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.time_off_holidays') }}</h2>
             <p class="text-gray-500 text-sm mt-1">{{ __('app.manage_time_off') }}</p>
         </div>
     </x-slot>

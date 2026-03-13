@@ -151,7 +151,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-gray-200">
                 <form action="{{ route('admin.super.businesses.destroy', $business) }}" method="POST" class="inline"
                     onsubmit="return confirm('{{ __('app.delete_business_full_confirm') }}')">
                     @csrf

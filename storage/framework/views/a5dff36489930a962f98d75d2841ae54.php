@@ -10,7 +10,7 @@
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
         <div>
-            <h2 class="font-bold text-3xl text-gray-800"><?php echo e(__('app.business_settings')); ?></h2>
+            <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800"><?php echo e(__('app.business_settings')); ?></h2>
             <p class="text-gray-500 text-sm mt-1"><?php echo e(__('app.configure_business')); ?></p>
         </div>
      <?php $__env->endSlot(); ?>

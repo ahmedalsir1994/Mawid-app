@@ -9,7 +9,7 @@
                 </svg>
                 Back to submissions
             </a>
-            <h1 class="text-3xl font-bold text-gray-900">Contact Message #{{ $contactSubmission->id }}</h1>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Contact Message #{{ $contactSubmission->id }}</h1>
             <p class="text-gray-500 mt-1 text-sm">Received {{ $contactSubmission->created_at->format('D, d M Y \a\t H:i') }}</p>
         </div>
         <div class="flex items-center gap-3 flex-wrap">

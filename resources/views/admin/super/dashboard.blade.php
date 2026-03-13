@@ -6,7 +6,7 @@
     </div>
 
     <!-- Key Statistics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Total Businesses -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition">
             <div class="flex items-center justify-between mb-4">
@@ -18,7 +18,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-900">{{ $totalBusinesses }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $totalBusinesses }}</p>
         </div>
 
         <!-- Active Licenses -->
@@ -32,7 +32,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-900">{{ $activeLicenses }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $activeLicenses }}</p>
         </div>
 
         <!-- Total Revenue -->
@@ -46,7 +46,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-900">{{ number_format($totalRevenue, 3) }} {{ __('app.revenue_omr') }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($totalRevenue, 3) }} {{ __('app.revenue_omr') }}</p>
         </div>
 
         <!-- Expiring Licenses -->
@@ -60,31 +60,31 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-900">{{ $expiringLicenses }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $expiringLicenses }}</p>
             <p class="text-sm text-gray-600 mt-2">{{ __('app.within_days', ['days' => 7]) }}</p>
         </div>
     </div>
 
     <!-- Second Row Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Pending Revenue -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.pending_revenue') }}</h3>
-            <p class="text-3xl font-bold text-gray-900">{{ number_format($pendingRevenue, 3) }} {{ __('app.revenue_omr') }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($pendingRevenue, 3) }} {{ __('app.revenue_omr') }}</p>
             <p class="text-sm text-orange-600 mt-2">{{ __('app.awaiting_payment') }}</p>
         </div>
 
         <!-- Total Users -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.total_users') }}</h3>
-            <p class="text-3xl font-bold text-gray-900">{{ $totalUsers }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $totalUsers }}</p>
             <p class="text-sm text-gray-600 mt-2">{{ __('app.across_all_businesses') }}</p>
         </div>
 
         <!-- Bookings This Month -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">Bookings This Month</h3>
-            <p class="text-3xl font-bold text-gray-900">{{ $bookingsThisMonth }}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $bookingsThisMonth }}</p>
             <p class="text-sm text-gray-600 mt-2">{{ now()->format('F Y') }}</p>
         </div>
     </div>

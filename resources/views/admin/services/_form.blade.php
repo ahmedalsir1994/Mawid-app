@@ -276,7 +276,7 @@
     @endif
 
     <!-- Action Buttons -->
-    <div class="border-t border-gray-200 pt-6 flex items-center justify-between">
+    <div class="border-t border-gray-200 pt-6 flex flex-wrap items-center justify-between gap-3">
         <a href="{{ route('admin.services.index') }}" 
             class="px-6 py-3 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition">
             {{ __('app.cancel') }}

@@ -63,8 +63,8 @@
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gray-50 overflow-hidden">
-    <div class="flex h-screen bg-gray-100 ">
+<body class="font-sans antialiased bg-gray-50">
+    <div class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
         <div class="hidden md:flex md:flex-col md:w-64 md:bg-white md:shadow-lg">
             <!-- Logo Section -->
@@ -376,7 +376,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
             <!-- Top Navigation Bar -->
             <header class="bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6">
@@ -632,7 +632,7 @@
             <?php endif; ?>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-auto">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden">
                 <div class="px-4 sm:px-6 lg:px-8 py-8">
                     <!-- Page Header -->
                     <?php if(isset($header)): ?>

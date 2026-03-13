@@ -169,7 +169,7 @@
 
             <div class="border rounded-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-green-600 to-green-500 text-white p-4">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-wrap items-start justify-between gap-y-2">
                         <div>
                             <h3 class="text-2xl font-bold">{{ $currentDate->format('l') }}</h3>
                             <p class="text-sm opacity-90">{{ $currentDate->format('F j, Y') }}</p>

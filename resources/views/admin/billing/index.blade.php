@@ -2,7 +2,7 @@
 
     {{-- ── Page Header ────────────────────────────────────────────────────── --}}
     <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Billing & Subscription</h1>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Billing & Subscription</h1>
         <p class="text-gray-500 mt-1 text-sm">Manage your plan, payment method, and billing history.</p>
     </div>
 
@@ -124,7 +124,7 @@
 
         {{-- ── Subscription Card ──────────────────────────────────────────── --}}
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex items-center justify-between mb-5">
+            <div class="flex flex-wrap items-center justify-between gap-y-2 mb-5">
                 <h2 class="text-base font-semibold text-gray-900">Current Plan</h2>
                 @if($license)
                     @php
@@ -155,7 +155,7 @@
                 @endphp
 
                 {{-- Plan strip --}}
-                <div class="flex items-center justify-between p-4 rounded-xl border {{ $planBg }} mb-5">
+                <div class="flex flex-wrap items-center justify-between gap-y-2 p-4 rounded-xl border {{ $planBg }} mb-5">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl {{ str_replace('border-', 'bg-', explode(' ', $planBg)[1]) ?? 'bg-gray-200' }} flex items-center justify-center text-xl">
                             {{ $planEmoji }}

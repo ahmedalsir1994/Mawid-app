@@ -147,7 +147,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-gray-200">
                 @if ($user->id)
                     <form action="{{ route('admin.super.users.destroy', $user) }}" method="POST" class="inline"
                         onsubmit="return confirm('{{ __('app.delete_user_full_confirm') }}')">

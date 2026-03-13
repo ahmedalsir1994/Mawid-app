@@ -1,8 +1,8 @@
 ﻿<x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.dashboard') }}</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.dashboard') }}</h2>
                 <p class="text-gray-500 text-sm mt-1">{{ __('app.welcome_back') }}, {{ auth()->user()->name }}!</p>
             </div>
             <div class="text-right">
@@ -21,13 +21,13 @@
     @endif
 
     <!-- Quick Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Total Bookings -->
         <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm font-medium">{{ __('app.total_bookings') }}</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2">0</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">0</p>
                     <p class="text-green-600 text-xs mt-2">↑ 0% {{ __('app.from_last_month') }}</p>
                 </div>
                 <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -45,7 +45,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm font-medium">{{ __('app.pending_bookings') }}</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2">0</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">0</p>
                     <p class="text-yellow-600 text-xs mt-2">{{ __('app.action_needed') }}</p>
                 </div>
                 <div class="w-14 h-14 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -63,7 +63,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm font-medium">{{ __('app.confirmed_bookings') }}</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2">0</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">0</p>
                     <p class="text-green-600 text-xs mt-2">{{ __('app.this_week') }}</p>
                 </div>
                 <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
@@ -81,7 +81,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm font-medium">{{ __('app.revenue') }}</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2">$0</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">$0</p>
                     <p class="text-green-600 text-xs mt-2">↑ 0% {{ __('app.from_last_month') }}</p>
                 </div>
                 <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
@@ -98,10 +98,10 @@
     </div>
 
     <!-- Charts and Recent Activity -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
         <!-- Weekly Bookings Chart -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border border-gray-100">
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex flex-wrap items-center justify-between gap-y-2 mb-4 sm:mb-6">
                 <h3 class="text-lg font-bold text-gray-800">{{ __('app.weekly_bookings') }}</h3>
                 <select lang="en" dir="ltr" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none">
                     <option>{{ __('app.this_week') }}</option>
@@ -193,9 +193,9 @@
 
     <!-- Calendar View -->
     <div class="bg-white rounded-xl shadow-md border border-gray-100 mb-8">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <h3 class="text-xl font-bold text-gray-800">{{ __('app.booking_calendar') }}</h3>
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+            <div class="flex flex-wrap items-center justify-between gap-y-3">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800">{{ __('app.booking_calendar') }}</h3>
                 <div class="flex items-center space-x-2">
                     <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded-lg transition">
                         <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,7 +363,7 @@
 
     <!-- Recent Bookings -->
     <div class="bg-white rounded-xl shadow-md border border-gray-100">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-wrap items-center justify-between gap-y-2">
             <h3 class="text-lg font-bold text-gray-800">{{ __('app.recent_bookings') }}</h3>
             <a href="{{ route('admin.bookings.index') }}"
                 class="text-green-600 hover:text-green-800 text-sm font-medium">{{ __('app.view_all') }}</a>
@@ -455,7 +455,7 @@
             </table>
         </div>
 
-        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="px-4 sm:px-6 py-4 border-t border-gray-200 flex flex-wrap items-center justify-between gap-y-2">
             <p class="text-sm text-gray-600">{{ __('app.showing_of', ['count' => 3, 'total' => 12]) }}
                 {{ __('app.bookings') }}
             </p>

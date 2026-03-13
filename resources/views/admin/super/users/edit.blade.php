@@ -161,7 +161,7 @@
         </form>{{-- END update form — must close before the delete form below --}}
 
         <!-- Actions (outside the update form to prevent nesting) -->
-        <div class="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-gray-200 mt-6">
             <form action="{{ route('admin.super.users.destroy', $user) }}" method="POST" class="inline"
                 onsubmit="return confirm('{{ __('app.delete_user_undone_confirm') }}')">
                 @csrf

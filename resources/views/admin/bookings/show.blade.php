@@ -26,7 +26,7 @@
 
         <!-- Status Card -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-6">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-start justify-between gap-y-3">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('app.booking_status') }}</h3>
                     <span class="inline-block px-4 py-2 text-sm font-semibold rounded-full
@@ -188,7 +188,7 @@
                 </svg>
                 Reminder Status
             </h3>
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-start justify-between gap-y-3">
                 <div>
                     @if($booking->reminder_sent_at)
                         <span
