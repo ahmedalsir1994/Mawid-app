@@ -29,24 +29,20 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        // Fix SSL certificate verification on Windows by providing the CA bundle
-        // or by using a custom SMTP transport with relaxed SSL options.
-        // NOTE: Only register this driver for non-production environments to avoid
-        // accidental use with MAIL_MAILER=smtp-ssl-fix in production.
-        if (!$this->app->environment('production')) {
-            Mail::extend('smtp-ssl-fix', function (array $config) {
-                $transport = new EsmtpTransport(
-                    $config['host'],
-                    (int) $config['port'],
-                    false   // false = STARTTLS on connect (port 587)
-                );
+        // Custom SMTP driver that works around Windows/Laragon CA bundle issues locally.
+        // In production this behaves identically to the standard smtp driver (SSL fully verified).
+        Mail::extend('smtp-ssl-fix', function (array $config) {
+            $transport = new EsmtpTransport(
+                $config['host'],
+                (int) $config['port'],
+                false   // false = STARTTLS on connect (port 587)
+            );
 
-                $transport->setUsername($config['username'] ?? '');
-                $transport->setPassword($config['password'] ?? '');
+            $transport->setUsername($config['username'] ?? '');
+            $transport->setPassword($config['password'] ?? '');
 
-                // On Windows/Laragon, OpenSSL cannot locate the system CA bundle.
-                // The TLS connection is still encrypted; only certificate validation is skipped.
-                // To re-enable, set openssl.cafile in php.ini pointing to a valid CA bundle.
+            // Only skip SSL verification on local/dev — never on production.
+            if (!$this->app->environment('production')) {
                 $transport->getStream()->setStreamOptions([
                     'ssl' => [
                         'verify_peer'       => false,
@@ -54,9 +50,9 @@ class AppServiceProvider extends ServiceProvider
                         'allow_self_signed' => true,
                     ],
                 ]);
+            }
 
-                return $transport;
-            });
-        }
+            return $transport;
+        });
     }
 }
