@@ -32,5 +32,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'customer',
             'is_active' => true,
         ]);
+
+        $this->call(PlansTableSeeder::class);
     }
 }

@@ -1,0 +1,313 @@
+<?php if (isset($component)) { $__componentOriginal91fdd17964e43374ae18c674f95cdaa3 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal91fdd17964e43374ae18c674f95cdaa3 = $attributes; } ?>
+<?php $component = App\View\Components\AdminLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AdminLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+    <!-- Header -->
+    <div class="mb-6">
+        <nav class="text-sm text-gray-500 mb-2">
+            <a href="<?php echo e(route('admin.super.plans.index')); ?>" class="hover:text-green-600">Plans</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-800 font-medium">New Plan</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-gray-900">Create New Plan</h1>
+    </div>
+
+    <div class="max-w-3xl bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
+        <form method="POST" action="<?php echo e(route('admin.super.plans.store')); ?>" class="space-y-6">
+            <?php echo csrf_field(); ?>
+
+            <!-- Identity -->
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Emoji *</label>
+                    <input type="text" name="emoji" value="<?php echo e(old('emoji', '📋')); ?>" required maxlength="10"
+                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-lg text-center">
+                    <?php $__errorArgs = ['emoji'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Slug * <span class="text-gray-400 font-normal text-xs">(unique, lowercase)</span></label>
+                    <input type="text" name="slug" value="<?php echo e(old('slug')); ?>" required maxlength="20"
+                        pattern="[a-z0-9_-]+" placeholder="e.g. pro"
+                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition">
+                    <?php $__errorArgs = ['slug'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                    <input type="text" name="name" value="<?php echo e(old('name')); ?>" required maxlength="50"
+                        placeholder="e.g. Pro"
+                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition">
+                    <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+                <input type="text" name="tagline" value="<?php echo e(old('tagline')); ?>" maxlength="200"
+                    placeholder="Short description shown on pricing cards"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition">
+            </div>
+
+            <!-- Pricing -->
+            <div>
+                <p class="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Pricing (OMR)</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Monthly Price *</label>
+                        <input type="number" name="price_monthly" value="<?php echo e(old('price_monthly', 0)); ?>"
+                            required min="0" step="0.001"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        <?php $__errorArgs = ['price_monthly'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Yearly Price * <span class="text-gray-400">(total, not per-month)</span></label>
+                        <input type="number" name="price_yearly" value="<?php echo e(old('price_yearly', 0)); ?>"
+                            required min="0" step="0.001"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        <?php $__errorArgs = ['price_yearly'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Display Monthly <span class="text-gray-400">(shown on pricing card)</span></label>
+                        <input type="number" name="price_monthly_display" value="<?php echo e(old('price_monthly_display')); ?>"
+                            min="0" step="0.001"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Display Yearly per-mo <span class="text-gray-400">(e.g. 5.5 OMR/mo)</span></label>
+                        <input type="number" name="price_yearly_display" value="<?php echo e(old('price_yearly_display')); ?>"
+                            min="0" step="0.001"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Old Monthly Price <span class="text-gray-400">(crossed-out)</span></label>
+                        <input type="number" name="old_price_monthly" value="<?php echo e(old('old_price_monthly', 0)); ?>"
+                            min="0" step="0.001"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Old Yearly Price <span class="text-gray-400">(crossed-out)</span></label>
+                        <input type="number" name="old_price_yearly" value="<?php echo e(old('old_price_yearly', 0)); ?>"
+                            min="0" step="0.001"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Monthly Discount % </label>
+                        <input type="number" name="discount_monthly" value="<?php echo e(old('discount_monthly', 0)); ?>"
+                            min="0" max="100"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Yearly Discount %</label>
+                        <input type="number" name="discount_yearly" value="<?php echo e(old('discount_yearly', 0)); ?>"
+                            min="0" max="100"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Limits -->
+            <div>
+                <p class="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Limits <span class="text-gray-400 font-normal">(0 = unlimited)</span></p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Branches *</label>
+                        <input type="number" name="max_branches" value="<?php echo e(old('max_branches', 1)); ?>"
+                            required min="1"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        <?php $__errorArgs = ['max_branches'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Staff *</label>
+                        <input type="number" name="max_staff" value="<?php echo e(old('max_staff', 1)); ?>"
+                            required min="1"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        <?php $__errorArgs = ['max_staff'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Services * <span class="text-gray-400">(0=∞)</span></label>
+                        <input type="number" name="max_services" value="<?php echo e(old('max_services', 0)); ?>"
+                            required min="0"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        <?php $__errorArgs = ['max_services'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Daily Bookings * <span class="text-gray-400">(0=∞)</span></label>
+                        <input type="number" name="max_daily_bookings" value="<?php echo e(old('max_daily_bookings', 0)); ?>"
+                            required min="0"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        <?php $__errorArgs = ['max_daily_bookings'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-600"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Monthly Bookings <span class="text-gray-400">(0=∞)</span></label>
+                        <input type="number" name="max_monthly_bookings" value="<?php echo e(old('max_monthly_bookings', 0)); ?>"
+                            min="0"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
+                        <input type="number" name="sort_order" value="<?php echo e(old('sort_order', 0)); ?>"
+                            min="0"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features & Status -->
+            <div class="flex flex-wrap items-center gap-6">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="whatsapp_reminders" value="1"
+                        <?php if(old('whatsapp_reminders')): echo 'checked'; endif; ?>
+                        class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                    <span class="text-sm text-gray-700">WhatsApp Reminders</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="is_active" value="1"
+                        <?php if(old('is_active', true)): echo 'checked'; endif; ?>
+                        class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                    <span class="text-sm text-gray-700">Active (visible to users)</span>
+                </label>
+            </div>
+
+            <!-- Landing Page Card -->
+            <div>
+                <p class="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Landing Page Card</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Feature Bullets <span class="text-gray-400 font-normal text-xs">(one per line)</span></label>
+                        <textarea name="features_text" rows="5"
+                            placeholder="Everything in Free&#10;Up to 15 Services&#10;WhatsApp Reminders"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm font-mono"><?php echo e(old('features_text')); ?></textarea>
+                        <p class="mt-1 text-xs text-gray-400">These appear as ✓ bullet points on the pricing card.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">CTA Button Label</label>
+                            <input type="text" name="cta_label" value="<?php echo e(old('cta_label')); ?>" maxlength="100"
+                                placeholder="e.g. Start Pro →"
+                                class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Accent Color</label>
+                            <select name="accent_color"
+                                class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                                <option value="gray" <?php if(old('accent_color', 'gray') === 'gray'): echo 'selected'; endif; ?>>⬜ Gray (default / free)</option>
+                                <option value="blue" <?php if(old('accent_color') === 'blue'): echo 'selected'; endif; ?>>🔵 Blue (featured)</option>
+                                <option value="green" <?php if(old('accent_color') === 'green'): echo 'selected'; endif; ?>>🟢 Green</option>
+                                <option value="purple" <?php if(old('accent_color') === 'purple'): echo 'selected'; endif; ?>>🟣 Purple</option>
+                                <option value="orange" <?php if(old('accent_color') === 'orange'): echo 'selected'; endif; ?>>🟠 Orange</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="is_featured" value="1"
+                                <?php if(old('is_featured')): echo 'checked'; endif; ?>
+                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm text-gray-700">Featured card <span class="text-gray-400">(highlighted border + badge)</span></span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Featured Badge Label <span class="text-gray-400">(shown when card is featured)</span></label>
+                        <input type="text" name="featured_label" value="<?php echo e(old('featured_label', 'Most Popular')); ?>" maxlength="50"
+                            placeholder="Most Popular"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4 pt-2">
+                <button type="submit"
+                    class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:shadow-lg transition">
+                    Create Plan
+                </button>
+                <a href="<?php echo e(route('admin.super.plans.index')); ?>"
+                    class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition text-center">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal91fdd17964e43374ae18c674f95cdaa3)): ?>
+<?php $attributes = $__attributesOriginal91fdd17964e43374ae18c674f95cdaa3; ?>
+<?php unset($__attributesOriginal91fdd17964e43374ae18c674f95cdaa3); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal91fdd17964e43374ae18c674f95cdaa3)): ?>
+<?php $component = $__componentOriginal91fdd17964e43374ae18c674f95cdaa3; ?>
+<?php unset($__componentOriginal91fdd17964e43374ae18c674f95cdaa3); ?>
+<?php endif; ?>
+<?php /**PATH C:\laragon\www\Mawid-app\resources\views/admin/super/plans/create.blade.php ENDPATH**/ ?>

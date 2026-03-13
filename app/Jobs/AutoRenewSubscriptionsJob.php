@@ -71,7 +71,7 @@ class AutoRenewSubscriptionsJob implements ShouldQueue
             return;
         }
 
-        $amountCents = (int) round($planService->price($plan, $cycle) * 100);
+        $amountCents = $planService->amountInFils($plan, $cycle); // OMR in baisa (1 OMR = 1000)
 
         // ── Paymob: Create order + pay with token ──────────────────────────
         $http = Http::withToken(config('paymob.secret_key'));

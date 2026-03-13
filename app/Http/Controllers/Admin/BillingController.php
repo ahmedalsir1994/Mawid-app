@@ -81,6 +81,7 @@ class BillingController extends Controller
         }
 
         // Downgrade to free plan immediately
+        $freePlan = \App\Services\PlanService::get('free');
         $license->update([
             'plan'               => 'free',
             'billing_cycle'      => 'monthly',   // enum cannot be null; reset to default
@@ -92,12 +93,12 @@ class BillingController extends Controller
             'auto_renew_attempts' => 0,
             'past_due_at'        => null,
             'grace_period_ends_at' => null,
-            'max_branches'       => 1,
-            'max_staff'          => 1,
-            'max_services'       => 5,
-            'max_users'          => 2,
-            'max_daily_bookings' => 20,
-            'whatsapp_reminders' => false,
+            'max_branches'       => $freePlan['max_branches'],
+            'max_staff'          => $freePlan['max_staff'],
+            'max_services'       => $freePlan['max_services'],
+            'max_users'          => ($freePlan['max_staff'] + 1),
+            'max_daily_bookings' => $freePlan['max_daily_bookings'],
+            'whatsapp_reminders' => $freePlan['whatsapp_reminders'],
         ]);
 
         return redirect()->route('admin.billing.index')

@@ -128,24 +128,24 @@
                 <div class="mb-6">
                     <div class="cycle-monthly">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-sm line-through text-gray-400">10 OMR</span>
-                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
+                            <span class="text-sm line-through text-gray-400">{{ $plans['pro']['old_price_monthly'] ?? 10 }} OMR</span>
+                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save {{ $plans['pro']['discount_monthly'] ?? 35 }}%</span>
                         </div>
-                        <span class="text-3xl sm:text-4xl font-bold text-gray-900">6.5</span>
+                        <span class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $plans['pro']['price_monthly'] ?? 6.5 }}</span>
                         <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
                         <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
                     </div>
                     <div class="cycle-yearly" style="display:none">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-sm line-through text-gray-400">10 OMR/mo</span>
-                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 45%</span>
+                            <span class="text-sm line-through text-gray-400">{{ $plans['pro']['old_price_monthly'] ?? 10 }} OMR/mo</span>
+                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save {{ $plans['pro']['discount_yearly'] ?? 45 }}%</span>
                         </div>
                         <div class="flex items-end gap-2">
-                            <span class="text-3xl sm:text-4xl font-bold text-gray-900">5.5</span>
+                            <span class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $plans['pro']['price_yearly_display'] ?? 5.5 }}</span>
                             <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="text-sm text-gray-500">66 OMR {{ __('landing.per_year') }}</span>
+                            <span class="text-sm text-gray-500">{{ $plans['pro']['price_yearly'] ?? 66 }} OMR {{ __('landing.per_year') }}</span>
                         </div>
                     </div>
                 </div>
@@ -192,24 +192,24 @@
                 <div class="mb-6">
                     <div class="cycle-monthly">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-sm line-through text-gray-400">14 OMR</span>
-                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 30%</span>
+                            <span class="text-sm line-through text-gray-400">{{ $plans['plus']['old_price_monthly'] ?? 14 }} OMR</span>
+                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save {{ $plans['plus']['discount_monthly'] ?? 30 }}%</span>
                         </div>
-                        <span class="text-3xl sm:text-4xl font-bold text-gray-900">9.8</span>
+                        <span class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $plans['plus']['price_monthly'] ?? 9.8 }}</span>
                         <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
                         <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
                     </div>
                     <div class="cycle-yearly" style="display:none">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-sm line-through text-gray-400">14 OMR/mo</span>
-                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
+                            <span class="text-sm line-through text-gray-400">{{ $plans['plus']['old_price_monthly'] ?? 14 }} OMR/mo</span>
+                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save {{ $plans['plus']['discount_yearly'] ?? 35 }}%</span>
                         </div>
                         <div class="flex items-end gap-2">
-                            <span class="text-3xl sm:text-4xl font-bold text-gray-900">9.1</span>
+                            <span class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $plans['plus']['price_yearly_display'] ?? 9.1 }}</span>
                             <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="text-sm text-gray-500">109.2 OMR {{ __('landing.per_year') }}</span>
+                            <span class="text-sm text-gray-500">{{ $plans['plus']['price_yearly'] ?? 109.2 }} OMR {{ __('landing.per_year') }}</span>
                         </div>
                     </div>
                 </div>

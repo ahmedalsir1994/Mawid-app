@@ -2,8 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\Plan;
+
 class PlanService
 {
+    /**
+     * Fallback static definitions used when the plans table is unavailable
+     * (e.g. during the very first migration run before seeding).
+     */
     const PLANS = [
         'free' => [
             'name'                  => 'Free',
@@ -16,7 +22,7 @@ class PlanService
             'max_services'          => 3,
             'max_daily_bookings'    => 25,
             'max_monthly_bookings'  => 25,
-            'whatsapp_reminders'    => false,
+            'whatsapp_reminders'    => true,
             'core_features' => [
                 'Booking calendar',
                 'Customer records',
@@ -27,7 +33,7 @@ class PlanService
                 '1 Branch',
                 '1 Staff account',
                 'Up to 3 services',
-                'No WhatsApp reminders',
+                'WhatsApp reminders',
             ],
         ],
         'pro' => [
@@ -95,13 +101,39 @@ class PlanService
         ],
     ];
 
+    /**
+     * Get a single plan's data array by slug.
+     * Reads from the DB plans table; falls back to the static PLANS constant
+     * if the table does not exist yet (e.g. during initial migration).
+     */
     public static function get(string $plan): array
     {
+        try {
+            $model = Plan::where('slug', $plan)->first();
+            if ($model) {
+                return $model->toServiceArray();
+            }
+        } catch (\Exception) {
+            // DB unavailable — fall through to static fallback
+        }
+
         return self::PLANS[$plan] ?? self::PLANS['free'];
     }
 
+    /**
+     * Return all active plans as an array keyed by slug.
+     */
     public static function all(): array
     {
+        try {
+            $collection = Plan::active()->orderBy('sort_order')->get();
+            if ($collection->isNotEmpty()) {
+                return $collection->keyBy('slug')->map(fn($p) => $p->toServiceArray())->toArray();
+            }
+        } catch (\Exception) {
+            // DB unavailable — fall through
+        }
+
         return self::PLANS;
     }
 

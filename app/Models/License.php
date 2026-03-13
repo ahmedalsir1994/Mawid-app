@@ -14,6 +14,7 @@ class License extends Model
     protected $fillable = [
         'business_id',
         'license_key',
+        'license_type',
         'plan',
         'billing_cycle',
         'status',
@@ -28,6 +29,7 @@ class License extends Model
         'price',
         'payment_status',
         'notes',
+        'created_by',
         'paymob_order_id',
         'auto_renew',
         'next_billing_date',
@@ -51,6 +53,11 @@ class License extends Model
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function invoices()
@@ -110,9 +117,10 @@ class License extends Model
     // Plan helpers
     // ───────────────────────────────────────────────
 
-    public function isFree(): bool   { return ($this->plan ?? 'free') === 'free'; }
-    public function isPro(): bool    { return $this->plan === 'pro'; }
-    public function isPlus(): bool   { return $this->plan === 'plus'; }
+    public function isFree(): bool    { return !$this->isCustom() && ($this->plan ?? 'free') === 'free'; }
+    public function isPro(): bool     { return $this->plan === 'pro'; }
+    public function isPlus(): bool    { return $this->plan === 'plus'; }
+    public function isCustom(): bool  { return $this->license_type === 'custom'; }
 
     public function isPastDue(): bool
     {
@@ -209,6 +217,21 @@ class License extends Model
 
     public function planData(): array
     {
+        // Custom licenses have no associated plan definition
+        if ($this->isCustom()) {
+            return [
+                'name'                 => 'Custom',
+                'emoji'                => '⚙️',
+                'max_branches'         => $this->max_branches ?? 1,
+                'max_staff'            => $this->max_staff ?? 1,
+                'max_services'         => $this->max_services ?? 3,
+                'max_daily_bookings'   => $this->max_daily_bookings ?? 100,
+                'max_monthly_bookings' => 0,
+                'whatsapp_reminders'   => (bool) $this->whatsapp_reminders,
+                'price_monthly'        => $this->price ?? 0,
+                'price_yearly'         => $this->price ?? 0,
+            ];
+        }
         return PlanService::get($this->plan ?? 'free');
     }
 
@@ -216,6 +239,7 @@ class License extends Model
     public function canAddService(): bool
     {
         $limit = $this->max_services ?? 3;
+        if ($limit === 0) return true; // 0 means unlimited
         $count = $this->business->services()->count();
         return $count < $limit;
     }

@@ -43,6 +43,8 @@
         </div>
     </x-slot>
 
+    @php $whatsappEnabled = auth()->user()->business?->license?->whatsapp_reminders ?? false; @endphp
+
     <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
 
         @if (session('success'))
@@ -86,8 +88,10 @@
                                 {{ __('app.phone') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 {{ __('app.status') }}</th>
+                            @if($whatsappEnabled)
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
                                 {{ __('app.reminder') }}</th>
+                            @endif
                             <th class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase">
                                 {{ __('app.actions') }}</th>
                         </tr>
@@ -152,6 +156,7 @@
                                     </form>
                                 </td>
 
+                                @if($whatsappEnabled)
                                 <td class="px-6 py-4" id="reminder-status-{{ $b->id }}">
                                     @if($b->reminder_sent_at)
                                         <span
@@ -162,6 +167,7 @@
                                         <span class="text-gray-500 text-xs">{{ __('app.not_sent') }}</span>
                                     @endif
                                 </td>
+                                @endif
 
                                 <td class="px-6 py-4 text-right">
                                     @php
@@ -176,6 +182,7 @@
                                         </svg>
                                         {{ __('app.view_details') }}
                                     </a>
+                                    @if($whatsappEnabled)
                                     @php
                                         // Clean and format phone number
                                         $phone = preg_replace('/[^0-9+]/', '', $b->customer_phone);
@@ -223,6 +230,7 @@
                                         </svg>
                                         <span>{{ __('app.send_reminder') }}</span>
                                     </button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

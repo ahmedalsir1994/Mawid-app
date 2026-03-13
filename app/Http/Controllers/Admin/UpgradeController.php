@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Services\PlanService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class UpgradeController extends Controller
         $user     = $request->user();
         $business = $user->business;
         $license  = $business->license;
-        $plans    = PlanService::all();
+        $plans    = Plan::active()->orderBy('sort_order')->get()->keyBy('slug')->map->toServiceArray()->toArray();
 
         // Pre-select plan from query param (coming from landing page for logged-in users)
         $preselectedPlan = $request->query('plan');
@@ -43,7 +44,9 @@ class UpgradeController extends Controller
         $plan  = $request->query('plan');
         $cycle = $request->query('cycle', 'monthly');
 
-        if (!$plan || !in_array($plan, ['pro', 'plus'])) {
+        $paidSlugs = Plan::active()->where('price_monthly', '>', 0)->pluck('slug')->toArray();
+
+        if (!$plan || !in_array($plan, $paidSlugs)) {
             $pending = $request->session()->get('pending_plan_upgrade');
             $plan    = $pending['plan']  ?? null;
             $cycle   = $pending['cycle'] ?? 'monthly';
@@ -52,7 +55,7 @@ class UpgradeController extends Controller
         // Clear session entry regardless
         $request->session()->forget('pending_plan_upgrade');
 
-        if (!$plan || !in_array($plan, ['pro', 'plus'])) {
+        if (!$plan || !in_array($plan, $paidSlugs)) {
             return redirect()->route('admin.upgrade.index')
                 ->with('error', 'No pending plan found. Please select a plan to upgrade.');
         }
@@ -63,8 +66,10 @@ class UpgradeController extends Controller
     /** Initiate a payment with Paymob (Intention API) — called from form POST */
     public function initiate(Request $request)
     {
+        $paidSlugs = Plan::active()->where('price_monthly', '>', 0)->pluck('slug')->toArray();
+
         $validated = $request->validate([
-            'plan'          => 'required|in:pro,plus',
+            'plan'          => ['required', \Illuminate\Validation\Rule::in($paidSlugs)],
             'billing_cycle' => 'required|in:monthly,yearly',
         ]);
 

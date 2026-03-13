@@ -33,9 +33,10 @@
         <div class="relative">
             <select name="plan" class="appearance-none pl-3 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white text-gray-700 cursor-pointer">
                 <option value="">All Plans</option>
-                <option value="free"  @selected(request('plan') === 'free')>🆓 Free</option>
-                <option value="pro"   @selected(request('plan') === 'pro')>💼 Pro</option>
-                <option value="plus"  @selected(request('plan') === 'plus')>🚀 Plus</option>
+                <option value="free"   @selected(request('plan') === 'free')>🆓 Free</option>
+                <option value="pro"    @selected(request('plan') === 'pro')>💼 Pro</option>
+                <option value="plus"   @selected(request('plan') === 'plus')>🚀 Plus</option>
+                <option value="custom" @selected(request('plan') === 'custom')>⚙️ Custom</option>
             </select>
             <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -90,16 +91,23 @@
         <div class="md:hidden divide-y divide-gray-100">
             @forelse($licenses as $license)
                 @php
-                    $planBadge = match($license->plan ?? 'free') {
-                        'pro'  => 'bg-blue-100 text-blue-800',
-                        'plus' => 'bg-purple-100 text-purple-800',
-                        default => 'bg-gray-100 text-gray-700',
-                    };
-                    $planEmoji = match($license->plan ?? 'free') {
-                        'pro'  => '💼',
-                        'plus' => '🚀',
-                        default => '🆓',
-                    };
+                    if (($license->license_type ?? 'plan') === 'custom') {
+                        $planBadge = 'bg-purple-100 text-purple-800';
+                        $planEmoji = '⚙️';
+                        $planLabel = 'Custom';
+                    } else {
+                        $planBadge = match($license->plan ?? 'free') {
+                            'pro'  => 'bg-blue-100 text-blue-800',
+                            'plus' => 'bg-purple-100 text-purple-800',
+                            default => 'bg-gray-100 text-gray-700',
+                        };
+                        $planEmoji = match($license->plan ?? 'free') {
+                            'pro'  => '💼',
+                            'plus' => '🚀',
+                            default => '🆓',
+                        };
+                        $planLabel = ucfirst($license->plan ?? 'free');
+                    }
                 @endphp
                 <div class="p-4 hover:bg-gray-50 transition">
                     <div class="flex items-start justify-between gap-2 mb-2">
@@ -109,8 +117,8 @@
                                class="text-xs text-green-600 hover:underline">{{ $license->business->slug }}</a>
                         </div>
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $planBadge }} shrink-0">
-                            {{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}
-                            @if(($license->plan ?? 'free') !== 'free')
+                            {{ $planEmoji }} {{ $planLabel }}
+                            @if(($license->license_type ?? 'plan') !== 'custom' && ($license->plan ?? 'free') !== 'free')
                                 / {{ ucfirst($license->billing_cycle) }}
                             @endif
                         </span>
@@ -141,7 +149,7 @@
                             @else bg-orange-100 text-orange-800 @endif">
                             {{ ucfirst($license->payment_status) }}
                         </span>
-                        <span class="font-semibold text-gray-900">${{ number_format($license->price, 2) }}</span>
+                        <span class="font-semibold text-gray-900">OMR {{ number_format($license->price, 2) }}</span>
                     </div>
                     <div class="flex gap-3 text-xs">
                         <a href="{{ route('admin.super.licenses.show', $license) }}" class="text-green-600 hover:text-green-700 font-medium">{{ __('app.view') }}</a>
@@ -192,22 +200,29 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                @php
-                                    $planBadge = match($license->plan ?? 'free') {
-                                        'pro'  => 'bg-blue-100 text-blue-800',
-                                        'plus' => 'bg-purple-100 text-purple-800',
-                                        default => 'bg-gray-100 text-gray-700',
-                                    };
-                                    $planEmoji = match($license->plan ?? 'free') {
-                                        'pro'  => '💼',
-                                        'plus' => '🚀',
-                                        default => '🆓',
-                                    };
-                                @endphp
+                        @php
+                            if (($license->license_type ?? 'plan') === 'custom') {
+                                $planBadge = 'bg-purple-100 text-purple-800';
+                                $planEmoji = '⚙️';
+                                $planLabel = 'Custom';
+                            } else {
+                                $planBadge = match($license->plan ?? 'free') {
+                                    'pro'  => 'bg-blue-100 text-blue-800',
+                                    'plus' => 'bg-purple-100 text-purple-800',
+                                    default => 'bg-gray-100 text-gray-700',
+                                };
+                                $planEmoji = match($license->plan ?? 'free') {
+                                    'pro'  => '💼',
+                                    'plus' => '🚀',
+                                    default => '🆓',
+                                };
+                                $planLabel = ucfirst($license->plan ?? 'free');
+                            }
+                        @endphp
                                 <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold {{ $planBadge }}">
-                                    {{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}
+                                    {{ $planEmoji }} {{ $planLabel }}
                                 </span>
-                                @if(($license->plan ?? 'free') !== 'free')
+                                @if(($license->license_type ?? 'plan') !== 'custom' && ($license->plan ?? 'free') !== 'free')
                                     <p class="text-xs text-gray-400 mt-1 capitalize">{{ $license->billing_cycle }}</p>
                                 @endif
                             </td>
@@ -255,7 +270,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-sm font-semibold text-gray-900">
-                                ${{ number_format($license->price, 2) }}
+                            OMR {{ number_format($license->price, 2) }}
                             </td>
                             <td class="px-6 py-4 text-sm space-x-2">
                                 <a href="{{ route('admin.super.licenses.show', $license) }}"

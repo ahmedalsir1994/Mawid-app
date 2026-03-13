@@ -44,26 +44,33 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.plan') }}</label>
                         @php
-                            $planBadge = match($license->plan ?? 'free') {
-                                'pro'  => 'bg-blue-100 text-blue-800',
-                                'plus' => 'bg-purple-100 text-purple-800',
-                                default => 'bg-gray-100 text-gray-700',
-                            };
-                            $planEmoji = match($license->plan ?? 'free') {
-                                'pro'  => '💼',
-                                'plus' => '🚀',
-                                default => '🆓',
-                            };
+                            if ($license->license_type === 'custom') {
+                                $planBadge = 'bg-purple-100 text-purple-800';
+                                $planEmoji = '⚙️';
+                                $planName  = 'Custom';
+                            } else {
+                                $planBadge = match($license->plan ?? 'free') {
+                                    'pro'  => 'bg-blue-100 text-blue-800',
+                                    'plus' => 'bg-purple-100 text-purple-800',
+                                    default => 'bg-gray-100 text-gray-700',
+                                };
+                                $planEmoji = match($license->plan ?? 'free') {
+                                    'pro'  => '💼',
+                                    'plus' => '🚀',
+                                    default => '🆓',
+                                };
+                                $planName = ucfirst($license->plan ?? 'free');
+                            }
                         @endphp
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold {{ $planBadge }}">
-                            {{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}
+                            {{ $planEmoji }} {{ $planName }}
                         </span>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.billing_cycle') }}</label>
                         <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold capitalize">
-                            {{ $license->billing_cycle ?? 'monthly' }}
+                            {{ $license->billing_cycle ?? ($license->license_type === 'custom' ? 'N/A' : 'monthly') }}
                         </span>
                     </div>
 
@@ -89,22 +96,36 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.max_users') }}</label>
-                        <p class="text-gray-900 font-semibold text-lg">{{ $license->max_users }}</p>
-                    </div>
-
-                    <div>
-                        <label
-                            class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.max_daily_bookings') }}</label>
-                        <p class="text-gray-900 font-semibold text-lg">{{ $license->max_daily_bookings }}</p>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">License Limits</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
+                                <p class="text-xs text-gray-500 mb-1">Max Branches</p>
+                                <p class="text-xl font-bold text-gray-900">{{ $license->max_branches }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
+                                <p class="text-xs text-gray-500 mb-1">Max Staff</p>
+                                <p class="text-xl font-bold text-gray-900">{{ $license->max_staff }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
+                                <p class="text-xs text-gray-500 mb-1">Max Services</p>
+                                <p class="text-xl font-bold text-gray-900">{{ $license->max_services ?: '∞' }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
+                                <p class="text-xs text-gray-500 mb-1">Daily Bookings</p>
+                                <p class="text-xl font-bold text-gray-900">{{ $license->max_daily_bookings ?: '∞' }}</p>
+                            </div>
+                        </div>
+                        @if($license->whatsapp_reminders)
+                            <p class="mt-2 text-sm text-green-600 font-medium">✓ WhatsApp Reminders enabled</p>
+                        @else
+                            <p class="mt-2 text-sm text-gray-400">✗ WhatsApp Reminders disabled</p>
+                        @endif
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.price') }}</label>
-                        <p class="text-gray-900 font-semibold text-lg">{{ $license->currency ?? 'USD' }}
-                            {{ number_format($license->price, 2) }}
-                        </p>
+                        <p class="text-gray-900 font-semibold text-lg">OMR {{ number_format($license->price, 2) }}</p>
                     </div>
 
                     <div>
@@ -147,7 +168,7 @@
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-green-100">{{ __('app.plan') }}</span>
-                        <span class="font-bold capitalize">{{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}</span>
+                        <span class="font-bold capitalize">{{ $planEmoji }} {{ $planName }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-green-100">{{ __('app.status') }}</span>

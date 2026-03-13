@@ -21,7 +21,7 @@
         }
         
         .hero-gradient {
-            background: linear-gradient(135deg, #000000 0%, #0ba83a     %);
+            background: transparent;
         }
 
         .feature-card {
@@ -558,146 +558,130 @@
             </div>
 
             <!-- Plan Cards -->
-            <div class="grid md:grid-cols-3 gap-8 items-start">
+            <div class="grid gap-8 items-start
+                {{ count($plans) === 1 ? 'max-w-sm mx-auto' : (count($plans) === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3') }}">
 
-                <!-- Free Plan -->
-                <div class="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition">
-                    <div class="text-3xl mb-3">🆓</div>
-                    <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_free_name') }}</h3>
-                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_free_tagline') }}</p>
+                @foreach($plans as $plan)
+                @php
+                    $isFree      = $plan->price_monthly == 0 && $plan->price_yearly == 0;
+                    $accent      = $plan->accent_color ?? 'gray';
+                    $cardClass   = $plan->is_featured
+                        ? 'relative bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-xl'
+                        : 'bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition';
+                    $checkClass  = match($accent) {
+                        'blue'   => 'bg-blue-100 text-blue-600',
+                        'green'  => 'bg-green-100 text-green-600',
+                        'purple' => 'bg-purple-100 text-purple-600',
+                        'orange' => 'bg-orange-100 text-orange-600',
+                        default  => 'bg-gray-100 text-gray-500',
+                    };
+                    $btnClass    = match($accent) {
+                        'blue'   => 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg',
+                        'green'  => 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg',
+                        'purple' => 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:shadow-lg',
+                        'orange' => 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg',
+                        default  => 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50',
+                    };
+                    $ctaText     = $plan->cta_label ?: ($isFree ? __('landing.plan_free_cta') : $plan->name . ' →');
+                @endphp
+
+                <div class="{{ $cardClass }}">
+                    @if($plan->is_featured)
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+                            {{ $plan->featured_label ?: __('landing.plan_popular') }}
+                        </div>
+                    @endif
+
+                    <div class="text-3xl mb-3">{{ $plan->emoji }}</div>
+                    <h3 class="text-xl font-bold text-gray-900">{{ $plan->name }}</h3>
+                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ $plan->tagline }}</p>
+
                     <div class="mb-6">
-                        <span class="text-4xl font-bold text-gray-800">{{ __('landing.plan_free_price') }}</span>
-                        <span class="text-gray-500 text-sm ml-1">{{ __('landing.plan_free_period') }}</span>
+                        @if($isFree)
+                            <span class="text-4xl font-bold text-gray-800">{{ __('landing.plan_free_price') }}</span>
+                            <span class="text-gray-500 text-sm ml-1">{{ __('landing.plan_free_period') }}</span>
+                        @else
+                            {{-- Monthly --}}
+                            <div class="lp-cycle-monthly">
+                                @if($plan->old_price_monthly > 0 || $plan->discount_monthly > 0)
+                                    <div class="flex items-center gap-2 mb-1">
+                                        @if($plan->old_price_monthly > 0)
+                                            <span class="text-sm line-through text-gray-400">{{ $plan->old_price_monthly }} OMR</span>
+                                        @endif
+                                        @if($plan->discount_monthly > 0)
+                                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save {{ $plan->discount_monthly }}%</span>
+                                        @endif
+                                    </div>
+                                @endif
+                                <span class="text-4xl font-bold text-gray-900">{{ $plan->price_monthly_display ?? $plan->price_monthly }}</span>
+                                <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
+                                <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
+                            </div>
+                            {{-- Yearly --}}
+                            <div class="lp-cycle-yearly" style="display:none">
+                                @if($plan->old_price_monthly > 0 || $plan->discount_yearly > 0)
+                                    <div class="flex items-center gap-2 mb-1">
+                                        @if($plan->old_price_monthly > 0)
+                                            <span class="text-sm line-through text-gray-400">{{ $plan->old_price_monthly }} OMR/mo</span>
+                                        @endif
+                                        @if($plan->discount_yearly > 0)
+                                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save {{ $plan->discount_yearly }}%</span>
+                                        @endif
+                                    </div>
+                                @endif
+                                <div class="flex items-end gap-2">
+                                    <span class="text-4xl font-bold text-gray-900">{{ $plan->price_yearly_display ?? number_format($plan->price_yearly / 12, 1) }}</span>
+                                    <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-sm text-gray-500">{{ $plan->price_yearly }} OMR {{ __('landing.per_year') }}</span>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                    <ul class="space-y-2 mb-8">
-                        @foreach(['plan_free_f1','plan_free_f2','plan_free_f3','plan_free_f4'] as $fkey)
-                            <li class="flex items-center gap-2 text-sm text-gray-700">
-                                <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs flex-shrink-0">✓</span>
-                                {{ __("landing.{$fkey}") }}
-                            </li>
-                        @endforeach
-                    </ul>
-                    @auth
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="block w-full py-3 rounded-xl border-2 border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition">
-                            {{ __('landing.cta_btn_dashboard') }}
-                        </a>
+
+                    @php $planFeatures = is_array($plan->features) ? $plan->features : (is_string($plan->features) ? json_decode($plan->features, true) : []); @endphp
+                    @if(!empty($planFeatures))
+                        <ul class="space-y-2 mb-8">
+                            @foreach($planFeatures as $feature)
+                                <li class="flex items-center gap-2 text-sm text-gray-700">
+                                    <span class="w-5 h-5 rounded-full {{ $checkClass }} flex items-center justify-center text-xs flex-shrink-0">✓</span>
+                                    {{ $feature }}
+                                </li>
+                            @endforeach
+                        </ul>
                     @else
-                        <a href="{{ route('register') }}"
-                            class="block w-full py-3 rounded-xl border-2 border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition">
-                            {{ __('landing.plan_free_cta') }}
-                        </a>
+                        <div class="mb-8"></div>
+                    @endif
+
+                    @auth
+                        @if($isFree)
+                            <a href="{{ route('admin.dashboard') }}"
+                                class="block w-full py-3 rounded-xl {{ $btnClass }} text-center font-semibold transition">
+                                {{ __('landing.cta_btn_dashboard') }}
+                            </a>
+                        @else
+                            <a href="{{ route('admin.upgrade.index') }}?plan={{ $plan->slug }}"
+                                class="block w-full py-3 rounded-xl {{ $btnClass }} text-center font-semibold transition">
+                                {{ $ctaText }}
+                            </a>
+                        @endif
+                    @else
+                        @if($isFree)
+                            <a href="{{ route('register') }}"
+                                class="block w-full py-3 rounded-xl {{ $btnClass }} text-center font-semibold transition">
+                                {{ $ctaText }}
+                            </a>
+                        @else
+                            <a class="lp-cta-paid block w-full py-3 rounded-xl {{ $btnClass }} text-center font-semibold transition"
+                               data-slug="{{ $plan->slug }}"
+                               href="{{ route('register') }}?plan={{ $plan->slug }}&cycle=monthly">
+                                {{ $ctaText }}
+                            </a>
+                        @endif
                     @endauth
                 </div>
-
-                <!-- Pro Plan (highlighted) -->
-                <div class="relative bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-xl">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                        {{ __('landing.plan_popular') }}
-                    </div>
-                    <div class="text-3xl mb-3">💼</div>
-                    <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_pro_name') }}</h3>
-                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_pro_tagline') }}</p>
-                    <div class="mb-6">
-                        {{-- Monthly --}}
-                        <div class="lp-cycle-monthly">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">10 OMR</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
-                            </div>
-                            <span class="text-4xl font-bold text-gray-900">6.5</span>
-                            <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
-                            <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
-                        </div>
-                        {{-- Yearly --}}
-                        <div class="lp-cycle-yearly" style="display:none">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">10 OMR/mo</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 45%</span>
-                            </div>
-                            <div class="flex items-end gap-2">
-                                <span class="text-4xl font-bold text-gray-900">5.5</span>
-                                <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
-                            </div>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm text-gray-500">66 OMR {{ __('landing.per_year') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="space-y-2 mb-8">
-                        @foreach(['plan_pro_f1','plan_pro_f2','plan_pro_f3','plan_pro_f4','plan_pro_f5'] as $fkey)
-                            <li class="flex items-center gap-2 text-sm text-gray-700">
-                                <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs flex-shrink-0">✓</span>
-                                {{ __("landing.{$fkey}") }}
-                            </li>
-                        @endforeach
-                    </ul>
-                    @auth
-                        <a href="{{ route('admin.upgrade.index') }}?plan=pro"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center font-semibold hover:shadow-lg transition">
-                            {{ __('landing.plan_pro_cta') }}
-                        </a>
-                    @else
-                        <a id="lp-cta-pro"
-                           href="{{ route('register') }}?plan=pro&cycle=monthly"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center font-semibold hover:shadow-lg transition">
-                            {{ __('landing.plan_pro_cta') }}
-                        </a>
-                    @endauth
-                </div>
-
-                <!-- Plus Plan -->
-                <div class="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition">
-                    <div class="text-3xl mb-3">🚀</div>
-                    <h3 class="text-xl font-bold text-gray-900">{{ __('landing.plan_plus_name') }}</h3>
-                    <p class="text-sm text-gray-500 mt-1 mb-5">{{ __('landing.plan_plus_tagline') }}</p>
-                    <div class="mb-6">
-                        {{-- Monthly --}}
-                        <div class="lp-cycle-monthly">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">14 OMR</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 30%</span>
-                            </div>
-                            <span class="text-4xl font-bold text-gray-900">9.8</span>
-                            <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
-                            <span class="text-sm text-gray-500"> / {{ __('landing.per_month') }}</span>
-                        </div>
-                        {{-- Yearly --}}
-                        <div class="lp-cycle-yearly" style="display:none">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">14 OMR/mo</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
-                            </div>
-                            <div class="flex items-end gap-2">
-                                <span class="text-4xl font-bold text-gray-900">9.1</span>
-                                <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / {{ __('landing.per_month') }}</span>
-                            </div>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm text-gray-500">109.2 OMR {{ __('landing.per_year') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="space-y-2 mb-8">
-                        @foreach(['plan_plus_f1','plan_plus_f2','plan_plus_f3','plan_plus_f4','plan_plus_f5'] as $fkey)
-                            <li class="flex items-center gap-2 text-sm text-gray-700">
-                                <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs flex-shrink-0">✓</span>
-                                {{ __("landing.{$fkey}") }}
-                            </li>
-                        @endforeach
-                    </ul>
-                    @auth
-                        <a href="{{ route('admin.upgrade.index') }}?plan=plus"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center font-semibold hover:shadow-lg transition">
-                            {{ __('landing.plan_plus_cta') }}
-                        </a>
-                    @else
-                        <a id="lp-cta-plus"
-                           href="{{ route('register') }}?plan=plus&cycle=monthly"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center font-semibold hover:shadow-lg transition">
-                            {{ __('landing.plan_plus_cta') }}
-                        </a>
-                    @endauth
-                </div>
+                @endforeach
 
             </div>
 
@@ -720,12 +704,11 @@
             document.querySelectorAll('.lp-cycle-monthly').forEach(el => el.style.display = isYearly ? 'none' : 'block');
             document.querySelectorAll('.lp-cycle-yearly').forEach(el => el.style.display = isYearly ? 'block' : 'none');
             document.querySelectorAll('.lp-yearly-caption').forEach(el => el.style.display = isYearly ? 'block' : 'none');
-            // Update plan CTA register links so cycle is carried over
+            // Update all paid plan CTA register links so cycle is carried over
             const selectedCycle = isYearly ? 'yearly' : 'monthly';
-            const proBtn = document.getElementById('lp-cta-pro');
-            const plusBtn = document.getElementById('lp-cta-plus');
-            if (proBtn)  proBtn.href  = proBtn.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
-            if (plusBtn) plusBtn.href = plusBtn.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
+            document.querySelectorAll('.lp-cta-paid').forEach(link => {
+                link.href = link.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
+            });
         }
         </script>
     </section>

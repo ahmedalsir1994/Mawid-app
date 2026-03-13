@@ -17,6 +17,7 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto">
+        @php $whatsappEnabled = auth()->user()->business?->license?->whatsapp_reminders ?? false; @endphp
         @if(session('success'))
             <div class="mb-4 flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-800 text-sm font-medium">
                 <svg class="w-5 h-5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -179,6 +180,7 @@
             </div>
         </div>
 
+        @if($whatsappEnabled)
         <!-- Reminder Status -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -250,6 +252,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Booking Timeline -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
@@ -286,7 +289,7 @@
     <script>
         function sendReminder(bookingId) {
             // Open WhatsApp
-            const whatsappUrl = '{{ $whatsappUrl }}';
+            const whatsappUrl = '{{ $whatsappUrl ?? '' }}';
             window.open(whatsappUrl, '_blank');
 
             // Mark reminder as sent via AJAX

@@ -25,12 +25,16 @@ use App\Http\Controllers\PaymobController;
 use App\Http\Controllers\Admin\ManualBookingController;
 use App\Http\Controllers\Admin\BillingController;
 use App\Http\Controllers\Admin\SuperAdminBillingController;
+use App\Http\Controllers\Admin\SuperAdminPlanController;
 
 use App\Http\Controllers\ContactController;
 
 
 Route::get('/', function () {
-    return view('landing');
+    $plans = \Illuminate\Support\Facades\Cache::remember('landing_plans', 600, function () {
+        return \App\Models\Plan::active()->orderBy('sort_order')->get();
+    });
+    return view('landing', compact('plans'));
 })->name('landing');
 
 Route::view('/privacy', 'privacy')->name('privacy');    
@@ -94,6 +98,12 @@ Route::middleware(['auth', 'check_role:super_admin'])->prefix('admin')->name('ad
         ->names('super.licenses');
     Route::post('/super/licenses/{license}/reactivate', [SuperAdminLicenseController::class, 'reactivate'])
         ->name('super.licenses.reactivate');
+
+    // Manage Plans
+    Route::resource('super/plans', SuperAdminPlanController::class)
+        ->names('super.plans');
+    Route::patch('/super/plans/{plan}/toggle', [SuperAdminPlanController::class, 'toggle'])
+        ->name('super.plans.toggle');
     
     // Manage Users
     Route::resource('super/users', SuperAdminUserController::class)

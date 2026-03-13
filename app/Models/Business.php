@@ -99,4 +99,17 @@ class Business extends Model
     {
         return $this->paymentMethods()->where('is_default', true)->first();
     }
+
+    /**
+     * Returns the active license for this business, or the most recent one if none is active.
+     * Use this everywhere you need to read limits — it is the single source of truth.
+     */
+    public function activeLicense(): ?\App\Models\License
+    {
+        $license = $this->license;
+        if (!$license) {
+            return null;
+        }
+        return $license;
+    }
 }

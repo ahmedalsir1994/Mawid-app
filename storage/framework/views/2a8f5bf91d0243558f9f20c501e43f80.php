@@ -21,7 +21,7 @@
         }
         
         .hero-gradient {
-            background: linear-gradient(135deg, #000000 0%, #0ba83a     %);
+            background: transparent;
         }
 
         .feature-card {
@@ -575,156 +575,136 @@
             </div>
 
             <!-- Plan Cards -->
-            <div class="grid md:grid-cols-3 gap-8 items-start">
+            <div class="grid gap-8 items-start
+                <?php echo e(count($plans) === 1 ? 'max-w-sm mx-auto' : (count($plans) === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3')); ?>">
 
-                <!-- Free Plan -->
-                <div class="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition">
-                    <div class="text-3xl mb-3">🆓</div>
-                    <h3 class="text-xl font-bold text-gray-900"><?php echo e(__('landing.plan_free_name')); ?></h3>
-                    <p class="text-sm text-gray-500 mt-1 mb-5"><?php echo e(__('landing.plan_free_tagline')); ?></p>
+                <?php $__currentLoopData = $plans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
+                    $isFree      = $plan->price_monthly == 0 && $plan->price_yearly == 0;
+                    $accent      = $plan->accent_color ?? 'gray';
+                    $cardClass   = $plan->is_featured
+                        ? 'relative bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-xl'
+                        : 'bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition';
+                    $checkClass  = match($accent) {
+                        'blue'   => 'bg-blue-100 text-blue-600',
+                        'green'  => 'bg-green-100 text-green-600',
+                        'purple' => 'bg-purple-100 text-purple-600',
+                        'orange' => 'bg-orange-100 text-orange-600',
+                        default  => 'bg-gray-100 text-gray-500',
+                    };
+                    $btnClass    = match($accent) {
+                        'blue'   => 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg',
+                        'green'  => 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg',
+                        'purple' => 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:shadow-lg',
+                        'orange' => 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg',
+                        default  => 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50',
+                    };
+                    $ctaText     = $plan->cta_label ?: ($isFree ? __('landing.plan_free_cta') : $plan->name . ' →');
+                ?>
+
+                <div class="<?php echo e($cardClass); ?>">
+                    <?php if($plan->is_featured): ?>
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+                            <?php echo e($plan->featured_label ?: __('landing.plan_popular')); ?>
+
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="text-3xl mb-3"><?php echo e($plan->emoji); ?></div>
+                    <h3 class="text-xl font-bold text-gray-900"><?php echo e($plan->name); ?></h3>
+                    <p class="text-sm text-gray-500 mt-1 mb-5"><?php echo e($plan->tagline); ?></p>
+
                     <div class="mb-6">
-                        <span class="text-4xl font-bold text-gray-800"><?php echo e(__('landing.plan_free_price')); ?></span>
-                        <span class="text-gray-500 text-sm ml-1"><?php echo e(__('landing.plan_free_period')); ?></span>
+                        <?php if($isFree): ?>
+                            <span class="text-4xl font-bold text-gray-800"><?php echo e(__('landing.plan_free_price')); ?></span>
+                            <span class="text-gray-500 text-sm ml-1"><?php echo e(__('landing.plan_free_period')); ?></span>
+                        <?php else: ?>
+                            
+                            <div class="lp-cycle-monthly">
+                                <?php if($plan->old_price_monthly > 0 || $plan->discount_monthly > 0): ?>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <?php if($plan->old_price_monthly > 0): ?>
+                                            <span class="text-sm line-through text-gray-400"><?php echo e($plan->old_price_monthly); ?> OMR</span>
+                                        <?php endif; ?>
+                                        <?php if($plan->discount_monthly > 0): ?>
+                                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save <?php echo e($plan->discount_monthly); ?>%</span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <span class="text-4xl font-bold text-gray-900"><?php echo e($plan->price_monthly_display ?? $plan->price_monthly); ?></span>
+                                <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
+                                <span class="text-sm text-gray-500"> / <?php echo e(__('landing.per_month')); ?></span>
+                            </div>
+                            
+                            <div class="lp-cycle-yearly" style="display:none">
+                                <?php if($plan->old_price_monthly > 0 || $plan->discount_yearly > 0): ?>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <?php if($plan->old_price_monthly > 0): ?>
+                                            <span class="text-sm line-through text-gray-400"><?php echo e($plan->old_price_monthly); ?> OMR/mo</span>
+                                        <?php endif; ?>
+                                        <?php if($plan->discount_yearly > 0): ?>
+                                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save <?php echo e($plan->discount_yearly); ?>%</span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="flex items-end gap-2">
+                                    <span class="text-4xl font-bold text-gray-900"><?php echo e($plan->price_yearly_display ?? number_format($plan->price_yearly / 12, 1)); ?></span>
+                                    <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / <?php echo e(__('landing.per_month')); ?></span>
+                                </div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-sm text-gray-500"><?php echo e($plan->price_yearly); ?> OMR <?php echo e(__('landing.per_year')); ?></span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <ul class="space-y-2 mb-8">
-                        <?php $__currentLoopData = ['plan_free_f1','plan_free_f2','plan_free_f3','plan_free_f4']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fkey): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li class="flex items-center gap-2 text-sm text-gray-700">
-                                <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs flex-shrink-0">✓</span>
-                                <?php echo e(__("landing.{$fkey}")); ?>
 
-                            </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </ul>
-                    <?php if(auth()->guard()->check()): ?>
-                        <a href="<?php echo e(route('admin.dashboard')); ?>"
-                            class="block w-full py-3 rounded-xl border-2 border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition">
-                            <?php echo e(__('landing.cta_btn_dashboard')); ?>
+                    <?php $planFeatures = is_array($plan->features) ? $plan->features : (is_string($plan->features) ? json_decode($plan->features, true) : []); ?>
+                    <?php if(!empty($planFeatures)): ?>
+                        <ul class="space-y-2 mb-8">
+                            <?php $__currentLoopData = $planFeatures; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feature): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li class="flex items-center gap-2 text-sm text-gray-700">
+                                    <span class="w-5 h-5 rounded-full <?php echo e($checkClass); ?> flex items-center justify-center text-xs flex-shrink-0">✓</span>
+                                    <?php echo e($feature); ?>
 
-                        </a>
+                                </li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </ul>
                     <?php else: ?>
-                        <a href="<?php echo e(route('register')); ?>"
-                            class="block w-full py-3 rounded-xl border-2 border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition">
-                            <?php echo e(__('landing.plan_free_cta')); ?>
+                        <div class="mb-8"></div>
+                    <?php endif; ?>
 
-                        </a>
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if($isFree): ?>
+                            <a href="<?php echo e(route('admin.dashboard')); ?>"
+                                class="block w-full py-3 rounded-xl <?php echo e($btnClass); ?> text-center font-semibold transition">
+                                <?php echo e(__('landing.cta_btn_dashboard')); ?>
+
+                            </a>
+                        <?php else: ?>
+                            <a href="<?php echo e(route('admin.upgrade.index')); ?>?plan=<?php echo e($plan->slug); ?>"
+                                class="block w-full py-3 rounded-xl <?php echo e($btnClass); ?> text-center font-semibold transition">
+                                <?php echo e($ctaText); ?>
+
+                            </a>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <?php if($isFree): ?>
+                            <a href="<?php echo e(route('register')); ?>"
+                                class="block w-full py-3 rounded-xl <?php echo e($btnClass); ?> text-center font-semibold transition">
+                                <?php echo e($ctaText); ?>
+
+                            </a>
+                        <?php else: ?>
+                            <a class="lp-cta-paid block w-full py-3 rounded-xl <?php echo e($btnClass); ?> text-center font-semibold transition"
+                               data-slug="<?php echo e($plan->slug); ?>"
+                               href="<?php echo e(route('register')); ?>?plan=<?php echo e($plan->slug); ?>&cycle=monthly">
+                                <?php echo e($ctaText); ?>
+
+                            </a>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
-
-                <!-- Pro Plan (highlighted) -->
-                <div class="relative bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-xl">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                        <?php echo e(__('landing.plan_popular')); ?>
-
-                    </div>
-                    <div class="text-3xl mb-3">💼</div>
-                    <h3 class="text-xl font-bold text-gray-900"><?php echo e(__('landing.plan_pro_name')); ?></h3>
-                    <p class="text-sm text-gray-500 mt-1 mb-5"><?php echo e(__('landing.plan_pro_tagline')); ?></p>
-                    <div class="mb-6">
-                        
-                        <div class="lp-cycle-monthly">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">10 OMR</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
-                            </div>
-                            <span class="text-4xl font-bold text-gray-900">6.5</span>
-                            <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
-                            <span class="text-sm text-gray-500"> / <?php echo e(__('landing.per_month')); ?></span>
-                        </div>
-                        
-                        <div class="lp-cycle-yearly" style="display:none">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">10 OMR/mo</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 45%</span>
-                            </div>
-                            <div class="flex items-end gap-2">
-                                <span class="text-4xl font-bold text-gray-900">5.5</span>
-                                <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / <?php echo e(__('landing.per_month')); ?></span>
-                            </div>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm text-gray-500">66 OMR <?php echo e(__('landing.per_year')); ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="space-y-2 mb-8">
-                        <?php $__currentLoopData = ['plan_pro_f1','plan_pro_f2','plan_pro_f3','plan_pro_f4','plan_pro_f5']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fkey): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li class="flex items-center gap-2 text-sm text-gray-700">
-                                <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs flex-shrink-0">✓</span>
-                                <?php echo e(__("landing.{$fkey}")); ?>
-
-                            </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </ul>
-                    <?php if(auth()->guard()->check()): ?>
-                        <a href="<?php echo e(route('admin.upgrade.index')); ?>?plan=pro"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center font-semibold hover:shadow-lg transition">
-                            <?php echo e(__('landing.plan_pro_cta')); ?>
-
-                        </a>
-                    <?php else: ?>
-                        <a id="lp-cta-pro"
-                           href="<?php echo e(route('register')); ?>?plan=pro&cycle=monthly"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center font-semibold hover:shadow-lg transition">
-                            <?php echo e(__('landing.plan_pro_cta')); ?>
-
-                        </a>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Plus Plan -->
-                <div class="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition">
-                    <div class="text-3xl mb-3">🚀</div>
-                    <h3 class="text-xl font-bold text-gray-900"><?php echo e(__('landing.plan_plus_name')); ?></h3>
-                    <p class="text-sm text-gray-500 mt-1 mb-5"><?php echo e(__('landing.plan_plus_tagline')); ?></p>
-                    <div class="mb-6">
-                        
-                        <div class="lp-cycle-monthly">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">14 OMR</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 30%</span>
-                            </div>
-                            <span class="text-4xl font-bold text-gray-900">9.8</span>
-                            <span class="text-lg font-semibold text-gray-500 ml-1">OMR</span>
-                            <span class="text-sm text-gray-500"> / <?php echo e(__('landing.per_month')); ?></span>
-                        </div>
-                        
-                        <div class="lp-cycle-yearly" style="display:none">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm line-through text-gray-400">14 OMR/mo</span>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Save 35%</span>
-                            </div>
-                            <div class="flex items-end gap-2">
-                                <span class="text-4xl font-bold text-gray-900">9.1</span>
-                                <span class="text-lg font-semibold text-gray-500 mb-0.5">OMR / <?php echo e(__('landing.per_month')); ?></span>
-                            </div>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm text-gray-500">109.2 OMR <?php echo e(__('landing.per_year')); ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="space-y-2 mb-8">
-                        <?php $__currentLoopData = ['plan_plus_f1','plan_plus_f2','plan_plus_f3','plan_plus_f4','plan_plus_f5']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fkey): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li class="flex items-center gap-2 text-sm text-gray-700">
-                                <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs flex-shrink-0">✓</span>
-                                <?php echo e(__("landing.{$fkey}")); ?>
-
-                            </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </ul>
-                    <?php if(auth()->guard()->check()): ?>
-                        <a href="<?php echo e(route('admin.upgrade.index')); ?>?plan=plus"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center font-semibold hover:shadow-lg transition">
-                            <?php echo e(__('landing.plan_plus_cta')); ?>
-
-                        </a>
-                    <?php else: ?>
-                        <a id="lp-cta-plus"
-                           href="<?php echo e(route('register')); ?>?plan=plus&cycle=monthly"
-                            class="block w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center font-semibold hover:shadow-lg transition">
-                            <?php echo e(__('landing.plan_plus_cta')); ?>
-
-                        </a>
-                    <?php endif; ?>
-                </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
             </div>
 
@@ -748,12 +728,11 @@
             document.querySelectorAll('.lp-cycle-monthly').forEach(el => el.style.display = isYearly ? 'none' : 'block');
             document.querySelectorAll('.lp-cycle-yearly').forEach(el => el.style.display = isYearly ? 'block' : 'none');
             document.querySelectorAll('.lp-yearly-caption').forEach(el => el.style.display = isYearly ? 'block' : 'none');
-            // Update plan CTA register links so cycle is carried over
+            // Update all paid plan CTA register links so cycle is carried over
             const selectedCycle = isYearly ? 'yearly' : 'monthly';
-            const proBtn = document.getElementById('lp-cta-pro');
-            const plusBtn = document.getElementById('lp-cta-plus');
-            if (proBtn)  proBtn.href  = proBtn.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
-            if (plusBtn) plusBtn.href = plusBtn.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
+            document.querySelectorAll('.lp-cta-paid').forEach(link => {
+                link.href = link.href.replace(/cycle=[^&]+/, 'cycle=' + selectedCycle);
+            });
         }
         </script>
     </section>

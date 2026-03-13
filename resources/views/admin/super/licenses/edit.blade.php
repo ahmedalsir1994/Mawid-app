@@ -32,6 +32,33 @@
                 </div>
             </div>
 
+            <!-- License Type -->
+            <div class="mb-6 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+                <p class="text-sm font-semibold text-gray-700 mb-3">License Type</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="license_type" value="plan" class="sr-only peer"
+                            @checked(old('license_type', $license->license_type ?? 'plan') === 'plan')
+                            onchange="toggleLicenseType('plan')">
+                        <div class="peer-checked:border-green-500 peer-checked:bg-green-50 border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-green-300">
+                            <div class="text-xl mb-1">📋</div>
+                            <div class="font-bold text-sm text-gray-800">Plan License</div>
+                            <div class="text-xs text-gray-500 mt-0.5">Limits auto-filled from plan</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="license_type" value="custom" class="sr-only peer"
+                            @checked(old('license_type', $license->license_type ?? 'plan') === 'custom')
+                            onchange="toggleLicenseType('custom')">
+                        <div class="peer-checked:border-purple-500 peer-checked:bg-purple-50 border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-purple-300">
+                            <div class="text-xl mb-1">⚙️</div>
+                            <div class="font-bold text-sm text-gray-800">Custom License</div>
+                            <div class="text-xs text-gray-500 mt-0.5">Manually define all limits</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-6 mb-6">
                 <!-- Status -->
                 <div>
@@ -70,41 +97,46 @@
                 </div>
             </div>
 
-            <!-- Plan & Billing Cycle -->
-            <div class="mb-6 p-5 bg-gray-50 rounded-xl border border-gray-200">
-                <p class="text-sm font-semibold text-gray-700 mb-3">Plan &amp; Billing</p>
-                <div class="grid grid-cols-3 gap-3 mb-4">
-                    @foreach($plans as $key => $p)
-                        <label class="relative cursor-pointer">
-                            <input type="radio" name="plan" value="{{ $key }}" class="sr-only peer"
-                                @checked(old('plan', $license->plan ?? 'free') === $key)
-                                onchange="applyPlan('{{ $key }}')">
-                            <div class="peer-checked:border-green-500 peer-checked:bg-green-50 border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-green-300">
-                                <div class="text-2xl mb-1">{{ $p['emoji'] }}</div>
-                                <div class="font-bold text-sm text-gray-800">{{ $p['name'] }}</div>
-                                <div class="text-xs text-gray-500 mt-0.5">
-                                    @if($p['price_monthly'] === 0) Free
-                                    @else {{ $p['price_monthly'] }} OMR/mo
-                                    @endif
+            <!-- Plan & Billing Cycle (hidden for custom licenses) -->
+            <div id="plan-section" class="mb-6">
+                <div class="p-5 bg-gray-50 rounded-xl border border-gray-200">
+                    <p class="text-sm font-semibold text-gray-700 mb-3">Plan &amp; Billing</p>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        @foreach($plans as $key => $p)
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="plan" value="{{ $key }}" class="sr-only peer"
+                                    @checked(old('plan', $license->plan ?? 'free') === $key)
+                                    onchange="applyPlan('{{ $key }}')">
+                                <div class="peer-checked:border-green-500 peer-checked:bg-green-50 border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-green-300">
+                                    <div class="text-2xl mb-1">{{ $p['emoji'] }}</div>
+                                    <div class="font-bold text-sm text-gray-800">{{ $p['name'] }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">
+                                        @if($p['price_monthly'] === 0) Free
+                                        @else {{ $p['price_monthly'] }} OMR/mo
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                        </label>
-                    @endforeach
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Billing Cycle</label>
-                    <select lang="en" dir="ltr" name="billing_cycle" id="billing_cycle"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                        <option value="monthly" @selected(old('billing_cycle', $license->billing_cycle ?? 'monthly') === 'monthly')>Monthly</option>
-                        <option value="yearly" @selected(old('billing_cycle', $license->billing_cycle ?? 'monthly') === 'yearly')>Yearly (5% off)</option>
-                    </select>
+                            </label>
+                        @endforeach
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Billing Cycle</label>
+                        <select lang="en" dir="ltr" name="billing_cycle" id="billing_cycle"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                            <option value="monthly" @selected(old('billing_cycle', $license->billing_cycle ?? 'monthly') === 'monthly')>Monthly</option>
+                            <option value="yearly" @selected(old('billing_cycle', $license->billing_cycle ?? 'monthly') === 'yearly')>Yearly (5% off)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <!-- Plan Limits -->
+            <!-- Limits -->
             <div class="mb-6">
-                <p class="text-sm font-semibold text-gray-700 mb-3">Plan Limits</p>
-                <div class="grid grid-cols-3 gap-4">
+                <p class="text-sm font-semibold text-gray-700 mb-3">
+                    <span id="limits-label-plan">Plan Limits</span>
+                    <span id="limits-label-custom" class="hidden">Custom Limits <span class="text-purple-600 font-normal">(override everything)</span></span>
+                </p>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Max Branches</label>
                         <input lang="en" dir="ltr" type="number" name="max_branches" id="max_branches"
@@ -125,6 +157,12 @@
                             required min="0" value="{{ old('max_services', $license->max_services ?? 3) }}"
                             class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
                         @error('max_services')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Daily Bookings <span class="text-gray-400">(0=∞)</span></label>
+                        <input lang="en" dir="ltr" type="number" name="max_daily_bookings" id="max_daily_bookings"
+                            min="0" value="{{ old('max_daily_bookings', $license->max_daily_bookings ?? 100) }}"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 transition text-sm">
                     </div>
                 </div>
                 <div class="mt-3">
@@ -226,6 +264,7 @@
             'max_branches'       => $p['max_branches'],
             'max_staff'          => $p['max_staff'],
             'max_services'       => $p['max_services'],
+            'max_daily_bookings' => $p['max_daily_bookings'],
             'whatsapp_reminders' => $p['whatsapp_reminders'],
             'price_monthly'      => $p['price_monthly'],
             'price_yearly'       => $p['price_yearly'] ?? $p['price_monthly'],
@@ -233,17 +272,43 @@
         @endphp
         const PLANS = @json(json_decode($planData));
 
+        function toggleLicenseType(type) {
+            const planSection = document.getElementById('plan-section');
+            const labelPlan   = document.getElementById('limits-label-plan');
+            const labelCustom = document.getElementById('limits-label-custom');
+
+            if (type === 'custom') {
+                planSection.classList.add('hidden');
+                labelPlan.classList.add('hidden');
+                labelCustom.classList.remove('hidden');
+                document.querySelectorAll('#max_branches, #max_staff, #max_services, #max_daily_bookings')
+                    .forEach(el => el.classList.add('border-purple-400', 'bg-purple-50'));
+            } else {
+                planSection.classList.remove('hidden');
+                labelPlan.classList.remove('hidden');
+                labelCustom.classList.add('hidden');
+                document.querySelectorAll('#max_branches, #max_staff, #max_services, #max_daily_bookings')
+                    .forEach(el => el.classList.remove('border-purple-400', 'bg-purple-50'));
+            }
+        }
+
         function applyPlan(planKey) {
             const p = PLANS[planKey];
             if (!p) return;
-            document.getElementById('max_branches').value        = p.max_branches;
-            document.getElementById('max_staff').value           = p.max_staff;
-            document.getElementById('max_services').value        = p.max_services;
+            document.getElementById('max_branches').value         = p.max_branches;
+            document.getElementById('max_staff').value            = p.max_staff;
+            document.getElementById('max_services').value         = p.max_services;
+            document.getElementById('max_daily_bookings').value   = p.max_daily_bookings;
             document.getElementById('whatsapp_reminders').checked = p.whatsapp_reminders;
             const cycle = document.getElementById('billing_cycle').value;
             if (document.getElementById('price')) {
                 document.getElementById('price').value = cycle === 'yearly' ? p.price_yearly : p.price_monthly;
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const licenseType = document.querySelector('input[name="license_type"]:checked')?.value || 'plan';
+            toggleLicenseType(licenseType);
+        });
     </script>
 </x-admin-layout>
