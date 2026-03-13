@@ -1,7 +1,7 @@
 ﻿<x-admin-layout>
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">{{ __('app.create_business') }}</h1>
-        <p class="text-gray-600 mt-2">{{ __('app.add_new_business') }}</p>
+    <div class="mb-6 sm:mb-8">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{{ __('app.create_business') }}</h1>
+        <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.add_new_business') }}</p>
     </div>
 
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">

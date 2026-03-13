@@ -33,11 +33,11 @@
     @endif
 
     <!-- Page Header -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-4">
             <div>
-                <h1 class="text-4xl font-bold text-gray-900">{{ $business->name }}</h1>
-                <p class="text-gray-600 mt-2">{{ __('app.dashboard_for') }} {{ $business->address }}</p>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{{ $business->name }}</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.dashboard_for') }} {{ $business->address }}</p>
             </div>
             <div class="text-right">
                 @php
@@ -78,7 +78,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Total Bookings -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.total_bookings') }}</h3>

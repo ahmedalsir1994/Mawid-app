@@ -1,17 +1,17 @@
 <x-admin-layout>
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">{{ $business->name }}</h1>
-                <p class="text-gray-600 mt-2">{{ __('app.business_details') }}</p>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{{ $business->name }}</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.business_details') }}</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <a href="{{ route('admin.super.businesses.edit', $business) }}"
-                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                    class="px-4 py-2 sm:px-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm sm:text-base">
                     {{ __('app.edit') }}
                 </a>
                 <a href="{{ route('admin.super.businesses.index') }}"
-                    class="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium">
+                    class="px-4 py-2 sm:px-6 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium text-sm sm:text-base">
                     {{ __('app.back') }}
                 </a>
             </div>

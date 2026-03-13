@@ -1,14 +1,12 @@
 <x-admin-layout>
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('admin.staff.index') }}" class="text-gray-600 hover:text-gray-900 transition">
-                    ← {{ __('app.back_to_staff') }}
-                </a>
-            </div>
-            <div class="flex items-center gap-3">
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
+            <a href="{{ route('admin.staff.index') }}" class="text-gray-600 hover:text-gray-900 transition text-sm">
+                ← {{ __('app.back_to_staff') }}
+            </a>
+            <div class="flex flex-wrap gap-2">
                 <a href="{{ route('admin.staff.edit', $staff) }}"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition">
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-1.5 rounded-lg transition text-sm">
                     ✏️ {{ __('app.edit') }}
                 </a>
                 <form action="{{ route('admin.staff.destroy', $staff) }}" method="POST"
@@ -16,7 +14,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2 rounded-lg transition">
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-1.5 rounded-lg transition text-sm">
                         🗑️ {{ __('app.delete') }}
                     </button>
                 </form>

@@ -1,12 +1,12 @@
 ﻿<x-admin-layout>
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">{{ __('app.edit_user') }}</h1>
-                <p class="text-gray-600 mt-2">{{ __('app.update_user_permissions') }}</p>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{{ __('app.edit_user') }}</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.update_user_permissions') }}</p>
             </div>
             <a href="{{ route('admin.super.users.index') }}"
-                class="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium">
+                class="shrink-0 px-4 py-2 sm:px-6 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-medium text-sm">
                 {{ __('app.back') }}
             </a>
         </div>

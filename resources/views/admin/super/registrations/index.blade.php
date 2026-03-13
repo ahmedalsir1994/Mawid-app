@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Registration Submissions</h1>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Registration Submissions</h1>
             <p class="text-gray-500 mt-1 text-sm">All businesses that have registered on the platform</p>
         </div>
         <div class="flex items-center gap-3">
@@ -97,7 +97,61 @@
 
     <!-- Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Mobile Card View -->
+        <div class="md:hidden divide-y divide-gray-100">
+            @forelse($registrations as $reg)
+                @php $license = optional($reg->business)->license; @endphp
+                <div class="p-4 hover:bg-gray-50 transition">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                            {{ strtoupper(substr($reg->name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900 text-sm">{{ $reg->name }}</p>
+                            <a href="mailto:{{ $reg->email }}" class="text-xs text-blue-700 hover:underline">{{ $reg->email }}</a>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mb-2 text-xs text-gray-600">
+                        @if(optional($reg->business)->name)
+                            <span class="font-medium text-gray-800">{{ $reg->business->name }}</span>
+                            <span class="text-gray-300">&middot;</span>
+                        @endif
+                        @if(optional($reg->business)->business_type)
+                            <span>{{ ucwords(str_replace('_', ' ', $reg->business->business_type)) }}</span>
+                        @endif
+                        @if(optional($reg->business)->phone)
+                            <span class="text-gray-300">&middot;</span>
+                            <a href="tel:{{ $reg->business->phone }}" class="text-gray-500">{{ $reg->business->phone }}</a>
+                        @endif
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mb-3 text-xs">
+                        @if($license)
+                            @php
+                                $planColors = ['free' => 'bg-gray-100 text-gray-600', 'pro' => 'bg-blue-100 text-blue-700', 'plus' => 'bg-purple-100 text-purple-700'];
+                                $statusColors = ['active' => 'bg-green-100 text-green-700', 'expired' => 'bg-red-100 text-red-700', 'past_due' => 'bg-yellow-100 text-yellow-700', 'cancelled' => 'bg-gray-100 text-gray-500', 'trial' => 'bg-teal-100 text-teal-700'];
+                            @endphp
+                            <span class="px-2 py-0.5 rounded-full font-semibold {{ $planColors[$license->plan] ?? 'bg-gray-100 text-gray-600' }}">
+                                {{ ucfirst($license->plan) }}@if($license->billing_cycle) / {{ ucfirst($license->billing_cycle) }}@endif
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full font-semibold {{ $statusColors[$license->status] ?? 'bg-gray-100 text-gray-600' }}">
+                                {{ ucfirst(str_replace('_', ' ', $license->status)) }}
+                            </span>
+                        @else
+                            <span class="text-gray-400">No license</span>
+                        @endif
+                        <span class="text-gray-400">{{ $reg->created_at->format('d M Y') }}</span>
+                    </div>
+                    <a href="{{ route('admin.super.registrations.show', $reg) }}"
+                       class="inline-block px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">
+                        View
+                    </a>
+                </div>
+            @empty
+                <div class="px-5 py-12 text-center text-gray-400 text-sm">No registrations found.</div>
+            @endforelse
+        </div>
+        <!-- Desktop Table -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-gray-100 bg-gray-50">
@@ -196,7 +250,7 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
+        </div><!-- end desktop table -->
 
         @if($registrations->hasPages())
             <div class="px-6 py-4 border-t border-gray-100">

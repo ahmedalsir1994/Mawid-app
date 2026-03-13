@@ -1,13 +1,13 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.services') }}</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.services') }}</h2>
                 <p class="text-gray-500 text-sm mt-1">{{ __('app.manage_business_services') }}</p>
             </div>
             <a href="{{ route('admin.services.create') }}"
-                class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold hover:shadow-lg transition">
-                <svg class="w-5 h-5 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
+                class="shrink-0 px-4 py-2 sm:px-6 sm:py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-500 text-white text-sm font-semibold hover:shadow-lg transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
                 </svg>
                 {{ __('app.add_service') }}
@@ -39,7 +39,52 @@
             </a>
         </div>
     @else
-        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+        {{-- Mobile cards (hidden on md and up) --}}
+        <div class="md:hidden space-y-3">
+            @foreach ($services as $service)
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-800">{{ $service->name }}</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                <span class="text-xs text-gray-500">⏱ {{ $service->duration_minutes }} {{ __('app.min') }}</span>
+                                @if($service->price !== null)
+                                    <span class="text-xs text-gray-500">{{ number_format($service->price, 2) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        @if($service->is_active)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 shrink-0">{{ __('app.active') }}</span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 shrink-0">{{ __('app.inactive') }}</span>
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                        <a href="{{ route('admin.services.edit', $service) }}"
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 transition">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                            {{ __('app.edit') }}
+                        </a>
+                        <form method="POST" action="{{ route('admin.services.destroy', $service) }}"
+                            class="inline" onsubmit="return confirm('{{ __('app.delete_service_confirm') }}');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ __('app.delete') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop table (hidden on mobile) --}}
+        <div class="hidden md:block bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>

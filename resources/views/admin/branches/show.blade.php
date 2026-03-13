@@ -1,15 +1,15 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('admin.branches.index') }}" class="p-2 hover:bg-gray-100 rounded-lg transition">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.branches.index') }}" class="p-2 hover:bg-gray-100 rounded-lg transition shrink-0">
                     <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </a>
                 <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="font-bold text-3xl text-gray-800">{{ $branch->name }}</h2>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ $branch->name }}</h2>
                         @if($branch->is_main)
                             <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-bold">{{ __('app.main_branch') }}</span>
                         @endif
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <a href="{{ route('admin.branches.edit', $branch) }}"
-               class="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition">
+               class="shrink-0 px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition">
                 {{ __('app.edit') }}
             </a>
         </div>

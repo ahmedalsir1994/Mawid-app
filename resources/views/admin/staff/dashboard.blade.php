@@ -1,42 +1,42 @@
 <x-admin-layout>
     <!-- Page Header -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
             <div>
-                <h1 class="text-4xl font-bold text-gray-900">👋 {{ __('app.welcome', ['name' => Auth::user()->name]) }}</h1>
-                <p class="text-gray-600 mt-2">{{ __('app.staff_dashboard_title', ['business' => $business->name]) }}</p>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">👋 {{ __('app.welcome', ['name' => Auth::user()->name]) }}</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.staff_dashboard_title', ['business' => $business->name]) }}</p>
             </div>
             <div class="text-right">
                 @if($license && $license->isActive())
-                    <span class="inline-block px-4 py-2 bg-green-100 text-green-800 font-medium rounded-lg">
+                    <span class="inline-block px-3 py-1.5 sm:px-4 sm:py-2 bg-green-100 text-green-800 font-medium rounded-lg text-sm">
                         ✓ {{ __('app.system_active') }}
                     </span>
                 @endif
-                <p class="text-sm text-gray-600 mt-2">{{ now()->format('l, F j, Y') }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ now()->format('l, F j, Y') }}</p>
             </div>
         </div>
     </div>
 
     <!-- Quick Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Today's Bookings -->
         <div class="bg-gradient-to-br from-green-600 to-green-500 rounded-xl shadow-md p-6 text-white">
             <h3 class="font-medium mb-2 opacity-90">{{ __('app.today_bookings') }}</h3>
-            <p class="text-4xl font-bold">{{ $todayBookings }}</p>
+            <p class="text-3xl sm:text-4xl font-bold">{{ $todayBookings }}</p>
             <p class="text-sm mt-2 opacity-90">{{ now()->format('l') }}</p>
         </div>
 
         <!-- Upcoming Bookings -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.upcoming_bookings') }}</h3>
-            <p class="text-4xl font-bold text-gray-900">{{ $upcomingBookings->count() }}</p>
+            <p class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $upcomingBookings->count() }}</p>
             <p class="text-sm text-gray-600 mt-2">{{ __('app.next_7_days') }}</p>
         </div>
 
         <!-- Total Services -->
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <h3 class="text-gray-600 font-medium mb-2">{{ __('app.available_services') }}</h3>
-            <p class="text-4xl font-bold text-gray-900">{{ $services->count() }}</p>
+            <p class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $services->count() }}</p>
             <p class="text-sm text-gray-600 mt-2">{{ __('app.offered_by_business') }}</p>
         </div>
     </div>
@@ -44,8 +44,8 @@
     <!-- Today's Schedule -->
     @if($todayBookingsList->count() > 0)
         <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-8">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">🗓️ {{ __('app.today_schedule') }}</h2>
+            <div class="flex flex-wrap items-center justify-between gap-y-1 mb-4 sm:mb-6">
+                <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">🗓️ {{ __('app.today_schedule') }}</h2>
                 <span class="text-sm text-gray-600">{{ now()->format('l, M j') }}</span>
             </div>
 
@@ -100,7 +100,7 @@
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 mb-8">
         <!-- Calendar Header -->
         <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
-            <h2 class="text-2xl font-bold text-gray-900">📅 {{ __('app.calendar_view') }}</h2>
+            <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">📅 {{ __('app.calendar_view') }}</h2>
 
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
                 <!-- View Switcher -->
@@ -372,7 +372,7 @@
 
     <!-- Upcoming Bookings -->
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 {{ __('app.upcoming_bookings') }}</h2>
+        <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">📋 {{ __('app.upcoming_bookings') }}</h2>
 
         @if($upcomingBookings->count() > 0)
             <div class="space-y-3">

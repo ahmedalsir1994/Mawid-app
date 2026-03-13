@@ -1,13 +1,10 @@
 ﻿<x-admin-layout>
-    <div class="mb-8">
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('admin.staff.index') }}"
-                class="text-gray-600 hover:text-gray-900 transition">
-                ← {{ __('app.back_to_staff') }}
-            </a>
-        </div>
-        <h1 class="text-4xl font-bold text-gray-900 mt-4">{{ __('app.edit_staff_member') }}</h1>
-        <p class="text-gray-600 mt-2">{{ __('app.update_staff_information', ['name' => $staff->name]) }}</p>
+    <div class="mb-6 sm:mb-8">
+        <a href="{{ route('admin.staff.index') }}" class="text-gray-600 hover:text-gray-900 transition text-sm">
+            ← {{ __('app.back_to_staff') }}
+        </a>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-3">{{ __('app.edit_staff_member') }}</h1>
+        <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.update_staff_information', ['name' => $staff->name]) }}</p>
     </div>
 
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">

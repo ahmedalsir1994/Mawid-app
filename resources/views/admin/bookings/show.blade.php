@@ -1,8 +1,8 @@
 ﻿<x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.booking_details') }}</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.booking_details') }}</h2>
                 <p class="text-gray-500 text-sm mt-1">{{ __('app.reference') }}: {{ $booking->reference_code }}
                     @if($booking->is_walk_in)
                         <span class="ms-2 inline-flex items-center px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">🚶 Walk-in</span>
@@ -10,7 +10,7 @@
                 </p>
             </div>
             <a href="{{ auth()->user()->role === 'staff' ? route('admin.staff.bookings.index') : route('admin.bookings.index') }}"
-                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
+                class="shrink-0 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium text-sm">
                 ← {{ __('app.back_to_bookings') }}
             </a>
         </div>

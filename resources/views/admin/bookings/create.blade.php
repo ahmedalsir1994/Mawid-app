@@ -1,12 +1,12 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">New Walk-In Booking</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">New Walk-In Booking</h2>
                 <p class="text-gray-500 text-sm mt-1">Manually create a booking for a walk-in customer</p>
             </div>
             <a href="{{ route($indexRoute) }}"
-               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
+               class="shrink-0 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium text-sm">
                 ← Back to Bookings
             </a>
         </div>

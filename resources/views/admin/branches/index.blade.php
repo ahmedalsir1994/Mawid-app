@@ -1,21 +1,21 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-start justify-between gap-y-3">
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.branches') }}</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.branches') }}</h2>
                 <p class="text-gray-500 text-sm mt-1">{{ __('app.manage_branches_desc') }}</p>
             </div>
             @if($license && $license->canAddBranch())
                 <a href="{{ route('admin.branches.create') }}"
-                   class="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold hover:shadow-lg transition flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                   class="shrink-0 px-4 py-2 sm:px-6 sm:py-3 rounded-lg bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-semibold hover:shadow-lg transition flex items-center gap-2">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
                     </svg>
                     {{ __('app.add_branch') }}
                 </a>
             @else
                 <a href="{{ route('admin.upgrade.index') }}"
-                   class="px-5 py-3 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition flex items-center gap-2">
+                   class="shrink-0 px-5 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition flex items-center gap-2">
                     🚀 {{ __('app.upgrade_for_more_branches') }}
                 </a>
             @endif

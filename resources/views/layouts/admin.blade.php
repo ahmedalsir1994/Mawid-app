@@ -850,7 +850,7 @@
             </nav>
 
             <!-- Mobile User Profile & Language Switcher -->
-            <div class="flex-shrink-0 bg-white border-t border-gray-200 p-3 space-y-1">
+            <div class="flex-shrink-0 bg-white border-t border-gray-200 p-3 space-y-1 overflow-y-auto max-h-[45vh]">
                 @if(auth()->user()->role === 'company_admin' && auth()->user()->business_id)
                     @php
                         $mobileSidebarLicense   = auth()->user()->business?->license;
@@ -910,20 +910,20 @@
                         </a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Logout -->
-                <div class="pt-2 mt-1 border-t border-gray-200">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition font-semibold">
-                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            <span>{{ __('app.logout') }}</span>
-                        </button>
-                    </form>
-                </div>
+            <!-- Logout — always visible at the bottom -->
+            <div class="flex-shrink-0 bg-white border-t border-gray-200 px-3 py-2">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition font-semibold">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>{{ __('app.logout') }}</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>

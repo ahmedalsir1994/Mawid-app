@@ -1,13 +1,13 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('admin.services.index') }}" class="p-2 hover:bg-gray-100 rounded-lg transition">
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('admin.services.index') }}" class="p-2 hover:bg-gray-100 rounded-lg transition shrink-0">
                 <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </a>
             <div>
-                <h2 class="font-bold text-3xl text-gray-800">{{ __('app.edit_service') }}</h2>
+                <h2 class="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800">{{ __('app.edit_service') }}</h2>
                 <p class="text-gray-500 text-sm mt-1">{{ __('app.update_service_details') }}</p>
             </div>
         </div>

@@ -1,8 +1,8 @@
 <x-admin-layout>
     <!-- Page Header -->
-    <div class="mb-8">
-        <h1 class="text-4xl font-bold text-gray-900">{{ __('app.super_admin_dashboard') }}</h1>
-        <p class="text-gray-600 mt-2">{{ __('app.manage_platform') }}</p>
+    <div class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{{ __('app.super_admin_dashboard') }}</h1>
+        <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">{{ __('app.manage_platform') }}</p>
     </div>
 
     <!-- Key Statistics -->

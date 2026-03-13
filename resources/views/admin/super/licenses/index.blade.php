@@ -1,14 +1,16 @@
 <x-admin-layout>
     <!-- Page Header -->
-    <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h1 class="text-4xl font-bold text-gray-900">{{ __('app.manage_licenses') }}</h1>
-            <p class="text-gray-600 mt-2">{{ __('app.create_manage_licenses') }}</p>
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{{ __('app.manage_licenses') }}</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.create_manage_licenses') }}</p>
+            </div>
+            <a href="{{ route('admin.super.licenses.create') }}"
+                class="shrink-0 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transition text-sm sm:text-base">
+                + {{ __('app.create_license') }}
+            </a>
         </div>
-        <a href="{{ route('admin.super.licenses.create') }}"
-            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition">
-            + {{ __('app.create_license') }}
-        </a>
     </div>
 
     <!-- Search & Filter -->
@@ -84,7 +86,81 @@
 
     <!-- Licenses Table -->
     <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Mobile Card View -->
+        <div class="md:hidden divide-y divide-gray-100">
+            @forelse($licenses as $license)
+                @php
+                    $planBadge = match($license->plan ?? 'free') {
+                        'pro'  => 'bg-blue-100 text-blue-800',
+                        'plus' => 'bg-purple-100 text-purple-800',
+                        default => 'bg-gray-100 text-gray-700',
+                    };
+                    $planEmoji = match($license->plan ?? 'free') {
+                        'pro'  => '💼',
+                        'plus' => '🚀',
+                        default => '🆓',
+                    };
+                @endphp
+                <div class="p-4 hover:bg-gray-50 transition">
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-900 text-sm">{{ $license->business->name }}</p>
+                            <a href="{{ route('public.business', $license->business->slug) }}" target="_blank"
+                               class="text-xs text-green-600 hover:underline">{{ $license->business->slug }}</a>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $planBadge }} shrink-0">
+                            {{ $planEmoji }} {{ ucfirst($license->plan ?? 'free') }}
+                            @if(($license->plan ?? 'free') !== 'free')
+                                / {{ ucfirst($license->billing_cycle) }}
+                            @endif
+                        </span>
+                    </div>
+                    <div class="mb-2">
+                        <code class="text-xs bg-gray-100 px-2 py-0.5 rounded">{{ $license->license_key }}</code>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mb-3 text-xs">
+                        @if($license->expires_at)
+                            <span class="text-gray-500">{{ $license->expires_at->format('M d, Y') }}</span>
+                            @if($license->isExpiring())
+                                <span class="font-bold text-orange-600">{{ $license->daysUntilExpiry() }}{{ __('app.days_left') }}</span>
+                            @elseif(!$license->isActive() && $license->expires_at->isPast())
+                                <span class="font-bold text-red-600">{{ $license->daysUntilExpiry() }}{{ __('app.days_ago') }}</span>
+                            @endif
+                        @else
+                            <span class="text-gray-500">{{ __('app.no_expiry') }}</span>
+                        @endif
+                        <span class="px-2 py-0.5 rounded-full font-bold
+                            @if($license->isActive()) bg-green-100 text-green-800
+                            @elseif($license->status === 'expired') bg-red-100 text-red-800
+                            @elseif($license->status === 'suspended') bg-yellow-100 text-yellow-800
+                            @else bg-gray-100 text-gray-800 @endif">
+                            {{ ucfirst($license->status) }}
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full font-bold
+                            @if($license->payment_status === 'paid') bg-green-100 text-green-800
+                            @else bg-orange-100 text-orange-800 @endif">
+                            {{ ucfirst($license->payment_status) }}
+                        </span>
+                        <span class="font-semibold text-gray-900">${{ number_format($license->price, 2) }}</span>
+                    </div>
+                    <div class="flex gap-3 text-xs">
+                        <a href="{{ route('admin.super.licenses.show', $license) }}" class="text-green-600 hover:text-green-700 font-medium">{{ __('app.view') }}</a>
+                        <a href="{{ route('admin.super.licenses.edit', $license) }}" class="text-blue-600 hover:text-blue-700 font-medium">{{ __('app.edit') }}</a>
+                        <form method="POST" action="{{ route('admin.super.licenses.destroy', $license) }}" class="inline" onsubmit="return confirm('{{ __('app.delete_license_confirm') }}')">
+                            @csrf @method('DELETE')
+                            <button class="text-red-600 hover:text-red-700 font-medium">{{ __('app.delete') }}</button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="px-6 py-12 text-center text-gray-500">
+                    <p class="text-lg mb-2">{{ __('app.no_licenses_yet') }}</p>
+                    <a href="{{ route('admin.super.licenses.create') }}" class="text-green-600 hover:text-green-700 font-medium">{{ __('app.create_first_license') }}</a>
+                </div>
+            @endforelse
+        </div>
+        <!-- Desktop Table -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
@@ -211,7 +287,7 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
+        </div><!-- end desktop table -->
     </div>
 
     <!-- Pagination -->

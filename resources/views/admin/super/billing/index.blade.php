@@ -1,10 +1,8 @@
 <x-admin-layout>
     <!-- Page Header -->
-    <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h1 class="text-4xl font-bold text-gray-900">Billing History</h1>
-            <p class="text-gray-600 mt-2">All invoices across all businesses.</p>
-        </div>
+    <div class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">Billing History</h1>
+        <p class="text-gray-600 mt-1 text-sm sm:text-base">All invoices across all businesses.</p>
     </div>
 
     <!-- Stats Row -->
@@ -79,7 +77,50 @@
     <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100">
         @if($invoices->count())
-            <div class="overflow-x-auto">
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y divide-gray-100">
+                @foreach($invoices as $invoice)
+                    @php
+                        $statusClass = match($invoice->status) {
+                            'paid'    => 'bg-green-100 text-green-800',
+                            'pending' => 'bg-yellow-100 text-yellow-800',
+                            'failed'  => 'bg-red-100 text-red-800',
+                            default   => 'bg-gray-100 text-gray-700',
+                        };
+                        $planEmoji = match($invoice->plan) { 'pro' => '💼', 'plus' => '🚀', default => '🆓' };
+                    @endphp
+                    <div class="p-4 hover:bg-gray-50 transition">
+                        <div class="flex items-start justify-between gap-2 mb-1">
+                            <div>
+                                <p class="font-semibold text-gray-800 text-sm">{{ $invoice->business_name }}</p>
+                                @if($invoice->business_email)
+                                    <p class="text-xs text-gray-400">{{ $invoice->business_email }}</p>
+                                @endif
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold {{ $statusClass }} shrink-0">
+                                {{ ucfirst($invoice->status) }}
+                            </span>
+                        </div>
+                        <p class="text-xs font-mono text-gray-500 mb-2">{{ $invoice->invoice_number }}</p>
+                        <div class="flex flex-wrap items-center gap-2 mb-2 text-xs text-gray-600">
+                            <span>{{ $planEmoji }} {{ ucfirst($invoice->plan) }}</span>
+                            @if($invoice->billing_cycle)
+                                <span class="text-gray-400">&middot;</span>
+                                <span>{{ ucfirst($invoice->billing_cycle) }}</span>
+                            @endif
+                            <span class="text-gray-400">&middot;</span>
+                            <span class="font-semibold text-gray-800">{{ number_format($invoice->amount, 3) }} {{ $invoice->currency ?? 'OMR' }}</span>
+                            <span class="text-gray-400">&middot;</span>
+                            <span>{{ $invoice->paid_at?->format('d M Y') ?? $invoice->created_at->format('d M Y') }}</span>
+                        </div>
+                        <a href="{{ route('admin.super.billing.show', $invoice) }}"
+                           class="inline-block text-xs px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                           target="_blank">View</a>
+                    </div>
+                @endforeach
+            </div>
+            <!-- Desktop Table -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50">
                         <tr>
@@ -136,7 +177,7 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
+            </div><!-- end desktop table -->
 
             @if($invoices->hasPages())
                 <div class="px-5 py-4 border-t border-gray-100">

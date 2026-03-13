@@ -1,12 +1,12 @@
 <x-admin-layout>
-    <div class="mb-8">
-        <div class="flex justify-between items-center">
+    <div class="mb-6 sm:mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-y-4">
             <div>
-                <h1 class="text-4xl font-bold text-gray-900">{{ __('app.staff_management') }}</h1>
-                <p class="text-gray-600 mt-2">{{ __('app.manage_staff_members') }}</p>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{{ __('app.staff_management') }}</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">{{ __('app.manage_staff_members') }}</p>
             </div>
             <a href="{{ route('admin.staff.create') }}"
-                class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition">
+                class="shrink-0 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg transition text-sm">
                 ➕ {{ __('app.add_staff_member') }}
             </a>
         </div>
@@ -30,7 +30,47 @@
 
     <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         @if ($staff->count() > 0)
-            <div class="overflow-x-auto">
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y divide-gray-200">
+                @foreach ($staff as $member)
+                    <div class="p-4 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                                <span class="text-green-600 font-bold text-sm">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-gray-900 text-sm">{{ $member->name }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ $member->email }}</p>
+                            </div>
+                            @if ($member->is_active)
+                                <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 shrink-0">{{ __('app.active') }}</span>
+                            @else
+                                <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 shrink-0">{{ __('app.inactive') }}</span>
+                            @endif
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 mb-3 text-xs text-gray-500">
+                            @if($member->branch)
+                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">
+                                    📍 {{ $member->branch->name }}
+                                </span>
+                            @endif
+                            <span>{{ $member->created_at->format('M d, Y') }}</span>
+                        </div>
+                        <div class="flex gap-3 text-xs">
+                            <a href="{{ route('admin.staff.show', $member) }}" class="text-green-600 hover:text-green-900 font-medium">{{ __('app.view') }}</a>
+                            <a href="{{ route('admin.staff.edit', $member) }}" class="text-blue-600 hover:text-blue-900 font-medium">{{ __('app.edit') }}</a>
+                            <form action="{{ route('admin.staff.destroy', $member) }}" method="POST" class="inline"
+                                onsubmit="return confirm('{{ __('app.delete_staff_confirm') }}')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900 font-medium">{{ __('app.delete') }}</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <!-- Desktop Table -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -113,7 +153,7 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
+            </div><!-- end desktop table -->
 
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
                 {{ $staff->links() }}
