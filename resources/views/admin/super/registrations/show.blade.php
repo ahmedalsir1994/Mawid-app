@@ -90,7 +90,7 @@
                         @if($business->country)
                         <div>
                             <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">Country</p>
-                            <p class="text-gray-700">{{ $business->country }}</p>
+                            <p class="text-gray-700">{{ config('countries.' . $business->country, $business->country) }} ({{ $business->country }})</p>
                         </div>
                         @endif
                         @if($business->address)
@@ -109,6 +109,12 @@
                         <div>
                             <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">Currency</p>
                             <p class="text-gray-700">{{ $business->currency }}</p>
+                        </div>
+                        @endif
+                        @if($business->how_heard_about_us)
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">How Heard About Us</p>
+                            <p class="text-gray-700">{{ ucwords(str_replace('_', ' ', $business->how_heard_about_us)) }}</p>
                         </div>
                         @endif
                     </div>

@@ -149,9 +149,11 @@
                                 class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.country') }}</label>
                             <select lang="en" dir="ltr" name="country"
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="OM" @selected(old('country', $business->country) === 'OM')>🇴🇲 Oman (OM)
-                                </option>
-                             
+                                @foreach(config('countries') as $code => $cname)
+                                    <option value="{{ $code }}" @selected(old('country', $business->country) === $code)>
+                                        {{ $cname }} ({{ $code }})
+                                    </option>
+                                @endforeach
                             </select>
                             @error('country') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
@@ -174,7 +176,11 @@
                                 class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.timezone') }}</label>
                             <select lang="en" dir="ltr" name="timezone"
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="Asia/Muscat" @selected(old('timezone', $business->timezone) === 'Asia/Muscat')>Asia/Muscat (GMT+4)</option>
+                                @foreach(\DateTimeZone::listIdentifiers() as $tz)
+                                    <option value="{{ $tz }}" @selected(old('timezone', $business->timezone) === $tz)>
+                                        {{ $tz }}
+                                    </option>
+                                @endforeach
                             </select>
                             @error('timezone') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
@@ -213,9 +219,35 @@
                         <div>
                             <label
                                 class="block text-sm font-semibold text-gray-800 mb-2">{{ __('app.address') }}</label>
-                            <textarea lang="en" dir="ltr" name="address" rows="3" placeholder="{{ __('app.your_business_address') }}"
+                            <textarea lang="en" dir="ltr" name="address" rows="3"
+                                placeholder="Copy your address from Google Maps (e.g. 123 Main St, Muscat, Oman)"
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">{{ old('address', $business->address) }}</textarea>
+                            <p class="text-gray-500 text-xs mt-1.5">💡 Open Google Maps → find your business → copy the address and paste it here.</p>
                             @error('address') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- How Heard About Us -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">How did you hear about us?</label>
+                            <select lang="en" dir="ltr" name="how_heard_about_us"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">— Not specified —</option>
+                                @foreach([
+                                    'google_search'  => 'Google Search',
+                                    'facebook'       => 'Facebook',
+                                    'instagram'      => 'Instagram',
+                                    'referral'       => 'Friend or Referral',
+                                    'youtube'        => 'YouTube',
+                                    'advertisement'  => 'Advertisement',
+                                    'event'          => 'Event or Conference',
+                                    'other'          => 'Other',
+                                ] as $val => $lbl)
+                                    <option value="{{ $val }}" @selected(old('how_heard_about_us', $business->how_heard_about_us) === $val)>
+                                        {{ $lbl }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('how_heard_about_us') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>

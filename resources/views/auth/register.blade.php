@@ -64,12 +64,26 @@
         </div>
     @endif
 
+    @php
+        $selectClass = 'block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm text-sm';
+        $howHeardOptions = [
+            'google_search'   => 'Google Search',
+            'facebook'        => 'Facebook',
+            'instagram'       => 'Instagram',
+            'referral'        => 'Friend or Referral',
+            'youtube'         => 'YouTube',
+            'advertisement'   => 'Advertisement',
+            'event'           => 'Event or Conference',
+            'other'           => 'Other',
+        ];
+    @endphp
+
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
         @csrf
         <input type="hidden" name="plan"          value="{{ $selectedPlan }}">
         <input type="hidden" name="billing_cycle" value="{{ $selectedCycle }}">
 
-        {{-- ── Section: Personal Info ──────────────────────────────── --}}
+        {{-- ── SECTION: Personal Information ─────────────────────── --}}
         <div>
             <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Your Information</p>
             <div class="space-y-4">
@@ -83,7 +97,7 @@
                     <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
                 </div>
 
-                {{-- Email + Phone (side by side on md+) --}}
+                {{-- Email + Phone --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="email" :value="__('Email Address')" />
@@ -104,10 +118,9 @@
             </div>
         </div>
 
-        {{-- ── Divider ─────────────────────────────────────────────── --}}
         <div class="border-t border-gray-100"></div>
 
-        {{-- ── Section: Business Info ──────────────────────────────── --}}
+        {{-- ── SECTION: Business Information ──────────────────────── --}}
         <div>
             <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Business Information</p>
             <div class="space-y-4">
@@ -121,45 +134,96 @@
                     <x-input-error :messages="$errors->get('business_name')" class="mt-1.5" />
                 </div>
 
-                {{-- Business Type + Company Size (side by side on md+) --}}
+                {{-- Business Type + Company Size --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="business_type" :value="__('Business Type')" />
-                        <select id="business_type" name="business_type" required
-                            class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm text-sm">
+                        <select id="business_type" name="business_type" required class="{{ $selectClass }}">
                             <option value="" disabled {{ old('business_type') ? '' : 'selected' }}>Select type…</option>
                             @foreach($businessTypes as $value => $label)
-                                <option value="{{ $value }}" {{ old('business_type') === $value ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
+                                <option value="{{ $value }}" {{ old('business_type') === $value ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('business_type')" class="mt-1.5" />
                     </div>
                     <div>
                         <x-input-label for="company_size" :value="__('Company Size')" />
-                        <select id="company_size" name="company_size" required
-                            class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm text-sm">
+                        <select id="company_size" name="company_size" required class="{{ $selectClass }}">
                             <option value="" disabled {{ old('company_size') ? '' : 'selected' }}>Select size…</option>
                             @foreach($companySizes as $value => $label)
-                                <option value="{{ $value }}" {{ old('company_size') === $value ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
+                                <option value="{{ $value }}" {{ old('company_size') === $value ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('company_size')" class="mt-1.5" />
                     </div>
                 </div>
 
+                {{-- Country + Timezone --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="country" :value="__('Country')" />
+                        <select id="country" name="country" required class="{{ $selectClass }}">
+                            <option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country…</option>
+                            @foreach(config('countries') as $code => $name)
+                                <option value="{{ $code }}" {{ old('country', 'OM') === $code ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('country')" class="mt-1.5" />
+                    </div>
+                    <div>
+                        <x-input-label for="timezone" :value="__('Timezone')" />
+                        <select id="timezone" name="timezone" required class="{{ $selectClass }}">
+                            <option value="" disabled>Select timezone…</option>
+                            @foreach(\DateTimeZone::listIdentifiers() as $tz)
+                                <option value="{{ $tz }}" {{ old('timezone', 'Asia/Muscat') === $tz ? 'selected' : '' }}>
+                                    {{ $tz }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('timezone')" class="mt-1.5" />
+                    </div>
+                </div>
+
+                {{-- Business Address --}}
+                <div>
+                    <x-input-label for="address" :value="__('Business Address')" />
+                    <textarea id="address" name="address" rows="3" required
+                        class="block mt-1 w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="Copy your address from Google Maps (e.g. 123 Main St, Muscat, Oman)"
+                    >{{ old('address') }}</textarea>
+                    <p class="mt-1 text-xs text-gray-400">💡 Open Google Maps → find your business → copy the address and paste it here.</p>
+                    <x-input-error :messages="$errors->get('address')" class="mt-1.5" />
+                </div>
+
             </div>
         </div>
 
-        {{-- ── Divider ─────────────────────────────────────────────── --}}
         <div class="border-t border-gray-100"></div>
 
-        {{-- ── Section: Password ───────────────────────────────────── --}}
+        {{-- ── SECTION: Marketing ──────────────────────────────────── --}}
         <div>
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Security</p>
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">How Did You Find Us?</p>
+            <div>
+                <x-input-label for="how_heard_about_us" :value="__('How did you hear about us?')" />
+                <select id="how_heard_about_us" name="how_heard_about_us" required class="{{ $selectClass }}">
+                    <option value="" disabled {{ old('how_heard_about_us') ? '' : 'selected' }}>Select an option…</option>
+                    @foreach($howHeardOptions as $value => $label)
+                        <option value="{{ $value }}" {{ old('how_heard_about_us') === $value ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('how_heard_about_us')" class="mt-1.5" />
+            </div>
+        </div>
+
+        <div class="border-t border-gray-100"></div>
+
+        {{-- ── SECTION: Security ───────────────────────────────────── --}}
+        <div>
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <x-input-label for="password" :value="__('Password')" />
@@ -174,6 +238,24 @@
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5" />
                 </div>
             </div>
+        </div>
+
+        <div class="border-t border-gray-100"></div>
+
+        {{-- ── SECTION: Agreement ──────────────────────────────────── --}}
+        <div>
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" name="terms" value="1" id="terms"
+                    {{ old('terms') ? 'checked' : '' }}
+                    class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-green-600 focus:ring-green-500" />
+                <span class="text-sm text-gray-600 leading-snug">
+                    I agree to the
+                    <a href="{{ url('/terms') }}" target="_blank" class="text-green-600 font-semibold hover:underline">Terms of Service</a>
+                    and
+                    <a href="{{ url('/privacy') }}" target="_blank" class="text-green-600 font-semibold hover:underline">Privacy Policy</a>
+                </span>
+            </label>
+            <x-input-error :messages="$errors->get('terms')" class="mt-1.5" />
         </div>
 
         {{-- ── Submit ───────────────────────────────────────────────── --}}

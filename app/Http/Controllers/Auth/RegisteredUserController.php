@@ -37,27 +37,34 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name'          => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone'         => ['required', 'string', 'max:20'],
-            'business_name' => ['required', 'string', 'max:255'],
-            'business_type' => ['required', 'string', 'max:100'],
-            'company_size'  => ['required', 'string', 'in:1-5,6-20,21-50,51-200,200+'],
-            'password'      => ['required', 'confirmed', Rules\Password::defaults()],
-            'plan'          => ['nullable', 'in:free,pro,plus'],
-            'billing_cycle' => ['nullable', 'in:monthly,yearly'],
+            'name'                 => ['required', 'string', 'max:255'],
+            'email'                => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone'                => ['required', 'string', 'max:20'],
+            'business_name'        => ['required', 'string', 'max:255'],
+            'business_type'        => ['required', 'string', 'max:100'],
+            'company_size'         => ['required', 'string', 'in:1-5,6-20,21-50,51-200,200+'],
+            'country'              => ['required', 'string', 'size:2'],
+            'timezone'             => ['required', 'timezone:all'],
+            'address'              => ['required', 'string', 'max:255'],
+            'how_heard_about_us'   => ['required', 'string', 'in:google_search,facebook,instagram,referral,youtube,advertisement,event,other'],
+            'terms'                => ['required', 'accepted'],
+            'password'             => ['required', 'confirmed', Rules\Password::defaults()],
+            'plan'                 => ['nullable', 'in:free,pro,plus'],
+            'billing_cycle'        => ['nullable', 'in:monthly,yearly'],
         ]);
 
         // Create a business for the new user
         $business = Business::create([
-            'name'          => $request->business_name,
-            'slug'          => Str::slug($request->business_name . '-' . Str::random(6)),
-            'phone'         => $request->phone,
-            'business_type' => $request->business_type,
-            'company_size'  => $request->company_size,
-            'country'       => 'OM',
-            'currency'      => 'OMR',
-            'timezone'      => 'Asia/Muscat',
+            'name'                 => $request->business_name,
+            'slug'                 => Str::slug($request->business_name . '-' . Str::random(6)),
+            'phone'                => $request->phone,
+            'business_type'        => $request->business_type,
+            'company_size'         => $request->company_size,
+            'country'              => $request->country,
+            'timezone'             => $request->timezone,
+            'address'              => $request->address,
+            'how_heard_about_us'   => $request->how_heard_about_us,
+            'currency'             => 'OMR',
         ]);
 
         // Create user with company_admin role and assign business

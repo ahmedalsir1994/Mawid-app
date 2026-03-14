@@ -23,7 +23,7 @@ class BusinessSettingsController extends Controller
                 'country' => 'OM',
                 'timezone' => 'Asia/Muscat',
                 'currency' => 'OMR',
-                'default_language' => 'ar',
+                'default_language' => 'en',
             ]);
 
             $user->business_id = $business->id;
@@ -52,12 +52,13 @@ class BusinessSettingsController extends Controller
             'gallery_image_1' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'gallery_image_2' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'gallery_image_3' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
-            'country' => ['required', Rule::in(['OM', 'SA'])],
-            'timezone' => ['required', Rule::in(['Asia/Muscat', 'Asia/Riyadh'])],
-            'currency' => ['required', Rule::in(['OMR', 'SAR'])],
-            'default_language' => ['required', Rule::in(['ar', 'en'])],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'address' => ['nullable', 'string', 'max:255'],
+            'country'              => ['required', 'string', 'size:2'],
+            'timezone'             => ['required', 'timezone:all'],
+            'currency'             => ['required', Rule::in(['OMR', 'SAR'])],
+            'default_language'     => ['required', Rule::in(['ar', 'en'])],
+            'phone'                => ['nullable', 'string', 'max:30'],
+            'address'              => ['nullable', 'string', 'max:255'],
+            'how_heard_about_us'   => ['nullable', 'string', 'max:60'],
         ]);
 
         // Handle logo upload
@@ -105,15 +106,6 @@ class BusinessSettingsController extends Controller
 
         // Remove keys that shouldn't go into Business::update directly
         unset($data['gallery_image_1'], $data['gallery_image_2'], $data['gallery_image_3']);
-
-        // Small auto-fix: if country changes, suggest matching defaults
-        if ($data['country'] === 'SA') {
-            if ($business->timezone === 'Asia/Muscat') $data['timezone'] = 'Asia/Riyadh';
-            if ($business->currency === 'OMR') $data['currency'] = 'SAR';
-        } else {
-            if ($business->timezone === 'Asia/Riyadh') $data['timezone'] = 'Asia/Muscat';
-            if ($business->currency === 'SAR') $data['currency'] = 'OMR';
-        }
 
         $business->update($data);
 

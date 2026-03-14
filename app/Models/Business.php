@@ -19,6 +19,7 @@ class Business extends Model
         'business_type',
         'company_size',
         'address',
+        'how_heard_about_us',
         'default_language',
         'settings',
         'is_active',
