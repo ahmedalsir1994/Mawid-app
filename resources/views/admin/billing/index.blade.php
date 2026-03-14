@@ -191,9 +191,11 @@
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl">
                         <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">Auto-Renewal</p>
-                        <p class="font-semibold text-xs text-green-700">
-                            ✓ On
-                        </p>
+                        @if($license->auto_renew)
+                            <p class="font-semibold text-xs text-green-700">✓ On</p>
+                        @else
+                            <p class="font-semibold text-xs text-red-500">✗ Off</p>
+                        @endif
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl overflow-hidden">
                         <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">License Key</p>
@@ -212,10 +214,16 @@
                            class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-50 transition">
                             Change Plan
                         </a>
-                        <button type="button" onclick="document.getElementById('cancel-sub-modal').classList.remove('hidden')"
-                            class="px-4 py-2 text-sm font-medium rounded-xl border border-red-200 text-red-600 bg-white hover:bg-red-50 transition">
-                            Cancel Subscription
-                        </button>
+                        @if($license->auto_renew)
+                            <button type="button" onclick="document.getElementById('cancel-sub-modal').classList.remove('hidden')"
+                                class="px-4 py-2 text-sm font-medium rounded-xl border border-red-200 text-red-600 bg-white hover:bg-red-50 transition">
+                                Cancel Subscription
+                            </button>
+                        @else
+                            <span class="px-4 py-2 text-xs font-medium rounded-xl border border-amber-200 text-amber-700 bg-amber-50 flex items-center">
+                                ⏳ Cancellation scheduled &mdash; active until {{ $license->expires_at?->format('M j, Y') ?? '—' }}
+                            </span>
+                        @endif
                     </div>
                 @endif
             @else
@@ -522,11 +530,11 @@
                     </div>
                 </div>
                 <p class="text-sm text-gray-700 mb-2">
-                    Your <span class="font-semibold">{{ ucfirst($plan) }} plan</span> will be cancelled immediately and your account will be downgraded to the <span class="font-semibold">Free plan</span>.
+                    Auto-renewal will be turned off for your <span class="font-semibold">{{ ucfirst($plan) }} plan</span>. You will keep full access until <span class="font-semibold">{{ $license->expires_at?->format('M j, Y') ?? 'the end of your billing cycle' }}</span>, then your account will be downgraded to the <span class="font-semibold">Free plan</span>.
                 </p>
                 <ul class="text-xs text-gray-500 space-y-1 mb-5 list-disc list-inside">
-                    <li>Limited to 1 branch, 1 staff, 5 services</li>
-                    <li>No WhatsApp reminders</li>
+                    <li>You keep your current plan until the expiry date</li>
+                    <li>After expiry: limited to 1 branch, 1 staff, 3 services</li>
                     <li>You can re-subscribe at any time</li>
                 </ul>
                 <div class="flex gap-3">

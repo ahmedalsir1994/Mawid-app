@@ -68,7 +68,7 @@ class BillingController extends Controller
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Cancel Subscription → downgrade to Free
+    // Cancel Subscription → stops auto-renew; plan stays active until expiry
     // ─────────────────────────────────────────────────────────────────────────
 
     public function cancelSubscription(Request $request)
@@ -80,29 +80,22 @@ class BillingController extends Controller
             return back()->with('error', 'No active paid subscription to cancel.');
         }
 
-        // Downgrade to free plan immediately
-        $freePlan = \App\Services\PlanService::get('free');
+        if (!$license->auto_renew) {
+            $expiryDate = $license->expires_at?->format('M j, Y') ?? 'the end of your billing cycle';
+            return back()->with('info', 'Auto-renewal is already disabled. Your ' . ucfirst($license->plan) . ' plan remains active until ' . $expiryDate . '.');
+        }
+
+        // Stop auto-renewal; keep current plan active until expires_at.
+        // The ExpireGracePeriodLicenses command will downgrade to Free after expiry.
         $license->update([
-            'plan'               => 'free',
-            'billing_cycle'      => 'monthly',   // enum cannot be null; reset to default
-            'status'             => 'active',
-            'payment_status'     => 'paid',
-            'expires_at'         => null,
-            'next_billing_date'  => null,
-            'auto_renew'         => false,
-            'auto_renew_attempts' => 0,
-            'past_due_at'        => null,
-            'grace_period_ends_at' => null,
-            'max_branches'       => $freePlan['max_branches'],
-            'max_staff'          => $freePlan['max_staff'],
-            'max_services'       => $freePlan['max_services'],
-            'max_users'          => ($freePlan['max_staff'] + 1),
-            'max_daily_bookings' => $freePlan['max_daily_bookings'],
-            'whatsapp_reminders' => $freePlan['whatsapp_reminders'],
+            'auto_renew'        => false,
+            'next_billing_date' => null,
         ]);
 
+        $expiryDate = $license->expires_at?->format('M j, Y') ?? 'the end of your billing cycle';
+
         return redirect()->route('admin.billing.index')
-            ->with('success', 'Your subscription has been cancelled. Your account is now on the Free plan.');
+            ->with('success', 'Auto-renewal cancelled. Your ' . ucfirst($license->plan) . ' plan remains active until ' . $expiryDate . '. After that, your account will be downgraded to the Free plan.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
