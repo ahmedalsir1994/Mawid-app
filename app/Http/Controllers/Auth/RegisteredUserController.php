@@ -114,9 +114,15 @@ class RegisteredUserController extends Controller
 
         // Generate OTP, save to user, send email
         [$otp] = OtpVerificationController::generateAndSaveOtp($user);
-        Mail::to($user->email)->send(new OtpVerificationMail($otp, $user->name));
+
+        try {
+            Mail::to($user->email)->send(new OtpVerificationMail($otp, $user->name));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('OTP mail failed: ' . $e->getMessage());
+        }
 
         // Store user ID in session for the OTP step (user is NOT logged in yet)
+        // This MUST happen even if mail fails so the OTP page is still reachable.
         $request->session()->put('otp_user_id', $user->id);
 
         return redirect()->route('otp.show')
