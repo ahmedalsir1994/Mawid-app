@@ -18,7 +18,7 @@ class CompanyAdminDashboardController extends Controller
         }
 
         // Calendar view parameters
-        $view = $request->get('view', 'month'); // week, month, year
+        $view = in_array($request->get('view'), ['week', 'month', 'year']) ? $request->get('view') : 'month';
         $date = $request->get('date', now()->format('Y-m-d'));
         $currentDate = \Carbon\Carbon::parse($date);
 

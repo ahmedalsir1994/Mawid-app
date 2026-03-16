@@ -111,6 +111,7 @@ class PaymobController extends Controller
         $pending = ($paymobOrderId ? Cache::get("paymob_order_{$paymobOrderId}") : null)
                 ?? ($merchantRef   ? Cache::get("paymob_ref_{$merchantRef}")     : null);
 
+        $isReactivation = false;
         if ($pending) {
             if (!empty($pending['update_card_only'])) {
                 // Card tokenisation: save token, skip plan activation
@@ -250,8 +251,6 @@ class PaymobController extends Controller
             'last_four'   => $lastFour ? '****' . $lastFour : null,
             'expiry'      => $expMonth && $expYear ? "{$expMonth}/" . substr($expYear, -2) : null,
         ]);
-
-        Log::info('Paymob: Card token saved', ['business_id' => $license->business_id]);
     }
 
     // ────────────────────────────────────────────────────────────────────
@@ -263,9 +262,8 @@ class PaymobController extends Controller
         $hmacSecret = config('paymob.hmac_secret');
 
         if (empty($hmacSecret)) {
-            Log::critical('Paymob HMAC secret is not configured — callback accepted without verification. Set PAYMOB_HMAC_SECRET in .env immediately.');
-            // Only skip in local environment; reject in production
-            return app()->environment('local', 'testing');
+            Log::critical('Paymob HMAC secret is not configured. Set PAYMOB_HMAC_SECRET in .env immediately. Rejecting callback.');
+            return false;
         }
 
         // Support both old API (transaction nested under 'obj') and new Intention API (flat)

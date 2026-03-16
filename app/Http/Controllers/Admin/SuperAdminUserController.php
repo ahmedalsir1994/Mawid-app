@@ -47,8 +47,6 @@ class SuperAdminUserController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $validated['password'] = bcrypt($validated['password']);
-
         User::create($validated);
 
         return redirect()->route('admin.super.users.index')
@@ -78,7 +76,7 @@ class SuperAdminUserController extends Controller
         ]);
 
         if ($request->filled('password')) {
-            $validated['password'] = bcrypt($request->password);
+            $validated['password'] = $request->password;
         }
 
         $user->update($validated);

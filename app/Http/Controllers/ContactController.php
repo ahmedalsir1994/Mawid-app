@@ -26,7 +26,7 @@ class ContactController extends Controller
 
         // Email notification to admin inbox
         try {
-            Mail::to('ahmedsecret94@gmail.com')
+            Mail::to(config('mail.admin_address', config('mail.from.address')))
                 ->send(new ContactSubmissionMail($submission));
         } catch (\Throwable $e) {
             logger()->error('ContactSubmissionMail failed: ' . $e->getMessage());

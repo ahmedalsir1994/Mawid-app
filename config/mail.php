@@ -131,4 +131,13 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Address
+    |--------------------------------------------------------------------------
+    | The email address that receives admin-facing notifications such as
+    | contact form submissions. Defaults to the global "from" address.
+    */
+    'admin_address' => env('ADMIN_MAIL_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
+
 ];

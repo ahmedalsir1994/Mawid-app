@@ -20,7 +20,6 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'email_verified_at',
         'password',
         'role',
         'is_active',
@@ -28,7 +27,6 @@ class User extends Authenticatable
         'branch_id',
         'photo',
         'title',
-        'otp_code',
         'otp_expires_at',
         'pending_plan',
         'pending_cycle',

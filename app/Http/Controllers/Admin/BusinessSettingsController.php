@@ -5,16 +5,78 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class BusinessSettingsController extends Controller
 {
+    /**
+     * Crop and resize any uploaded image to an 800×800 JPEG square using GD.
+     * Returns the destination path relative to public_path().
+     */
+    private function cropToSquare(UploadedFile $file, string $destDir, string $baseName): string
+    {
+        @mkdir(public_path($destDir), 0755, true);
+
+        $srcPath = $file->getRealPath();
+        $mime    = $file->getMimeType();
+
+        if (!extension_loaded('gd')) {
+            // GD not available — store the file as-is without cropping
+            $name = $baseName . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path($destDir), $name);
+            return $destDir . '/' . $name;
+        }
+
+        $src = match (true) {
+            str_contains($mime, 'jpeg'), str_contains($mime, 'jpg') => @imagecreatefromjpeg($srcPath),
+            str_contains($mime, 'png')  => @imagecreatefrompng($srcPath),
+            str_contains($mime, 'webp') => @imagecreatefromwebp($srcPath),
+            default                     => null,
+        };
+
+        if (!$src) {
+            // Fallback: just move the file as-is
+            $name = $baseName . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path($destDir), $name);
+            return $destDir . '/' . $name;
+        }
+
+        $origW = imagesx($src);
+        $origH = imagesy($src);
+
+        // Determine the square crop area (largest centered square)
+        $cropSize = min($origW, $origH);
+        $srcX     = (int)(($origW - $cropSize) / 2);
+        $srcY     = (int)(($origH - $cropSize) / 2);
+
+        $dst = imagecreatetruecolor(800, 800);
+
+        // Preserve transparency for PNG
+        if (str_contains($mime, 'png')) {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+            $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+            imagefilledrectangle($dst, 0, 0, 800, 800, $transparent);
+        }
+
+        imagecopyresampled($dst, $src, 0, 0, $srcX, $srcY, 800, 800, $cropSize, $cropSize);
+
+        $name    = $baseName . '.jpg';
+        $outPath = public_path($destDir . '/' . $name);
+        imagejpeg($dst, $outPath, 85);
+
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        return $destDir . '/' . $name;
+    }
+
     public function edit(Request $request)
     {
         $user = $request->user();
 
-        // If the user has no business yet, create one quickly
         if (!$user->business_id) {
             $name = $user->name . ' Business';
             $business = Business::create([
@@ -37,7 +99,7 @@ class BusinessSettingsController extends Controller
 
     public function update(Request $request)
     {
-        $user = $request->user();
+        $user     = $request->user();
         $business = $user->business;
 
         abort_if(!$business, 404);
@@ -48,7 +110,7 @@ class BusinessSettingsController extends Controller
                 'required', 'string', 'max:120',
                 Rule::unique('businesses', 'slug')->ignore($business->id),
             ],
-            'logo'           => ['nullable', 'image', 'mimes:jpeg,jpg,png,svg', 'max:2048'],
+            'logo'           => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
             'gallery_image_1' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'gallery_image_2' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'gallery_image_3' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
@@ -61,50 +123,45 @@ class BusinessSettingsController extends Controller
             'how_heard_about_us'   => ['nullable', 'string', 'max:60'],
         ]);
 
-        // Handle logo upload
+        // Handle logo upload (no square crop needed for logos)
         if ($request->hasFile('logo')) {
             if ($business->logo && file_exists(public_path($business->logo))) {
                 unlink(public_path($business->logo));
             }
-            $logo = $request->file('logo');
+            $logo     = $request->file('logo');
             $logoName = 'logo_' . time() . '.' . $logo->getClientOriginalExtension();
+            @mkdir(public_path('uploads/logos'), 0755, true);
             $logo->move(public_path('uploads/logos'), $logoName);
             $data['logo'] = 'uploads/logos/' . $logoName;
         }
 
-        // Handle gallery images (slots 1–3)
+        // Handle gallery images (slots 1–3), crop each to 800×800 square
         $gallery = $business->gallery_images ?? [null, null, null];
         while (count($gallery) < 3) $gallery[] = null;
+
+        // Normalise existing entries: extract path string if stored as object/array
+        $gallery = array_map(fn($p) => is_array($p) ? ($p['path'] ?? null) : $p, $gallery);
 
         foreach ([1, 2, 3] as $slot) {
             $field = "gallery_image_{$slot}";
             if ($request->hasFile($field)) {
-                // Delete old slot image
+                // Delete old file
                 $old = $gallery[$slot - 1] ?? null;
                 if ($old && file_exists(public_path($old))) {
                     unlink(public_path($old));
                 }
-                $file = $request->file($field);
-                $name = 'gallery_' . $business->id . '_' . $slot . '_' . time() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/gallery'), $name);
-                $gallery[$slot - 1] = 'uploads/gallery/' . $name;
+
+                $baseName         = 'gallery_' . $business->id . '_' . $slot . '_' . time();
+                $gallery[$slot-1] = $this->cropToSquare(
+                    $request->file($field),
+                    'uploads/gallery',
+                    $baseName
+                );
             }
         }
 
         $data['gallery_images'] = $gallery;
 
-        // Require all 3 gallery slots to be filled before saving
-        $missing = [];
-        foreach ([1, 2, 3] as $slot) {
-            if (empty($gallery[$slot - 1])) $missing[] = $slot;
-        }
-        if (!empty($missing)) {
-            return back()
-                ->withErrors(['gallery' => 'All 3 gallery photos are required. Missing: Photo ' . implode(', ', $missing) . '.'])
-                ->withInput();
-        }
-
-        // Remove keys that shouldn't go into Business::update directly
         unset($data['gallery_image_1'], $data['gallery_image_2'], $data['gallery_image_3']);
 
         $business->update($data);
@@ -114,7 +171,7 @@ class BusinessSettingsController extends Controller
 
     public function removeGalleryImage(Request $request, int $slot)
     {
-        $user = $request->user();
+        $user     = $request->user();
         $business = $user->business;
         abort_if(!$business, 404);
         abort_if($slot < 1 || $slot > 3, 422);
@@ -122,13 +179,14 @@ class BusinessSettingsController extends Controller
         $gallery = $business->gallery_images ?? [null, null, null];
         while (count($gallery) < 3) $gallery[] = null;
 
-        $path = $gallery[$slot - 1] ?? null;
+        $entry = $gallery[$slot - 1] ?? null;
+        $path  = is_array($entry) ? ($entry['path'] ?? null) : $entry;
         if ($path && file_exists(public_path($path))) {
             unlink(public_path($path));
         }
         $gallery[$slot - 1] = null;
 
-        $business->gallery_images = $gallery;
+        $business->gallery_images = array_values($gallery);
         $business->save();
 
         return response()->json(['ok' => true]);

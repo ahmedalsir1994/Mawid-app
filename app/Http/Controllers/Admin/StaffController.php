@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
@@ -54,7 +55,7 @@ class StaffController extends Controller
             'email'     => 'required|email|unique:users,email',
             'password'  => 'required|min:8|confirmed',
             'title'     => 'nullable|string|max:80',
-            'branch_id' => 'nullable|integer|exists:branches,id',
+            'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')->where('business_id', $request->user()->business_id)],
             'photo'     => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
             'is_active' => 'boolean',
         ]);
@@ -62,7 +63,7 @@ class StaffController extends Controller
         $data = [
             'name'        => $validated['name'],
             'email'       => $validated['email'],
-            'password'    => Hash::make($validated['password']),
+            'password'    => $validated['password'],
             'title'       => $validated['title'] ?? null,
             'branch_id'   => $validated['branch_id'] ?? null,
             'role'        => 'staff',
@@ -115,7 +116,7 @@ class StaffController extends Controller
             'name'      => 'required|string|max:255',
             'email'     => 'required|email|unique:users,email,' . $staff->id,
             'title'     => 'nullable|string|max:80',
-            'branch_id' => 'nullable|integer|exists:branches,id',
+            'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')->where('business_id', $request->user()->business_id)],
             'photo'     => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
             'is_active' => 'boolean',
         ]);
@@ -130,7 +131,7 @@ class StaffController extends Controller
 
         if ($request->filled('password')) {
             $request->validate(['password' => 'required|min:8|confirmed']);
-            $data['password'] = Hash::make($request->password);
+            $data['password'] = $request->password;
         }
 
         if ($request->hasFile('photo')) {

@@ -28,7 +28,7 @@ class CheckRole
         $allowedRoles = array_map('trim', explode(',', $role));
         
         if (!in_array(auth()->user()->role, $allowedRoles)) {
-            abort(403, 'Unauthorized. Required role: ' . $role . ', Your role: ' . auth()->user()->role);
+            abort(403);
         }
 
         return $next($request);

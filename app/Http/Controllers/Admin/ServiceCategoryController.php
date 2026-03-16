@@ -35,11 +35,13 @@ class ServiceCategoryController extends Controller
 
     public function edit(ServiceCategory $serviceCategory)
     {
+        abort_if($serviceCategory->business_id !== auth()->user()->business_id, 403);
         return view('admin.service_categories.edit', ['category' => $serviceCategory]);
     }
 
     public function update(Request $request, ServiceCategory $serviceCategory)
     {
+        abort_if($serviceCategory->business_id !== auth()->user()->business_id, 403);
         $request->validate([
             'name' => ['required', 'string', 'max:120'],
         ]);
@@ -49,6 +51,7 @@ class ServiceCategoryController extends Controller
 
     public function destroy(ServiceCategory $serviceCategory)
     {
+        abort_if($serviceCategory->business_id !== auth()->user()->business_id, 403);
         $serviceCategory->delete();
         return back()->with('success', 'Category deleted.');
     }

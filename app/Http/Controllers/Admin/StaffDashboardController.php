@@ -20,7 +20,7 @@ class StaffDashboardController extends Controller
         }
 
         // Calendar view parameters
-        $view = $request->get('view', 'week'); // Staff primarily needs week view
+        $view = in_array($request->get('view'), ['week', 'month', 'day']) ? $request->get('view') : 'week';
         $date = $request->get('date', now()->format('Y-m-d'));
         $currentDate = Carbon::parse($date);
 
