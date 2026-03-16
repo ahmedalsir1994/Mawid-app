@@ -115,20 +115,9 @@
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
                         required>
                         <option value="">{{ __('app.select_timezone') }}</option>
-                        <option value="UTC" @selected(old('timezone', $business->timezone) === 'UTC')>{{ __('app.utc') }}
-                        </option>
-                        <option value="America/New_York" @selected(old('timezone', $business->timezone) === 'America/New_York')>{{ __('app.est_eastern_time') }}</option>
-                        <option value="America/Chicago" @selected(old('timezone', $business->timezone) === 'America/Chicago')>{{ __('app.cst_central_time') }}</option>
-                        <option value="America/Los_Angeles" @selected(old('timezone', $business->timezone) === 'America/Los_Angeles')>{{ __('app.pst_pacific_time') }}</option>
-                        <option value="Europe/London" @selected(old('timezone', $business->timezone) === 'Europe/London')>
-                            {{ __('app.gmt_london') }}
-                        </option>
-                        <option value="Europe/Paris" @selected(old('timezone', $business->timezone) === 'Europe/Paris')>
-                            {{ __('app.cet_paris') }}
-                        </option>
-                        <option value="Asia/Dubai" @selected(old('timezone', $business->timezone) === 'Asia/Dubai')>
-                            {{ __('app.gst_dubai') }}</option>
-                        <option value="Asia/Singapore" @selected(old('timezone', $business->timezone) === 'Asia/Singapore')>{{ __('app.sgt_singapore') }}</option>
+                        @foreach(\DateTimeZone::listIdentifiers() as $tz)
+                            <option value="{{ $tz }}" @selected(old('timezone', $business->timezone) === $tz)>{{ $tz }}</option>
+                        @endforeach
                     </select>
                     @error('timezone')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>

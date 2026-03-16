@@ -95,9 +95,9 @@
                 <select lang="en" dir="ltr" id="timezone" name="timezone" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">{{ __('app.select_timezone') }}</option>
-                    <option value="Asia/Muscat" {{ old('timezone') == 'Asia/Muscat' ? 'selected' : '' }}>
-                        {{ __('app.asia_muscat') }}
-                    </option>
+                    @foreach(\DateTimeZone::listIdentifiers() as $tz)
+                        <option value="{{ $tz }}" {{ old('timezone', 'Asia/Muscat') === $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                    @endforeach
                 </select>
                 @error('timezone')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

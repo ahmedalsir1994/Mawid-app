@@ -56,11 +56,10 @@ class OtpVerificationController extends Controller
         }
 
         // Mark verified — clear OTP, set email_verified_at
-        $user->update([
-            'email_verified_at' => now(),
-            'otp_code'          => null,
-            'otp_expires_at'    => null,
-        ]);
+        $user->email_verified_at = now();
+        $user->otp_code          = null;
+        $user->otp_expires_at    = null;
+        $user->saveQuietly();
 
         // Refresh model to get the latest DB state (ensures pending_plan is current)
         $user->refresh();
@@ -129,10 +128,9 @@ class OtpVerificationController extends Controller
     {
         $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        $user->update([
-            'otp_code'       => $otp,
-            'otp_expires_at' => now()->addMinutes(10),
-        ]);
+        $user->otp_code       = $otp;
+        $user->otp_expires_at = now()->addMinutes(10);
+        $user->saveQuietly();
 
         return [$otp];
     }
