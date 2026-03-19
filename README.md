@@ -232,4 +232,14 @@ database/
 
 ## License
 
-MIT
+
+© 2026 Ahmed. All rights reserved.
+
+This project and its source code are proprietary and confidential.
+
+You are NOT allowed to:
+- Use this code for commercial purposes  
+- Copy or redistribute this project  
+- Modify or create derivative works  
+
+Without explicit written permission from the author.
