@@ -1,4 +1,4 @@
-# Mawid — Appointment Booking SaaS Platform
+# Mawid —  Booking SaaS Platform
 
 Mawid (Arabic: **موعد**, meaning *appointment*) is a multi-tenant SaaS platform built with **Laravel 12** that lets businesses manage services, staff, branches, and customer bookings through a clean dashboard. Each business gets a public booking page for customers and a full admin panel for management.
 
